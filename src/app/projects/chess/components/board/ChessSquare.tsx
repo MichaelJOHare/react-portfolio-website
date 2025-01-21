@@ -1,9 +1,11 @@
+import { useDroppable } from "@dnd-kit/core";
 import React from "react";
 
 type SquareProps = {
   square: number[];
   isBoardFlipped: boolean;
   children: React.ReactNode;
+  onSquareClick: (row: number, col: number) => void;
 };
 
 export const ChessSquare = ({
@@ -11,6 +13,10 @@ export const ChessSquare = ({
   isBoardFlipped,
   children,
 }: SquareProps) => {
+  const { isOver, setNodeRef } = useDroppable({ id: "droppable" });
+  const style = {
+    color: isOver ? "green" : undefined,
+  };
   const isDark = (square[0] + square[1]) % 2 === 0;
   const isLabeledColumn = square[1] === 7;
   const isLabeledRow = square[0] === 7;
@@ -28,6 +34,8 @@ export const ChessSquare = ({
       className={`relative flex justify-center items-center w-full h-full aspect-square ${getColor(
         isDark
       )}`}
+      ref={setNodeRef}
+      style={style}
     >
       {children}
       {isLabeledColumn && (
