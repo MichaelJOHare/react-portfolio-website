@@ -13,10 +13,9 @@ export const ChessSquare = ({
   isBoardFlipped,
   children,
 }: SquareProps) => {
-  const { isOver, setNodeRef } = useDroppable({ id: "droppable" });
-  const style = {
-    color: isOver ? "green" : undefined,
-  };
+  const { isOver, setNodeRef } = useDroppable({
+    id: `droppable-${square[0]}-${square[1]}`,
+  });
   const isDark = (square[0] + square[1]) % 2 === 0;
   const isLabeledColumn = square[1] === 7;
   const isLabeledRow = square[0] === 7;
@@ -26,7 +25,7 @@ export const ChessSquare = ({
     : String.fromCharCode(97 + square[1]);
 
   const getColor = (isDark: boolean) => {
-    return isDark ? "bg-orange-200" : "bg-yellow-900";
+    return isOver ? "bg-green-500" : isDark ? "bg-orange-200" : "bg-yellow-900";
   };
 
   return (
@@ -35,7 +34,6 @@ export const ChessSquare = ({
         isDark
       )}`}
       ref={setNodeRef}
-      style={style}
     >
       {children}
       {isLabeledColumn && (

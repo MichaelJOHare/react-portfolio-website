@@ -964,23 +964,19 @@ var _s = __turbopack_refresh__.signature();
 const ChessSquare = ({ square, isBoardFlipped, children })=>{
     _s();
     const { isOver, setNodeRef } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$dnd$2d$kit$2f$core$2f$dist$2f$core$2e$esm$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useDroppable"])({
-        id: "droppable"
+        id: `droppable-${square[0]}-${square[1]}`
     });
-    const style = {
-        color: isOver ? "green" : undefined
-    };
     const isDark = (square[0] + square[1]) % 2 === 0;
     const isLabeledColumn = square[1] === 7;
     const isLabeledRow = square[0] === 7;
     const columnLabel = isBoardFlipped ? 1 + square[0] : 8 - square[0];
     const rowLabel = isBoardFlipped ? String.fromCharCode(104 - square[1]) : String.fromCharCode(97 + square[1]);
     const getColor = (isDark)=>{
-        return isDark ? "bg-orange-200" : "bg-yellow-900";
+        return isOver ? "bg-green-500" : isDark ? "bg-orange-200" : "bg-yellow-900";
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: `relative flex justify-center items-center w-full h-full aspect-square ${getColor(isDark)}`,
         ref: setNodeRef,
-        style: style,
         children: [
             children,
             isLabeledColumn && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -988,7 +984,7 @@ const ChessSquare = ({ square, isBoardFlipped, children })=>{
                 children: columnLabel
             }, void 0, false, {
                 fileName: "[project]/src/app/projects/chess/components/board/ChessSquare.tsx",
-                lineNumber: 42,
+                lineNumber: 40,
                 columnNumber: 9
             }, this),
             isLabeledRow && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -996,13 +992,13 @@ const ChessSquare = ({ square, isBoardFlipped, children })=>{
                 children: rowLabel
             }, void 0, false, {
                 fileName: "[project]/src/app/projects/chess/components/board/ChessSquare.tsx",
-                lineNumber: 51,
+                lineNumber: 49,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/projects/chess/components/board/ChessSquare.tsx",
-        lineNumber: 33,
+        lineNumber: 32,
         columnNumber: 5
     }, this);
 };
