@@ -1,11 +1,7 @@
 import { MovementStrategy, Move } from "../../types";
 import { createStandardMove, getPieceAt, createSquare } from "../index";
 
-export const rookMovementStrategy: MovementStrategy = (
-  board,
-  isBoardFlipped,
-  piece
-) => {
+export const rookMovementStrategy: MovementStrategy = (board, piece) => {
   let legalMoves: Move[] = [];
   let row = piece.currentSquare.row;
   let col = piece.currentSquare.col;

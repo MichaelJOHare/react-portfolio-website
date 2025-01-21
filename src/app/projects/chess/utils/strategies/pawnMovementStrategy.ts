@@ -17,15 +17,39 @@ import {
 
 export const pawnMovementStrategy: MovementStrategy = (
   board,
-  isBoardFlipped,
   piece,
+  isBoardFlipped,
   moveHistory
 ) => {
   const legalMoves: Move[] = [];
   const { row, col } = piece.currentSquare;
-  const direction = piece.color === PlayerColor.WHITE ? -1 : 1;
-  const backRank = piece.color === PlayerColor.WHITE ? 0 : 7;
-  const startingRow = piece.color === PlayerColor.WHITE ? 6 : 1;
+
+  const direction =
+    (piece.color === PlayerColor.WHITE ? -1 : 1) * (isBoardFlipped ? -1 : 1);
+
+  const backRank = isBoardFlipped
+    ? piece.color === PlayerColor.WHITE
+      ? 7
+      : 0
+    : piece.color === PlayerColor.WHITE
+    ? 0
+    : 7;
+
+  const startingRow = isBoardFlipped
+    ? piece.color === PlayerColor.WHITE
+      ? 1
+      : 6
+    : piece.color === PlayerColor.WHITE
+    ? 6
+    : 1;
+
+  const rowBeforePromotionRow = isBoardFlipped
+    ? piece.color === PlayerColor.WHITE
+      ? 6
+      : 1
+    : piece.color === PlayerColor.WHITE
+    ? 1
+    : 6;
 
   const addNormalMoves = (
     row: number,
@@ -119,9 +143,22 @@ export const pawnMovementStrategy: MovementStrategy = (
     if (!moveHistory) {
       return;
     }
-    const enPassantStartingRow = piece.color === PlayerColor.WHITE ? 1 : 6;
-    const enPassantEndRow = piece.color === PlayerColor.WHITE ? 3 : 4;
-    const direction = piece.color === PlayerColor.WHITE ? -1 : 1;
+    const enPassantStartingRow = isBoardFlipped
+      ? piece.color === PlayerColor.WHITE
+        ? 6
+        : 1
+      : piece.color === PlayerColor.WHITE
+      ? 1
+      : 6;
+
+    const enPassantEndRow = isBoardFlipped
+      ? piece.color === PlayerColor.WHITE
+        ? 4
+        : 3
+      : piece.color === PlayerColor.WHITE
+      ? 3
+      : 4;
+
     const lastMove = moveHistory[moveHistory.length - 1];
 
     if (
@@ -159,8 +196,6 @@ export const pawnMovementStrategy: MovementStrategy = (
     board: Square[][],
     legalMoves: Move[]
   ) => {
-    const direction = piece.color === PlayerColor.WHITE ? -1 : 1;
-    const rowBeforePromotionRow = piece.color === PlayerColor.WHITE ? 1 : 6;
     const forwardSquare: Square = { row: row + direction, col };
 
     if (row === rowBeforePromotionRow) {

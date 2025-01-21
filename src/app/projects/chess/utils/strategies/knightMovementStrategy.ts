@@ -1,11 +1,7 @@
 import { MovementStrategy, Move } from "../../types";
 import { createStandardMove, createSquare, getPieceAt } from "../index";
 
-export const knightMovementStrategy: MovementStrategy = (
-  board,
-  isBoardFlipped,
-  piece
-) => {
+export const knightMovementStrategy: MovementStrategy = (board, piece) => {
   let legalMoves: Move[] = [];
   let row = piece.currentSquare.row;
   let col = piece.currentSquare.col;
