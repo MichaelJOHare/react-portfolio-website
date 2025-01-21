@@ -18,8 +18,8 @@ export type Piece = {
 export interface MovementStrategy {
   (
     board: Square[][],
-    isBoardFlipped: boolean,
     piece: Piece,
+    isBoardFlipped?: boolean,
     moveHistory?: Move[]
   ): Move[];
 }

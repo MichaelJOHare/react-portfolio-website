@@ -8,8 +8,8 @@ import {
 
 export const kingMovementStrategy: MovementStrategy = (
   board,
-  isBoardFlipped,
-  piece
+  piece,
+  isBoardFlipped
 ) => {
   const legalMoves: Move[] = [];
   let row = piece.currentSquare.row;
@@ -31,10 +31,9 @@ export const kingMovementStrategy: MovementStrategy = (
     king: Piece,
     legalMoves: Move[]
   ) => {
-    const rookPositions = {
-      kingSideRookCol: 7,
-      queenSideRookCol: 0,
-    };
+    const rookPositions = isBoardFlipped
+      ? { kingSideRookCol: 0, queenSideRookCol: 7 }
+      : { kingSideRookCol: 7, queenSideRookCol: 0 };
     const kingSideRook = getPieceAt(
       board,
       king.currentSquare.row,
