@@ -112,20 +112,22 @@ export const useChessGame = (isBoardFlipped: boolean) => {
 
   const executeMoveByType = (move: Move, board: Square[][]) => {
     const capturePiece = (piece?: Piece) => {
-      if (!piece) return;
-      setGameState((prevState) => ({
-        ...prevState,
-        capturedPieces: [...prevState.capturedPieces, piece],
-      }));
-      piece.isAlive = false;
-      board[piece.currentSquare.row][piece.currentSquare.col].piece = undefined;
+      if (piece) {
+        setGameState((prevState) => ({
+          ...prevState,
+          capturedPieces: [...prevState.capturedPieces, piece],
+        }));
+        piece.isAlive = false;
+        board[piece.currentSquare.row][piece.currentSquare.col].piece =
+          undefined;
+      }
     };
 
     let piecesToUpdate: Piece[] = [];
+    capturePiece(move.capturedPiece);
 
     switch (move.type) {
       case MoveType.STNDRD:
-        capturePiece(move.capturedPiece);
         piecesToUpdate = executeStandardMove(move, board, move.capturedPiece);
         break;
 
@@ -134,15 +136,27 @@ export const useChessGame = (isBoardFlipped: boolean) => {
         break;
 
       case MoveType.EP:
-        capturePiece(move.capturedPiece);
         piecesToUpdate = executeEnPassantMove(move, board, move.capturedPiece);
         break;
 
       case MoveType.PROMO:
-        capturePiece(move.capturedPiece);
         piecesToUpdate = executePromoMove(move, board, move.capturedPiece);
         break;
     }
+
+    const halfMoveClock =
+      move.piece.type === PieceType.PAWN || move.capturedPiece
+        ? 0
+        : gameState.halfMoveClock + 1;
+
+    setGameState((prevState) => ({
+      ...prevState,
+      halfMoveClock,
+      fullMoveNumber:
+        move.piece.color === PlayerColor.BLACK
+          ? prevState.fullMoveNumber + 1
+          : prevState.fullMoveNumber,
+    }));
 
     updatePlayerPieces(piecesToUpdate);
   };

@@ -77,7 +77,6 @@ export interface Move {
   piece: Piece;
   capturedPiece?: Piece;
   isPromotion?: boolean;
-  isCapture?: boolean;
 }
 
 export interface CastlingMove extends Move {
