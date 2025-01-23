@@ -4,17 +4,18 @@ import React from "react";
 type SquareProps = {
   square: number[];
   isBoardFlipped: boolean;
+  isValidMove: boolean;
   children: React.ReactNode;
-  onSquareClick: (row: number, col: number) => void;
 };
 
 export const ChessSquare = ({
   square,
   isBoardFlipped,
+  isValidMove,
   children,
-}: SquareProps) => {
+}: SquareProps & { isValidMove: boolean }) => {
   const { isOver, setNodeRef } = useDroppable({
-    id: `droppable-${square[0]}-${square[1]}`,
+    id: `${square[0]}${square[1]}`,
   });
   const isDark = (square[0] + square[1]) % 2 === 0;
   const isLabeledColumn = square[1] === 7;
@@ -24,15 +25,16 @@ export const ChessSquare = ({
     ? String.fromCharCode(104 - square[1])
     : String.fromCharCode(97 + square[1]);
 
-  const getColor = (isDark: boolean) => {
-    return isOver ? "bg-green-500" : isDark ? "bg-orange-200" : "bg-yellow-900";
+  const getColor = () => {
+    if (isOver) {
+      return isValidMove ? "bg-green-500" : "bg-red-500";
+    }
+    return isDark ? "bg-orange-200" : "bg-yellow-900";
   };
 
   return (
     <div
-      className={`relative flex justify-center items-center w-full h-full aspect-square ${getColor(
-        isDark
-      )}`}
+      className={`relative flex justify-center items-center w-full h-full aspect-square ${getColor()}`}
       ref={setNodeRef}
     >
       {children}

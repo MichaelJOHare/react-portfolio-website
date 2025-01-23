@@ -5,17 +5,17 @@ import { useChessGame } from "../../hooks/useChessGame";
 import { Board } from "../board/Board";
 
 export const ChessGameContainer = () => {
-  const gameManager = useChessGame();
   const [isBoardFlipped, setisBoardFlipped] = useState(false);
+  const gameManager = useChessGame(isBoardFlipped);
 
   useEffect(() => {
-    gameManager.initializeBoard(isBoardFlipped);
+    gameManager.initializeBoard();
   }, []);
 
   return (
     <div className="flex flex-col justify-center lg:flex-row">
       <div className="flex justify-center items-center">
-        <Board board={gameManager.board} isBoardFlipped={isBoardFlipped} />
+        <Board gameManager={gameManager} isBoardFlipped={isBoardFlipped} />
       </div>
     </div>
   );

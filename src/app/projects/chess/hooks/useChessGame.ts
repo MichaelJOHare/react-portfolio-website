@@ -6,10 +6,12 @@ import {
   PlayerColor,
   PlayerType,
   PieceType,
+  Move,
+  Square,
 } from "../types";
 import { createPlayer, createPiece, defaultBoard, setupPieces } from "../utils";
 
-export const useChessGame = () => {
+export const useChessGame = (isBoardFlipped: boolean) => {
   const [gameState, setGameState] = useState<GameState>({
     board: defaultBoard(),
     players: [
@@ -31,7 +33,7 @@ export const useChessGame = () => {
   const player1 = gameState.players[0];
   const player2 = gameState.players[1];
 
-  const initializeBoard = (isBoardFlipped: boolean) => {
+  const initializeBoard = () => {
     const setup = setupPieces(isBoardFlipped);
     const newBoard = gameState.board;
     let newPiecesByPlayer = new Map();
@@ -76,8 +78,44 @@ export const useChessGame = () => {
     }));
   };
 
+  const getPlayerMoves = () => {
+    const playerPieces = gameState.piecesByPlayer.get(
+      gameState.players[gameState.currentPlayerIndex]
+    );
+    const playerMoves: Move[] = [];
+    playerPieces?.forEach((piece) => {
+      if (piece.isAlive) {
+        const pieceMoves =
+          piece.type === PieceType.PAWN
+            ? piece.movementStrategy(
+                gameState.board,
+                piece,
+                isBoardFlipped,
+                gameState.moveHistory
+              )
+            : piece.movementStrategy(gameState.board, piece, isBoardFlipped);
+        playerMoves.push(...pieceMoves);
+      }
+    });
+    return playerMoves;
+  };
+
+  const updatePlayerPieces = (updatedPieces: Piece[]) => {
+    updatedPieces.forEach((updatedPiece) => {
+      const playerPieces =
+        gameState.piecesByPlayer.get(updatedPiece.player) || [];
+      const updatedPlayerPieces = playerPieces.map((piece) =>
+        piece.id === updatedPiece.id ? updatedPiece : piece
+      );
+      gameState.piecesByPlayer.set(updatedPiece.player, updatedPlayerPieces);
+    });
+  };
+
   return {
     ...gameState,
+    setGameState,
     initializeBoard,
+    getPlayerMoves,
+    updatePlayerPieces,
   };
 };

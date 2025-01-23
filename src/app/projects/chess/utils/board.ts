@@ -1,4 +1,4 @@
-import { Piece, Square, PieceType, MovementStrategy } from "../types";
+import { Piece, Square, PieceType, MovementStrategy, Move } from "../types";
 import { createSquare } from "./square";
 import {
   rookMovementStrategy,
@@ -77,4 +77,22 @@ export const isEmpty = (
   col: number
 ): boolean => {
   return !board[row][col].piece;
+};
+
+export const isAttackedByOpponent = (
+  opponentMoves: Move[],
+  targetSquare: Square
+): boolean => {
+  return opponentMoves.some((move) => {
+    return (
+      (move.to.row === targetSquare.row && move.to.col === targetSquare.col) ||
+      (move.capturedPiece && move.capturedPiece.type === PieceType.KING)
+    );
+  });
+};
+
+export const isKingInCheck = (opponentMoves: Move[]) => {
+  return opponentMoves.some((move) => {
+    return move.capturedPiece && move.capturedPiece.type === PieceType.KING;
+  });
 };
