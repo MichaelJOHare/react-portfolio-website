@@ -10,7 +10,7 @@ type ChessPieceProps = {
 
 export const ChessPiece = ({ piece, type, color, square }: ChessPieceProps) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: `${type}-${square[0]}-${square[1]}`,
+    id: `${square[0]}${square[1]}`,
   });
   const style = transform
     ? {
