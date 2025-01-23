@@ -20,15 +20,13 @@ export const createStandardMove = (
   piece: Piece,
   from: Square,
   to: Square,
-  capturedPiece?: Piece,
-  isCapture?: boolean
+  capturedPiece?: Piece
 ): Move => ({
   type: MoveType.STNDRD,
   from,
   to,
   capturedPiece,
   piece,
-  isCapture,
 });
 
 export const createCastlingMove = (
@@ -45,7 +43,6 @@ export const createCastlingMove = (
   capturedPiece: undefined,
   piece: king,
   rook: rook,
-  isCapture: false,
   kingFrom,
   kingTo,
   rookFrom,
