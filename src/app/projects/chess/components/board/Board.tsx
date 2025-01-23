@@ -3,7 +3,7 @@ import { ChessPiece } from "./ChessPiece";
 import { ChessSquare } from "./ChessSquare";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useState } from "react";
-import { createSquare } from "../../utils";
+import { PlayerType } from "../../types";
 
 type BoardProps = {
   gameManager: ReturnType<typeof useChessGame>;
@@ -12,8 +12,7 @@ type BoardProps = {
 
 export const Board = ({ gameManager, isBoardFlipped }: BoardProps) => {
   const { board } = gameManager;
-  const playerMoves = gameManager.getPlayerMoves();
-  console.log(playerMoves);
+  const playerMoves = gameManager.getPlayerMoves(); // will need to be getLegalMoves() in the future to account for check
   const [validMoves, setValidMoves] = useState<{ row: number; col: number }[]>(
     []
   );
@@ -22,7 +21,7 @@ export const Board = ({ gameManager, isBoardFlipped }: BoardProps) => {
     const startId = String(event.active.id);
     const [startRow, startCol] = startId.split("").map(Number);
     const piece = board[startRow][startCol].piece;
-    if (!piece) return;
+    if (!piece || piece.player.type === PlayerType.COMPUTER) return;
 
     // used to store valid moves for a piece being dragged so squares can be highlighted if they're legal or not
     setValidMoves(
@@ -41,37 +40,7 @@ export const Board = ({ gameManager, isBoardFlipped }: BoardProps) => {
     const [startRow, startCol] = String(active.id).split("").map(Number);
     const [endRow, endCol] = String(over.id).split("").map(Number);
 
-    // move this all into an execute move function, add update move history/undone moves/half move clock/full move number
-    const piece = board[startRow][startCol]?.piece;
-    if (!piece) return;
-
-    const isValidMove = playerMoves.some(
-      ({ piece: movePiece, from, to }) =>
-        movePiece.id === piece.id &&
-        from.row === startRow &&
-        from.col === startCol &&
-        to.row === endRow &&
-        to.col === endCol
-    );
-
-    if (!isValidMove) return;
-
-    const newBoard = board.map((row) => row.map((square) => ({ ...square })));
-
-    const capturedPiece = newBoard[endRow][endCol]?.piece;
-    newBoard[endRow][endCol].piece = piece;
-    newBoard[startRow][startCol].piece = undefined;
-
-    piece.currentSquare = createSquare(endRow, endCol);
-
-    gameManager.updatePlayerPieces(
-      capturedPiece ? [piece, capturedPiece] : [piece]
-    );
-    gameManager.setGameState((prevState) => ({
-      ...prevState,
-      board: newBoard,
-      currentPlayerIndex: prevState.currentPlayerIndex === 0 ? 1 : 0,
-    }));
+    gameManager.executeMove(startRow, startCol, endRow, endCol, playerMoves);
   };
 
   return (

@@ -7,9 +7,19 @@ import {
   PlayerType,
   PieceType,
   Move,
+  MoveType,
   Square,
 } from "../types";
-import { createPlayer, createPiece, defaultBoard, setupPieces } from "../utils";
+import {
+  createPlayer,
+  createPiece,
+  defaultBoard,
+  setupPieces,
+  executeStandardMove,
+  executeCastlingMove,
+  executeEnPassantMove,
+  executePromoMove,
+} from "../utils";
 
 export const useChessGame = (isBoardFlipped: boolean) => {
   const [gameState, setGameState] = useState<GameState>({
@@ -100,6 +110,78 @@ export const useChessGame = (isBoardFlipped: boolean) => {
     return playerMoves;
   };
 
+  const executeMoveByType = (move: Move, board: Square[][]) => {
+    const capturePiece = (piece?: Piece) => {
+      if (!piece) return;
+      setGameState((prevState) => ({
+        ...prevState,
+        capturedPieces: [...prevState.capturedPieces, piece],
+      }));
+      piece.isAlive = false;
+      board[piece.currentSquare.row][piece.currentSquare.col].piece = undefined;
+    };
+
+    let piecesToUpdate: Piece[] = [];
+
+    switch (move.type) {
+      case MoveType.STNDRD:
+        capturePiece(move.capturedPiece);
+        piecesToUpdate = executeStandardMove(move, board, move.capturedPiece);
+        break;
+
+      case MoveType.CASTLE:
+        piecesToUpdate = executeCastlingMove(move, board);
+        break;
+
+      case MoveType.EP:
+        capturePiece(move.capturedPiece);
+        piecesToUpdate = executeEnPassantMove(move, board, move.capturedPiece);
+        break;
+
+      case MoveType.PROMO:
+        capturePiece(move.capturedPiece);
+        piecesToUpdate = executePromoMove(move, board, move.capturedPiece);
+        break;
+    }
+
+    updatePlayerPieces(piecesToUpdate);
+  };
+
+  const executeMove = (
+    startRow: number,
+    startCol: number,
+    endRow: number,
+    endCol: number,
+    playerMoves: Move[]
+  ) => {
+    const piece = gameState.board[startRow][startCol]?.piece;
+    if (!piece) return;
+
+    const validMove = playerMoves.find(
+      ({ piece: movePiece, from, to }) =>
+        movePiece.id === piece.id &&
+        from.row === startRow &&
+        from.col === startCol &&
+        to.row === endRow &&
+        to.col === endCol
+    );
+
+    if (!validMove) return;
+
+    const newBoard = gameState.board.map((row) =>
+      row.map((square) => ({ ...square }))
+    );
+
+    executeMoveByType(validMove, newBoard);
+
+    setGameState((prevState) => ({
+      ...prevState,
+      board: newBoard,
+      currentPlayerIndex: prevState.currentPlayerIndex === 0 ? 1 : 0,
+      moveHistory: [...prevState.moveHistory, validMove],
+    }));
+  };
+
   const updatePlayerPieces = (updatedPieces: Piece[]) => {
     updatedPieces.forEach((updatedPiece) => {
       const playerPieces =
@@ -116,6 +198,7 @@ export const useChessGame = (isBoardFlipped: boolean) => {
     setGameState,
     initializeBoard,
     getPlayerMoves,
+    executeMove,
     updatePlayerPieces,
   };
 };
