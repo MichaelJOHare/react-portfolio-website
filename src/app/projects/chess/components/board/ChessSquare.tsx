@@ -13,11 +13,12 @@ export const ChessSquare = ({
   isBoardFlipped,
   isValidMove,
   children,
-}: SquareProps & { isValidMove: boolean }) => {
+}: SquareProps) => {
   const { isOver, setNodeRef } = useDroppable({
     id: `${square[0]}${square[1]}`,
   });
   const isDark = (square[0] + square[1]) % 2 === 0;
+  const isOccupied = !!children;
   const isLabeledColumn = square[1] === 7;
   const isLabeledRow = square[0] === 7;
   const columnLabel = isBoardFlipped ? 1 + square[0] : 8 - square[0];
@@ -26,6 +27,7 @@ export const ChessSquare = ({
     : String.fromCharCode(97 + square[1]);
 
   const getColor = () => {
+    // implement selected piece highlight and previous move highlight
     if (isOver) {
       return isValidMove ? "bg-green-500" : "bg-red-500";
     }
@@ -37,7 +39,20 @@ export const ChessSquare = ({
       className={`relative flex justify-center items-center w-full h-full aspect-square ${getColor()}`}
       ref={setNodeRef}
     >
+      {/* adds green circles and corners for legal moves when piece is dragged */}
+      {isValidMove && !isOccupied && (
+        <div className="absolute w-4 h-4 rounded-full bg-green-600"></div>
+      )}
+      {isValidMove && isOccupied && (
+        <div className="absolute w-full h-full flex justify-center items-center bg-green-600 overflow-hidden">
+          <div
+            className={`relative w-full h-full rounded-full ${getColor()} transform scale-110`}
+          ></div>
+        </div>
+      )}
+
       {children}
+
       {isLabeledColumn && (
         <div
           className={`absolute top-0 right-0 pt-1 pr-1 text-xs lg:text-sm ${

@@ -17,6 +17,9 @@ export const Board = ({ gameManager, isBoardFlipped }: BoardProps) => {
     []
   );
 
+  /*   implement piece selection and move with click -> onClick set selected piece -> setValidMoves ->
+  pass selectedPiece.currentSquare to ChessSquare  -> onClick when piece is selected && is validMove square -> move piece  */
+
   const handleDragStart = (event: DragStartEvent) => {
     const startId = String(event.active.id);
     const [startRow, startCol] = startId.split("").map(Number);
