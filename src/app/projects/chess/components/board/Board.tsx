@@ -4,13 +4,21 @@ import { ChessSquare } from "./ChessSquare";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useState } from "react";
 import { PlayerType } from "../../types";
+import { Arrow } from "../ui/Arrow";
+import { Circle } from "../ui/Circle";
+import { useHighlighter } from "../../hooks/useHighlighter";
 
 type BoardProps = {
   gameManager: ReturnType<typeof useChessGame>;
+  highlighter: ReturnType<typeof useHighlighter>;
   isBoardFlipped: boolean;
 };
 
-export const Board = ({ gameManager, isBoardFlipped }: BoardProps) => {
+export const Board = ({
+  gameManager,
+  isBoardFlipped,
+  highlighter,
+}: BoardProps) => {
   const { board } = gameManager;
   const playerMoves = gameManager.getPlayerMoves(); // will need to be getLegalMoves() in the future to account for check
   const [validMoves, setValidMoves] = useState<{ row: number; col: number }[]>(
@@ -21,8 +29,7 @@ export const Board = ({ gameManager, isBoardFlipped }: BoardProps) => {
   pass selectedPiece.currentSquare to ChessSquare  -> onClick when piece is selected && is validMove square -> move piece  */
 
   const handleDragStart = (event: DragStartEvent) => {
-    const startId = String(event.active.id);
-    const [startRow, startCol] = startId.split("").map(Number);
+    const [startRow, startCol] = String(event.active.id).split("").map(Number);
     const piece = board[startRow][startCol].piece;
     if (!piece || piece.player.type === PlayerType.COMPUTER) return;
 
@@ -51,7 +58,34 @@ export const Board = ({ gameManager, isBoardFlipped }: BoardProps) => {
       <div
         id="chessboard"
         className="relative grid grid-cols-8 w-[90vmin] h-[90vmin] lg:w-[70vmin] lg:h-[70vmin]"
+        onMouseDown={highlighter.onMouseDown}
+        onMouseMove={highlighter.onMouseMove}
+        onMouseUp={highlighter.onMouseUp}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          e.nativeEvent.stopImmediatePropagation();
+        }}
       >
+        {/* arrows and circles drawn while holding down right click */}
+        {<Arrow {...highlighter.tempDrawings.arrowCoordinates} />}
+        {<Circle {...highlighter.tempDrawings.circleCoordinates} />}
+        {/* permanent arrows and circles, keys used for removing arrows/circles by drawing back over them */}
+        {highlighter.highlightedSquares.arrowsDrawnOnSquares.map(
+          (arrow, index) => (
+            <Arrow key={`arrow-${index}`} {...arrow} />
+          )
+        )}
+        {highlighter.highlightedSquares.circlesDrawnOnSquares.map(
+          (circle, index) => (
+            <Circle key={`circle-${index}`} {...circle} />
+          )
+        )}
+        {highlighter.highlightedSquares.stockfishBestMoveArrow.map(
+          (arrow, index) => (
+            <Arrow key={`stockfish-arrow-${index}`} {...arrow} />
+          )
+        )}
         {board.map((row, rowIndex) =>
           row.map((square, colIndex) => (
             <ChessSquare

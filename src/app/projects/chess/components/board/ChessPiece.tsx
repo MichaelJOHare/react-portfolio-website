@@ -1,5 +1,5 @@
 import { useDraggable } from "@dnd-kit/core";
-import { Piece, PieceType, PlayerColor } from "../../types";
+import { PieceType, PlayerColor } from "../../types";
 
 type ChessPieceProps = {
   type: PieceType;
