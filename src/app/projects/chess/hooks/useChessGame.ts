@@ -110,44 +110,6 @@ export const useChessGame = (isBoardFlipped: boolean) => {
     return playerMoves;
   };
 
-  /*   const getLegalMoves = (player: Player) => {
-    const legalMoves: Move[] = [];
-    const newPiecesByPlayer = new Map<Player, Piece[]>(
-      [...gameState.piecesByPlayer].map(([player1, pieces]) => [
-        player1,
-        pieces.map((piece) => ({ ...piece })),
-      ])
-    );
-    const newMoveHistory = [...gameState.moveHistory];
-    const rawPlayerMoves = getPlayerMoves(
-      newPiecesByPlayer,
-      gameState.board,
-      newMoveHistory,
-      player
-    );
-
-    rawPlayerMoves.forEach((move) => {
-      const newBoard = gameState.board.map((row) =>
-        row.map((square) => ({
-          ...square,
-          piece: square.piece ? { ...square.piece } : undefined,
-        }))
-      );
-      simulateMove(move, newBoard, newPiecesByPlayer);
-      const rawOpponentMoves = getPlayerMoves(
-        newPiecesByPlayer,
-        newBoard,
-        newMoveHistory,
-        player === player1 ? player2 : player1
-      );
-      if (!isKingInCheck(rawOpponentMoves)) {
-        legalMoves.push(move);
-      }
-    });
-
-    return legalMoves;
-  }; */
-
   const executeMoveByType = (move: Move, board: Square[][]) => {
     const capturePiece = (piece?: Piece) => {
       if (piece) {
@@ -234,38 +196,6 @@ export const useChessGame = (isBoardFlipped: boolean) => {
     }));
   };
 
-  /*   const simulateMove = (
-    move: Move,
-    board: Square[][],
-    playerPieces: Map<Player, Piece[]>
-  ) => {
-    let piecesToUpdate: Piece[] = [];
-    switch (move.type) {
-      case MoveType.STNDRD:
-        piecesToUpdate = executeStandardMove(move, board, move.capturedPiece);
-        break;
-      case MoveType.CASTLE:
-        piecesToUpdate = executeCastlingMove(move, board);
-        break;
-      case MoveType.EP:
-        piecesToUpdate = executeEnPassantMove(move, board, move.capturedPiece);
-        break;
-      case MoveType.PROMO:
-        piecesToUpdate = executePromoMove(move, board, move.capturedPiece);
-        break;
-    }
-
-    piecesToUpdate.forEach((updatedPiece) => {
-      const playerPieceList = playerPieces.get(updatedPiece.player) || [];
-
-      const updatedPlayerPieces = playerPieceList.map((piece) =>
-        piece.id === updatedPiece.id ? updatedPiece : piece
-      );
-
-      playerPieces.set(updatedPiece.player, updatedPlayerPieces);
-    });
-  };
- */
   const updatePlayerPieces = (updatedPieces: Piece[]) => {
     updatedPieces.forEach((updatedPiece) => {
       const playerPieces =

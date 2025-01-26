@@ -94,3 +94,39 @@ export interface EnPassantMove extends Move {
 export interface PromotionMove extends Move {
   promotionType: PieceType;
 }
+
+export type Highlighter = {
+  tempDrawings: HighlighterState;
+  highlightedSquares: HighlightedSquares;
+  onMouseDown: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  onMouseMove: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  onMouseUp: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  addStockfishBestMoveArrow: (arrowCoords: ArrowProps) => void;
+  clearStockfishBestMoveArrow: () => void;
+};
+
+export type HighlightedSquares = {
+  arrowsDrawnOnSquares: ArrowProps[];
+  circlesDrawnOnSquares: CircleProps[];
+  stockfishBestMoveArrow: ArrowProps[];
+};
+
+export interface HighlighterState {
+  selectedPiece: Piece | undefined;
+  legalMoveSquares: Move[];
+  arrowCoordinates: ArrowProps;
+  circleCoordinates: CircleProps;
+}
+
+export type ArrowProps = {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  isStockfish?: boolean;
+};
+
+export type CircleProps = {
+  cx: number;
+  cy: number;
+};
