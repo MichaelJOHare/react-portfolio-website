@@ -61,12 +61,13 @@ export const Board = ({ gameManager, isBoardFlipped }: BoardProps) => {
               isValidMove={validMoves.some(
                 (move) => move.row === rowIndex && move.col === colIndex
               )}
+              isKingInCheck={gameManager.isKingInCheck}
+              kingSquare={gameManager.kingSquare}
             >
               {square.piece && square.piece.isAlive && (
                 <ChessPiece
                   type={square.piece.type}
                   color={square.piece.color}
-                  piece={square.piece}
                   square={[rowIndex, colIndex]}
                 />
               )}

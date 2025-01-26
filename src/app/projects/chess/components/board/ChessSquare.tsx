@@ -1,10 +1,13 @@
 import { useDroppable } from "@dnd-kit/core";
 import React from "react";
+import { Square } from "../../types";
 
 type SquareProps = {
   square: number[];
   isBoardFlipped: boolean;
   isValidMove: boolean;
+  isKingInCheck: boolean;
+  kingSquare: Square | undefined;
   children: React.ReactNode;
 };
 
@@ -12,6 +15,8 @@ export const ChessSquare = ({
   square,
   isBoardFlipped,
   isValidMove,
+  isKingInCheck,
+  kingSquare,
   children,
 }: SquareProps) => {
   const { isOver, setNodeRef } = useDroppable({
@@ -30,6 +35,13 @@ export const ChessSquare = ({
     // implement selected piece highlight and previous move highlight
     if (isOver) {
       return isValidMove ? "bg-green-500" : "bg-red-500";
+    }
+    if (
+      isKingInCheck &&
+      kingSquare?.row === square[0] &&
+      kingSquare?.col === square[1]
+    ) {
+      return "bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-current to-red-700";
     }
     return isDark ? "bg-orange-200" : "bg-yellow-900";
   };
