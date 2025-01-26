@@ -2,13 +2,12 @@ import { useDraggable } from "@dnd-kit/core";
 import { Piece, PieceType, PlayerColor } from "../../types";
 
 type ChessPieceProps = {
-  piece: Piece;
   type: PieceType;
   color: PlayerColor;
   square: number[];
 };
 
-export const ChessPiece = ({ piece, type, color, square }: ChessPieceProps) => {
+export const ChessPiece = ({ type, color, square }: ChessPieceProps) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: `${square[0]}${square[1]}`,
   });

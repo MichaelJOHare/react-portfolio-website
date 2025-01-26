@@ -56,3 +56,18 @@ export const getMovementStrategyFromType = (
   }
   return moveStrat;
 };
+
+export function getPieceUnicode(type: PieceType) {
+  switch (type) {
+    case PieceType.KING:
+      return "♚";
+    case PieceType.QUEEN:
+      return "♛";
+    case PieceType.ROOK:
+      return "♜";
+    case PieceType.BISHOP:
+      return "♝";
+    case PieceType.KNIGHT:
+      return "♞";
+  }
+}
