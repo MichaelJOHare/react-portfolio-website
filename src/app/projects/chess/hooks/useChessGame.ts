@@ -120,7 +120,7 @@ export const useChessGame = (isBoardFlipped: boolean) => {
     const pieceMoves = getPlayerMoves(player, gameState.board);
 
     pieceMoves.forEach((move) => {
-      const tempBoard = simulateMove(move, gameState.board);
+      const { tempBoard, capturedPiece } = simulateMove(move, gameState.board);
       const opponentMoves = getPlayerMoves(opponent, tempBoard);
 
       const isCastlingMove = move.type === MoveType.CASTLE;
@@ -131,6 +131,10 @@ export const useChessGame = (isBoardFlipped: boolean) => {
             gameState.board
           )
         : !isKingInCheck(opponentMoves);
+
+      if (capturedPiece) {
+        capturedPiece.isAlive = true;
+      }
 
       if (isValidMove) {
         legalMoves.push(move);
@@ -237,13 +241,16 @@ export const useChessGame = (isBoardFlipped: boolean) => {
     const tempBoard = board.map((row) =>
       row.map((square) => ({ ...square, piece: square.piece }))
     );
+    const { piece, from, to, capturedPiece } = move;
 
-    const { piece, from, to } = move;
+    if (capturedPiece) {
+      capturedPiece.isAlive = false;
+    }
 
     tempBoard[to.row][to.col].piece = piece;
     tempBoard[from.row][from.col].piece = undefined;
 
-    return tempBoard;
+    return { tempBoard, capturedPiece };
   };
 
   const updateCheckStatus = (
