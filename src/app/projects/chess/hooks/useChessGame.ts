@@ -9,6 +9,7 @@ import {
   Move,
   MoveType,
   Square,
+  CastlingMove,
 } from "../types";
 import {
   createPlayer,
@@ -19,6 +20,8 @@ import {
   executeCastlingMove,
   executeEnPassantMove,
   executePromoMove,
+  isKingInCheck,
+  isValidCastlingMove,
 } from "../utils";
 
 export const useChessGame = (isBoardFlipped: boolean) => {
@@ -88,26 +91,68 @@ export const useChessGame = (isBoardFlipped: boolean) => {
     }));
   };
 
-  const getPlayerMoves = () => {
-    const playerPieces = gameState.piecesByPlayer.get(
-      gameState.players[gameState.currentPlayerIndex]
-    );
+  const getPlayerMoves = (player: Player, board: Square[][]) => {
+    const playerPieces = gameState.piecesByPlayer.get(player);
     const playerMoves: Move[] = [];
+
     playerPieces?.forEach((piece) => {
       if (piece.isAlive) {
         const pieceMoves =
           piece.type === PieceType.PAWN
             ? piece.movementStrategy(
-                gameState.board,
+                board,
                 piece,
                 isBoardFlipped,
                 gameState.moveHistory
               )
-            : piece.movementStrategy(gameState.board, piece, isBoardFlipped);
+            : piece.movementStrategy(board, piece, isBoardFlipped);
         playerMoves.push(...pieceMoves);
       }
     });
+
     return playerMoves;
+  };
+
+  const getLegalMoves = () => {
+    const legalMoves: Move[] = [];
+    const player = gameState.players[gameState.currentPlayerIndex];
+    const opponent = gameState.players[1 - gameState.currentPlayerIndex];
+    const playerKing = gameState.piecesByPlayer.get(opponent)?.find((piece) => {
+      return piece.type === PieceType.KING;
+    });
+    const pieceMoves = getPlayerMoves(player, gameState.board);
+
+    let isPlayerKingInCheck = false;
+    let kingSquare: Square | undefined = undefined;
+
+    pieceMoves.forEach((move) => {
+      const tempBoard = simulateMove(move, gameState.board);
+      const opponentMoves = getPlayerMoves(opponent, tempBoard);
+
+      const isCastlingMove = move.type === MoveType.CASTLE;
+      const isValidMove = isCastlingMove
+        ? isValidCastlingMove(
+            move as CastlingMove,
+            opponentMoves,
+            gameState.board
+          )
+        : !isKingInCheck(getPlayerMoves(player, tempBoard));
+
+      if (isValidMove) {
+        legalMoves.push(move);
+      }
+      const kingInCheck = isKingInCheck(getPlayerMoves(player, tempBoard));
+      if (kingInCheck) {
+        isPlayerKingInCheck = true;
+        kingSquare = playerKing?.currentSquare;
+      }
+    });
+
+    // fix this, not showing when move puts other king in check
+    gameState.isKingInCheck = isPlayerKingInCheck;
+    gameState.kingSquare = kingSquare;
+
+    return legalMoves;
   };
 
   const executeMoveByType = (move: Move, board: Square[][]) => {
@@ -115,9 +160,11 @@ export const useChessGame = (isBoardFlipped: boolean) => {
       if (piece) {
         setGameState((prevState) => ({
           ...prevState,
-          capturedPieces: [...prevState.capturedPieces, piece],
+          capturedPieces: [
+            ...prevState.capturedPieces,
+            { ...piece, isAlive: false },
+          ],
         }));
-        piece.isAlive = false;
         board[piece.currentSquare.row][piece.currentSquare.col].piece =
           undefined;
       }
@@ -196,6 +243,23 @@ export const useChessGame = (isBoardFlipped: boolean) => {
     }));
   };
 
+  const simulateMove = (move: Move, board: Square[][]) => {
+    const tempBoard = board.map((row) =>
+      row.map((square) => ({ ...square, piece: square.piece }))
+    );
+
+    const { piece, from, to, capturedPiece } = move;
+
+    tempBoard[to.row][to.col].piece = piece;
+    tempBoard[from.row][from.col].piece = undefined;
+
+    if (capturedPiece) {
+      tempBoard[to.row][to.col].piece = piece;
+    }
+
+    return tempBoard;
+  };
+
   const updatePlayerPieces = (updatedPieces: Piece[]) => {
     updatedPieces.forEach((updatedPiece) => {
       const playerPieces =
@@ -211,7 +275,7 @@ export const useChessGame = (isBoardFlipped: boolean) => {
     ...gameState,
     setGameState,
     initializeBoard,
-    getPlayerMoves,
+    getLegalMoves,
     executeMove,
     updatePlayerPieces,
   };

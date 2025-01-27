@@ -112,7 +112,6 @@ export type HighlightedSquares = {
 };
 
 export interface HighlighterState {
-  selectedPiece: Piece | undefined;
   legalMoveSquares: Move[];
   arrowCoordinates: ArrowProps;
   circleCoordinates: CircleProps;
