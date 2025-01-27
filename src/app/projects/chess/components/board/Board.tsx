@@ -20,7 +20,7 @@ export const Board = ({
   highlighter,
 }: BoardProps) => {
   const { board } = gameManager;
-  const playerMoves = gameManager.getPlayerMoves(); // will need to be getLegalMoves() in the future to account for check
+  const playerMoves = gameManager.getLegalMoves(); // will need to be getLegalMoves() in the future to account for check
   const [validMoves, setValidMoves] = useState<{ row: number; col: number }[]>(
     []
   );
