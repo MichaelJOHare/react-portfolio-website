@@ -117,13 +117,7 @@ export const useChessGame = (isBoardFlipped: boolean) => {
     const legalMoves: Move[] = [];
     const player = gameState.players[gameState.currentPlayerIndex];
     const opponent = gameState.players[1 - gameState.currentPlayerIndex];
-    const playerKing = gameState.piecesByPlayer.get(opponent)?.find((piece) => {
-      return piece.type === PieceType.KING;
-    });
     const pieceMoves = getPlayerMoves(player, gameState.board);
-
-    let isPlayerKingInCheck = false;
-    let kingSquare: Square | undefined = undefined;
 
     pieceMoves.forEach((move) => {
       const tempBoard = simulateMove(move, gameState.board);
@@ -136,21 +130,12 @@ export const useChessGame = (isBoardFlipped: boolean) => {
             opponentMoves,
             gameState.board
           )
-        : !isKingInCheck(getPlayerMoves(player, tempBoard));
+        : !isKingInCheck(opponentMoves);
 
       if (isValidMove) {
         legalMoves.push(move);
       }
-      const kingInCheck = isKingInCheck(getPlayerMoves(player, tempBoard));
-      if (kingInCheck) {
-        isPlayerKingInCheck = true;
-        kingSquare = playerKing?.currentSquare;
-      }
     });
-
-    // fix this, not showing when move puts other king in check
-    gameState.isKingInCheck = isPlayerKingInCheck;
-    gameState.kingSquare = kingSquare;
 
     return legalMoves;
   };
@@ -241,6 +226,11 @@ export const useChessGame = (isBoardFlipped: boolean) => {
       currentPlayerIndex: prevState.currentPlayerIndex === 0 ? 1 : 0,
       moveHistory: [...prevState.moveHistory, validMove],
     }));
+    updateCheckStatus(
+      newBoard,
+      gameState.players[1 - gameState.currentPlayerIndex],
+      gameState.players[gameState.currentPlayerIndex]
+    );
   };
 
   const simulateMove = (move: Move, board: Square[][]) => {
@@ -248,16 +238,35 @@ export const useChessGame = (isBoardFlipped: boolean) => {
       row.map((square) => ({ ...square, piece: square.piece }))
     );
 
-    const { piece, from, to, capturedPiece } = move;
+    const { piece, from, to } = move;
 
     tempBoard[to.row][to.col].piece = piece;
     tempBoard[from.row][from.col].piece = undefined;
 
-    if (capturedPiece) {
-      tempBoard[to.row][to.col].piece = piece;
+    return tempBoard;
+  };
+
+  const updateCheckStatus = (
+    board: Square[][],
+    player: Player,
+    opponent: Player
+  ) => {
+    const playersKing = gameState.piecesByPlayer
+      .get(player)
+      ?.find((piece) => piece.type === PieceType.KING);
+
+    if (!playersKing) {
+      return;
     }
 
-    return tempBoard;
+    const opponentMoves = getPlayerMoves(opponent, board);
+    const kingInCheck = isKingInCheck(opponentMoves);
+
+    setGameState((prev) => ({
+      ...prev,
+      isKingInCheck: kingInCheck,
+      kingSquare: kingInCheck ? playersKing.currentSquare : undefined,
+    }));
   };
 
   const updatePlayerPieces = (updatedPieces: Piece[]) => {

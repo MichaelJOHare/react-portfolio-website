@@ -14,7 +14,6 @@ export const useHighlighter = (): Highlighter => {
   const [originalSquare, setOriginalSquare] = useState<Square | null>(null);
 
   const [tempDrawings, setTempDrawings] = useState<HighlighterState>({
-    selectedPiece: undefined,
     legalMoveSquares: [],
     arrowCoordinates: emptyArrow(),
     circleCoordinates: emptyCircle(),

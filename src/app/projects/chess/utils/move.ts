@@ -103,6 +103,7 @@ export const executeStandardMove = (
     board[move.to.row][move.to.col].piece = updatedPiece;
     piecesToUpdate.push(updatedPiece);
     if (capturedPiece) {
+      capturedPiece.isAlive = false;
       piecesToUpdate.push(capturedPiece);
     }
   }
@@ -125,6 +126,7 @@ export const executeEnPassantMove = (
     board[move.to.row][move.to.col].piece = updatedPawn;
     piecesToUpdate.push(updatedPawn);
     if (epCapturedPiece) {
+      epCapturedPiece.isAlive = false;
       piecesToUpdate.push(epCapturedPiece);
     }
   }
@@ -172,6 +174,7 @@ export const executePromoMove = (
     board[move.to.row][move.to.col].piece = promotedPawn;
     piecesToUpdate.push(promotedPawn);
     if (capturedPiecePromo) {
+      capturedPiecePromo.isAlive = false;
       piecesToUpdate.push(capturedPiecePromo);
     }
   }

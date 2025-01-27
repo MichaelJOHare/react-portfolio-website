@@ -111,11 +111,11 @@ export type HighlightedSquares = {
   stockfishBestMoveArrow: ArrowProps[];
 };
 
-export interface HighlighterState {
+export type HighlighterState = {
   legalMoveSquares: Move[];
   arrowCoordinates: ArrowProps;
   circleCoordinates: CircleProps;
-}
+};
 
 export type ArrowProps = {
   x1: number;
