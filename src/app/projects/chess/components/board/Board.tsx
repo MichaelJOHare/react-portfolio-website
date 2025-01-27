@@ -20,7 +20,7 @@ export const Board = ({
   highlighter,
 }: BoardProps) => {
   const { board } = gameManager;
-  const playerMoves = gameManager.getLegalMoves(); // will need to be getLegalMoves() in the future to account for check
+  const playerMoves = gameManager.getLegalMoves();
   const [validMoves, setValidMoves] = useState<{ row: number; col: number }[]>(
     []
   );
@@ -70,7 +70,7 @@ export const Board = ({
         {/* arrows and circles drawn while holding down right click */}
         {<Arrow {...highlighter.tempDrawings.arrowCoordinates} />}
         {<Circle {...highlighter.tempDrawings.circleCoordinates} />}
-        {/* permanent arrows and circles, keys used for removing arrows/circles by drawing back over them */}
+        {/* arrows and circles that stay after drawing completes, keys used for removing arrows/circles by drawing back over them */}
         {highlighter.highlightedSquares.arrowsDrawnOnSquares.map(
           (arrow, index) => (
             <Arrow key={`arrow-${index}`} {...arrow} />

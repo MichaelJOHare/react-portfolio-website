@@ -41,7 +41,7 @@ export const ChessSquare = ({
       kingSquare?.row === square[0] &&
       kingSquare?.col === square[1]
     ) {
-      return "bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-current to-red-700";
+      return "bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-current to-red-500";
     }
     return isDark ? "bg-orange-200" : "bg-yellow-900";
   };
