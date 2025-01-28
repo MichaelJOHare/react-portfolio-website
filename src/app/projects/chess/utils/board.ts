@@ -1,4 +1,11 @@
-import { Piece, Square, PieceType, MovementStrategy, Move } from "../types";
+import {
+  Piece,
+  Square,
+  PieceType,
+  MovementStrategy,
+  Move,
+  PlayerColor,
+} from "../types";
 import { createSquare } from "./square";
 import {
   rookMovementStrategy,
@@ -95,4 +102,21 @@ export const isKingInCheck = (opponentMoves: Move[]) => {
   return opponentMoves.some((move) => {
     return move.capturedPiece && move.capturedPiece.type === PieceType.KING;
   });
+};
+
+export const getSquaresToHideDuringPromotion = (
+  move: Move,
+  color: PlayerColor
+) => {
+  const toSquare = move.to;
+  const squaresToHide = [];
+  const increment = color === PlayerColor.WHITE ? 1 : -1;
+  for (let i = 0; i < 4; i++) {
+    squaresToHide.push({
+      row: toSquare.row + i * increment,
+      col: toSquare.col,
+    });
+  }
+  squaresToHide.push({ row: move.from.row, col: move.from.col });
+  return squaresToHide;
 };

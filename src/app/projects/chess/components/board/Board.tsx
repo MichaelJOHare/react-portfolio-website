@@ -3,10 +3,11 @@ import { ChessPiece } from "./ChessPiece";
 import { ChessSquare } from "./ChessSquare";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useState } from "react";
-import { PlayerType } from "../../types";
+import { PlayerColor, PlayerType } from "../../types";
 import { Arrow } from "../ui/Arrow";
 import { Circle } from "../ui/Circle";
 import { useHighlighter } from "../../hooks/useHighlighter";
+import { PromotionPanel } from "../ui/PromotionPanel";
 
 type BoardProps = {
   gameManager: ReturnType<typeof useChessGame>;
@@ -19,14 +20,38 @@ export const Board = ({
   isBoardFlipped,
   highlighter,
 }: BoardProps) => {
-  const { board } = gameManager;
-  const playerMoves = gameManager.getLegalMoves();
+  const { board, getLegalMoves, executeMove } = gameManager;
+  const playerMoves = getLegalMoves();
+  const [selectedPiece, setSelectedPiece] = useState<{
+    row: number;
+    col: number;
+  } | null>(null);
   const [validMoves, setValidMoves] = useState<{ row: number; col: number }[]>(
     []
   );
 
-  /*   implement piece selection and move with click -> onClick set selected piece -> setValidMoves ->
-  pass selectedPiece.currentSquare to ChessSquare  -> onClick when piece is selected && is validMove square -> move piece  */
+  const handleClickToMove = (row: number, col: number) => {
+    if (selectedPiece) {
+      const validMove = validMoves.some(
+        (move) => move.row === row && move.col === col
+      );
+      if (validMove) {
+        const { row: startRow, col: startCol } = selectedPiece;
+        executeMove(startRow, startCol, row, col, playerMoves);
+      }
+      setSelectedPiece(null);
+      setValidMoves([]);
+    } else {
+      const piece = board[row][col].piece;
+      if (piece && piece.player.type !== PlayerType.COMPUTER) {
+        setSelectedPiece({ row, col });
+        const pieceMoves = playerMoves.filter((move) => move.piece === piece);
+        setValidMoves(
+          pieceMoves.map((move) => ({ row: move.to.row, col: move.to.col }))
+        );
+      }
+    }
+  };
 
   const handleDragStart = (event: DragStartEvent) => {
     const [startRow, startCol] = String(event.active.id).split("").map(Number);
@@ -50,8 +75,15 @@ export const Board = ({
     const [startRow, startCol] = String(active.id).split("").map(Number);
     const [endRow, endCol] = String(over.id).split("").map(Number);
 
-    gameManager.executeMove(startRow, startCol, endRow, endCol, playerMoves);
+    if (startRow === endRow && startCol === endCol) {
+      // if the piece is dropped on its original square, treat it as a click
+      handleClickToMove(startRow, startCol);
+    } else {
+      executeMove(startRow, startCol, endRow, endCol, playerMoves);
+    }
   };
+
+  const handlePromotionSelect = () => {};
 
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
@@ -67,6 +99,17 @@ export const Board = ({
           e.nativeEvent.stopImmediatePropagation();
         }}
       >
+        {/*
+        <div className="absolute top-0 left-0 w-[90vmin] h-[90vmin] bg-black bg-opacity-20 z-20 lg:w-[70vmin] lg:h-[70vmin]">
+          <PromotionPanel
+            isBoardFlipped={isBoardFlipped}
+            square={}
+            promotingPawn={}
+            color={}
+            onPromotionSelect={handlePromotionSelect}
+          />
+        </div>
+         */}
         {/* arrows and circles drawn while holding down right click */}
         {<Arrow {...highlighter.tempDrawings.arrowCoordinates} />}
         {<Circle {...highlighter.tempDrawings.circleCoordinates} />}
@@ -97,6 +140,7 @@ export const Board = ({
               )}
               isKingInCheck={gameManager.isKingInCheck}
               kingSquare={gameManager.kingSquare}
+              onSquareClick={handleClickToMove}
             >
               {square.piece && square.piece.isAlive && (
                 <ChessPiece

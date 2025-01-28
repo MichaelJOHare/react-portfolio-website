@@ -63,6 +63,12 @@ export type GameState = {
   fullMoveNumber: number;
 };
 
+export type PromotionPanelState = {
+  promotionSquare: Square | undefined;
+  promotionColor: PlayerColor | undefined;
+  promotingPawn: Piece | undefined;
+};
+
 export enum MoveType {
   STNDRD = "Standard",
   CASTLE = "Castling",
