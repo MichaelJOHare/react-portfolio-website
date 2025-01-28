@@ -8,6 +8,7 @@ type SquareProps = {
   isValidMove: boolean;
   isKingInCheck: boolean;
   kingSquare: Square | undefined;
+  onSquareClick: (row: number, col: number) => void;
   children: React.ReactNode;
 };
 
@@ -17,6 +18,7 @@ export const ChessSquare = ({
   isValidMove,
   isKingInCheck,
   kingSquare,
+  onSquareClick,
   children,
 }: SquareProps) => {
   const { isOver, setNodeRef } = useDroppable({
@@ -50,6 +52,7 @@ export const ChessSquare = ({
     <div
       className={`relative flex justify-center items-center w-full h-full aspect-square ${getColor()}`}
       ref={setNodeRef}
+      onClick={() => onSquareClick(square[0], square[1])}
     >
       {/* adds green circles and corners for legal moves when piece is dragged */}
       {isValidMove && !isOccupied && (

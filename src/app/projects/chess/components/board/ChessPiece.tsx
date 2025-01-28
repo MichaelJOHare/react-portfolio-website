@@ -19,7 +19,7 @@ export const ChessPiece = ({ type, color, square }: ChessPieceProps) => {
 
   return (
     <img
-      className="h-3/4 z-10 select-none"
+      className="h-5/6 z-10 select-none"
       ref={setNodeRef}
       style={style}
       {...listeners}
