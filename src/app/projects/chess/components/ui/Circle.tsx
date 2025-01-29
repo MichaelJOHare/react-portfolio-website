@@ -13,7 +13,7 @@ export const Circle = ({ cx, cy }: CircleProps) => {
         cy={cy}
         r="0.45vmin"
         stroke={cx === 0 && cy === 0 ? "transparent" : "green"}
-        strokeWidth="0.10vmin"
+        strokeWidth="0.06vmin"
         fill="transparent"
         opacity="0.7"
       />

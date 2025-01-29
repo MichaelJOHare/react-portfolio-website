@@ -24,7 +24,7 @@ export function toFEN(
   };
   const epTarget = getEnPassantTarget(moveHistory);
 
-  // 1. Piece placement
+  // piece placement
   for (let row = 0; row < 8; row++) {
     let emptySquares = 0;
     for (let col = 0; col < 8; col++) {
@@ -48,7 +48,7 @@ export function toFEN(
     }
   }
 
-  // Append other FEN parts (simplified for brevity)
+  // append other FEN parts (simplified for brevity)
   fen +=
     " " + (players[currentPlayerIndex].color === PlayerColor.WHITE ? "w" : "b");
   fen += " " + generateCastlingAvailability(board);

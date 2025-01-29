@@ -14,6 +14,7 @@ export const ChessPiece = ({ type, color, square }: ChessPieceProps) => {
   const style = transform
     ? {
         transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+        opacity: "50%",
       }
     : undefined;
 

@@ -3,7 +3,7 @@ import { ChessPiece } from "./ChessPiece";
 import { ChessSquare } from "./ChessSquare";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useState } from "react";
-import { Piece, PlayerColor, PlayerType } from "../../types";
+import { Piece, PlayerColor, PlayerType, Square } from "../../types";
 import { Arrow } from "../ui/Arrow";
 import { Circle } from "../ui/Circle";
 import { useHighlighter } from "../../hooks/useHighlighter";
@@ -23,20 +23,12 @@ export const Board = ({
   const { board, getLegalMoves, executeMove } = gameManager;
   const playerMoves = getLegalMoves();
   const currentPlayer = gameManager.players[gameManager.currentPlayerIndex];
-  const [selectedPiece, setSelectedPiece] = useState<
-    | {
-        row: number;
-        col: number;
-      }
-    | undefined
-  >(undefined);
-  const [dragStartSquare, setDragStartSquare] = useState<
-    | {
-        row: number;
-        col: number;
-      }
-    | undefined
-  >(undefined);
+  const [selectedPiece, setSelectedPiece] = useState<Square | undefined>(
+    undefined
+  );
+  const [dragStartSquare, setDragStartSquare] = useState<Square | undefined>(
+    undefined
+  );
   const [validMoves, setValidMoves] = useState<{ row: number; col: number }[]>(
     []
   );
@@ -119,7 +111,7 @@ export const Board = ({
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div
         id="chessboard"
-        className="relative grid grid-cols-8 w-[90vmin] h-[90vmin] lg:w-[70vmin] lg:h-[70vmin]"
+        className="relative grid grid-cols-8 w-[90vmin] h-[90vmin] lg:w-[70vmin] lg:h-[70vmin] touch-none"
         onMouseDown={highlighter.onMouseDown}
         onMouseMove={highlighter.onMouseMove}
         onMouseUp={highlighter.onMouseUp}
