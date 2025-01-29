@@ -9,6 +9,8 @@ type SquareProps = {
   isKingInCheck: boolean;
   kingSquare: Square | undefined;
   onSquareClick: (row: number, col: number) => void;
+  selectedPiece?: Square;
+  dragStartSquare?: Square;
   children: React.ReactNode;
 };
 
@@ -19,6 +21,8 @@ export const ChessSquare = ({
   isKingInCheck,
   kingSquare,
   onSquareClick,
+  selectedPiece,
+  dragStartSquare,
   children,
 }: SquareProps) => {
   const { isOver, setNodeRef } = useDroppable({
@@ -34,8 +38,12 @@ export const ChessSquare = ({
     : String.fromCharCode(97 + square[1]);
 
   const getColor = () => {
-    // implement selected piece highlight and previous move highlight
-    if (isOver) {
+    // implement previous move highlight
+    if (
+      isOver &&
+      dragStartSquare &&
+      (square[0] !== dragStartSquare.row || square[1] !== dragStartSquare.col)
+    ) {
       return isValidMove ? "bg-green-500" : "bg-red-500";
     }
     if (
@@ -44,6 +52,9 @@ export const ChessSquare = ({
       kingSquare?.col === square[1]
     ) {
       return "bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-current to-red-500";
+    }
+    if (selectedPiece?.row === square[0] && selectedPiece?.col === square[1]) {
+      return "bg-green-300";
     }
     return isDark ? "bg-orange-200" : "bg-yellow-900";
   };
