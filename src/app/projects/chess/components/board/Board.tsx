@@ -3,7 +3,7 @@ import { ChessPiece } from "./ChessPiece";
 import { ChessSquare } from "./ChessSquare";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useState } from "react";
-import { PlayerColor, PlayerType } from "../../types";
+import { Piece, PlayerColor, PlayerType } from "../../types";
 import { Arrow } from "../ui/Arrow";
 import { Circle } from "../ui/Circle";
 import { useHighlighter } from "../../hooks/useHighlighter";
@@ -22,41 +22,71 @@ export const Board = ({
 }: BoardProps) => {
   const { board, getLegalMoves, executeMove } = gameManager;
   const playerMoves = getLegalMoves();
-  const [selectedPiece, setSelectedPiece] = useState<{
-    row: number;
-    col: number;
-  } | null>(null);
+  const currentPlayer = gameManager.players[gameManager.currentPlayerIndex];
+  const [selectedPiece, setSelectedPiece] = useState<
+    | {
+        row: number;
+        col: number;
+      }
+    | undefined
+  >(undefined);
+  const [dragStartSquare, setDragStartSquare] = useState<
+    | {
+        row: number;
+        col: number;
+      }
+    | undefined
+  >(undefined);
   const [validMoves, setValidMoves] = useState<{ row: number; col: number }[]>(
     []
   );
 
+  const selectPiece = (row: number, col: number, piece: Piece) => {
+    setSelectedPiece({ row, col });
+    setValidMoves(
+      playerMoves
+        .filter((move) => move.piece === piece)
+        .map((move) => ({ row: move.to.row, col: move.to.col }))
+    );
+  };
+
+  const deselectPiece = () => {
+    setSelectedPiece(undefined);
+    setValidMoves([]);
+  };
+
   const handleClickToMove = (row: number, col: number) => {
+    const piece = board[row][col].piece;
+    const isCurrentPlayerPiece =
+      piece &&
+      piece.player.type !== PlayerType.COMPUTER &&
+      piece.player === currentPlayer;
+
     if (selectedPiece) {
-      const validMove = validMoves.some(
-        (move) => move.row === row && move.col === col
-      );
-      if (validMove) {
+      if (validMoves.some((move) => move.row === row && move.col === col)) {
         const { row: startRow, col: startCol } = selectedPiece;
         executeMove(startRow, startCol, row, col, playerMoves);
+        deselectPiece();
+      } else if (isCurrentPlayerPiece) {
+        selectPiece(row, col, piece);
+      } else {
+        deselectPiece();
       }
-      setSelectedPiece(null);
-      setValidMoves([]);
-    } else {
-      const piece = board[row][col].piece;
-      if (piece && piece.player.type !== PlayerType.COMPUTER) {
-        setSelectedPiece({ row, col });
-        const pieceMoves = playerMoves.filter((move) => move.piece === piece);
-        setValidMoves(
-          pieceMoves.map((move) => ({ row: move.to.row, col: move.to.col }))
-        );
-      }
+    } else if (isCurrentPlayerPiece) {
+      selectPiece(row, col, piece);
     }
   };
 
   const handleDragStart = (event: DragStartEvent) => {
     const [startRow, startCol] = String(event.active.id).split("").map(Number);
+    setDragStartSquare({ row: startRow, col: startCol });
     const piece = board[startRow][startCol].piece;
-    if (!piece || piece.player.type === PlayerType.COMPUTER) return;
+    if (
+      !piece ||
+      piece.player.type === PlayerType.COMPUTER ||
+      piece.player !== currentPlayer
+    )
+      return;
 
     // used to store valid moves for a piece being dragged so squares can be highlighted if they're legal or not
     setValidMoves(
@@ -141,6 +171,8 @@ export const Board = ({
               isKingInCheck={gameManager.isKingInCheck}
               kingSquare={gameManager.kingSquare}
               onSquareClick={handleClickToMove}
+              selectedPiece={selectedPiece}
+              dragStartSquare={dragStartSquare}
             >
               {square.piece && square.piece.isAlive && (
                 <ChessPiece
