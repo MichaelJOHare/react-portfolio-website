@@ -9,7 +9,7 @@ type SquareProps = {
   isKingInCheck: boolean;
   kingSquare: Square | undefined;
   onSquareClick: (row: number, col: number) => void;
-  selectedPiece?: Square;
+  selectedPieceSquare?: Square;
   dragStartSquare?: Square;
   children: React.ReactNode;
 };
@@ -21,7 +21,7 @@ export const ChessSquare = ({
   isKingInCheck,
   kingSquare,
   onSquareClick,
-  selectedPiece,
+  selectedPieceSquare,
   dragStartSquare,
   children,
 }: SquareProps) => {
@@ -53,7 +53,10 @@ export const ChessSquare = ({
     ) {
       return "bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-current to-red-500";
     }
-    if (selectedPiece?.row === square[0] && selectedPiece?.col === square[1]) {
+    if (
+      selectedPieceSquare?.row === square[0] &&
+      selectedPieceSquare?.col === square[1]
+    ) {
       return "bg-green-300";
     }
     return isDark ? "bg-orange-200" : "bg-yellow-900";

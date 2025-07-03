@@ -1,3 +1,17 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* @theme {
+  --animate-pop: cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  @keyframes pop {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: translate3d(-10%, -10%, 0) scale(1.5);
+    }
+  }
+}
+
+Need to figure this out later
+ */
