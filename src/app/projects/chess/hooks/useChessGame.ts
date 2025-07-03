@@ -96,6 +96,7 @@ export const useChessGame = (isBoardFlipped: boolean) => {
     const playerMoves: Move[] = [];
 
     playerPieces?.forEach((piece) => {
+      // don't need ternary?
       if (piece.isAlive) {
         const pieceMoves =
           piece.type === PieceType.PAWN
