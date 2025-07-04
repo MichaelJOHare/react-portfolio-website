@@ -21,6 +21,7 @@ export const useHighlighter = (): Highlighter => {
 
   const [highlightedSquares, setHighlightedSquares] =
     useState<HighlightedSquares>({
+      previousMoveSquares: [],
       arrowsDrawnOnSquares: [],
       circlesDrawnOnSquares: [],
       stockfishBestMoveArrow: [],
@@ -170,6 +171,20 @@ export const useHighlighter = (): Highlighter => {
     onMouseUp,
     highlightedSquares,
     tempDrawings,
+    addPreviousMoveSquares: (startSquare: Square, endSquare: Square) =>
+      setHighlightedSquares((prev) => ({
+        ...prev,
+        previousMoveSquares: [
+          ...prev.previousMoveSquares,
+          startSquare,
+          endSquare,
+        ],
+      })),
+    clearPreviousMoveSquare: () =>
+      setHighlightedSquares((prev) => ({
+        ...prev,
+        previousMoveSquare: undefined,
+      })),
     addStockfishBestMoveArrow: (arrowCoords: ArrowProps) =>
       setHighlightedSquares((prev) => ({
         ...prev,

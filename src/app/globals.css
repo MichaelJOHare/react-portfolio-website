@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
-/* @theme {
+@theme {
+  /*
   --animate-pop: cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
   @keyframes pop {
@@ -11,7 +12,11 @@
       transform: translate3d(-10%, -10%, 0) scale(1.5);
     }
   }
-}
 
 Need to figure this out later
  */
+  --color-darkSquare: #b58863;
+  --color-lightSquare: #f0d9b5;
+  --color-previousMoveLight: #cdd16a;
+  --color-previousMoveDark: #aaa23a;
+}

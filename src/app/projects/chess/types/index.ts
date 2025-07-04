@@ -107,11 +107,14 @@ export type Highlighter = {
   onMouseDown: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   onMouseMove: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   onMouseUp: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  addPreviousMoveSquares: (startSquare: Square, endSquare: Square) => void;
+  clearPreviousMoveSquare: () => void;
   addStockfishBestMoveArrow: (arrowCoords: ArrowProps) => void;
   clearStockfishBestMoveArrow: () => void;
 };
 
 export type HighlightedSquares = {
+  previousMoveSquares: Square[];
   arrowsDrawnOnSquares: ArrowProps[];
   circlesDrawnOnSquares: CircleProps[];
   stockfishBestMoveArrow: ArrowProps[];

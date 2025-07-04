@@ -33,6 +33,15 @@ export const Board = ({
     []
   );
 
+  // separate piece selection, valid moves, drag/click moves, etc. into usePieceSelection hook
+  const isMoveValid = (row: number, col: number) =>
+    validMoves.some((move) => move.row === row && move.col === col);
+
+  const parseSquareId = (id: string): Square => {
+    const [row, col] = id.split("-").map(Number);
+    return { row, col };
+  };
+
   const isCurrentPlayerPiece = (piece: Piece | undefined) => {
     return (
       piece &&
@@ -60,10 +69,8 @@ export const Board = ({
     const piece = board[row][col].piece;
 
     if (selectedPieceSquare) {
-      if (validMoves.some((move) => move.row === row && move.col === col)) {
-        const { row: startRow, col: startCol } = selectedPieceSquare;
-        executeMove(startRow, startCol, row, col, playerMoves);
-        deselectPiece();
+      if (isMoveValid(row, col)) {
+        finalizeMove(selectedPieceSquare, { row, col });
       } else if (isCurrentPlayerPiece(piece)) {
         selectPiece(row, col, piece);
       } else {
@@ -73,7 +80,9 @@ export const Board = ({
   };
 
   const handleDragStart = (event: DragStartEvent) => {
-    const [startRow, startCol] = String(event.active.id).split("").map(Number);
+    const startSquare = parseSquareId(event.active.id as string);
+    const startRow = startSquare.row;
+    const startCol = startSquare.col;
     const piece = board[startRow][startCol].piece;
     if (!isCurrentPlayerPiece(piece)) {
       return;
@@ -97,18 +106,48 @@ export const Board = ({
     const { active, over } = event;
     if (!over) return; // early return if drop target is not a square
 
-    const [startRow, startCol] = String(active.id).split("").map(Number);
-    const [endRow, endCol] = String(over.id).split("").map(Number);
+    const startSquare = parseSquareId(active.id as string);
+    const endSquare = parseSquareId(over.id as string);
 
-    if (startRow === endRow && startCol === endCol) {
+    if (
+      startSquare.row === endSquare.row &&
+      startSquare.col === endSquare.col
+    ) {
       // if the piece is dropped on its original square, treat it as a click
-      handleClickToMove(startRow, startCol);
+      handleClickToMove(startSquare.row, startSquare.col);
     } else {
-      executeMove(startRow, startCol, endRow, endCol, playerMoves);
+      isMoveValid(endSquare.row, endSquare.col) &&
+        finalizeMove(
+          { row: startSquare.row, col: startSquare.col },
+          { row: endSquare.row, col: endSquare.col }
+        );
     }
   };
 
   const handlePromotionSelect = () => {};
+
+  const finalizeMove = (startSquare: Square, endSquare: Square) => {
+    executeMove(
+      startSquare.row,
+      startSquare.col,
+      endSquare.row,
+      endSquare.col,
+      playerMoves
+    );
+    highlighter.addPreviousMoveSquares(startSquare, endSquare);
+    deselectPiece();
+  };
+
+  const squareGameState = {
+    isBoardFlipped,
+    isKingInCheck: gameManager.isKingInCheck,
+    kingSquare: gameManager.kingSquare,
+    onSquareClick: handleClickToMove,
+    selectedPieceSquare,
+    previousMoveSquares:
+      highlighter.highlightedSquares.previousMoveSquares.slice(-2),
+    dragStartSquare,
+  };
 
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
@@ -158,22 +197,15 @@ export const Board = ({
           row.map((square, colIndex) => (
             <ChessSquare
               key={`${rowIndex}-${colIndex}`}
-              square={[rowIndex, colIndex]}
-              isBoardFlipped={isBoardFlipped}
-              isValidMove={validMoves.some(
-                (move) => move.row === rowIndex && move.col === colIndex
-              )}
-              isKingInCheck={gameManager.isKingInCheck}
-              kingSquare={gameManager.kingSquare}
-              onSquareClick={handleClickToMove}
-              selectedPieceSquare={selectedPieceSquare}
-              dragStartSquare={dragStartSquare}
+              square={{ row: rowIndex, col: colIndex }}
+              isValidMove={isMoveValid(rowIndex, colIndex)}
+              {...squareGameState}
             >
               {square.piece && square.piece.isAlive && (
                 <ChessPiece
                   type={square.piece.type}
                   color={square.piece.color}
-                  square={[rowIndex, colIndex]}
+                  square={{ row: rowIndex, col: colIndex }}
                 />
               )}
             </ChessSquare>
