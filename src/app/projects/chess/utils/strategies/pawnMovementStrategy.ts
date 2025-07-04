@@ -209,7 +209,8 @@ export const pawnMovementStrategy: MovementStrategy = (
               piece,
               { row, col, piece },
               forwardSquare,
-              promotionType
+              promotionType,
+              true
             );
             legalMoves.push(promotionMove);
           }
@@ -233,6 +234,7 @@ export const pawnMovementStrategy: MovementStrategy = (
                 { row, col },
                 { row: forwardSquare.row, col: newCol, piece },
                 promotionType,
+                true,
                 capturedPiece
               );
               legalMoves.push(promotionMove);

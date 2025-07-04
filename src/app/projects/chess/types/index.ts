@@ -1,3 +1,8 @@
+import { useChessGame } from "../hooks/useChessGame";
+import { useHighlighter } from "../hooks/useHighlighter";
+import { usePieceSelection } from "../hooks/usePieceSelection";
+import { usePromotionPanel } from "../hooks/usePromotionPanel";
+
 export type Square = {
   row: number;
   col: number;
@@ -48,21 +53,6 @@ export enum PlayerType {
   COMPUTER = "Computer",
 }
 
-export type GameState = {
-  board: Square[][];
-  players: Player[];
-  piecesByPlayer: Map<Player, Piece[]>;
-  currentPlayerIndex: number;
-  currentPlayerMoves: Move[];
-  capturedPieces: Piece[];
-  kingSquare: Square | undefined;
-  isKingInCheck: boolean;
-  moveHistory: Move[];
-  undoneMoves: Move[];
-  halfMoveClock: number;
-  fullMoveNumber: number;
-};
-
 export type PromotionPanelState = {
   promotionSquare: Square | undefined;
   promotionColor: PlayerColor | undefined;
@@ -101,40 +91,7 @@ export interface PromotionMove extends Move {
   promotionType: PieceType;
 }
 
-export type Highlighter = {
-  tempDrawings: HighlighterState;
-  highlightedSquares: HighlightedSquares;
-  onMouseDown: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  onMouseMove: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  onMouseUp: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  addPreviousMoveSquares: (startSquare: Square, endSquare: Square) => void;
-  clearPreviousMoveSquare: () => void;
-  addStockfishBestMoveArrow: (arrowCoords: ArrowProps) => void;
-  clearStockfishBestMoveArrow: () => void;
-};
-
-export type HighlightedSquares = {
-  previousMoveSquares: Square[];
-  arrowsDrawnOnSquares: ArrowProps[];
-  circlesDrawnOnSquares: CircleProps[];
-  stockfishBestMoveArrow: ArrowProps[];
-};
-
-export type HighlighterState = {
-  legalMoveSquares: Move[];
-  arrowCoordinates: ArrowProps;
-  circleCoordinates: CircleProps;
-};
-
-export type ArrowProps = {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  isStockfish?: boolean;
-};
-
-export type CircleProps = {
-  cx: number;
-  cy: number;
-};
+export type Highlighter = ReturnType<typeof useHighlighter>;
+export type GameManager = ReturnType<typeof useChessGame>;
+export type PieceSelector = ReturnType<typeof usePieceSelection>;
+export type PromotionHandler = ReturnType<typeof usePromotionPanel>;

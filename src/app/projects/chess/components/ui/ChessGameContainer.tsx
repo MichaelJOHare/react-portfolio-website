@@ -1,14 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Board } from "../board/Board";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useHighlighter } from "../../hooks/useHighlighter";
-import { Board } from "../board/Board";
+import { usePromotionPanel } from "../../hooks/usePromotionPanel";
+import { usePieceSelection } from "../../hooks/usePieceSelection";
 
 export const ChessGameContainer = () => {
   const [isBoardFlipped, setisBoardFlipped] = useState(false);
   const gameManager = useChessGame(isBoardFlipped);
+  const promotionHandler = usePromotionPanel(isBoardFlipped, gameManager);
   const highlighter = useHighlighter();
+  const pieceSelector = usePieceSelection(
+    gameManager,
+    highlighter,
+    promotionHandler
+  );
 
   useEffect(() => {
     gameManager.initializeBoard();
@@ -19,8 +27,10 @@ export const ChessGameContainer = () => {
       <div className="flex justify-center items-center">
         <Board
           gameManager={gameManager}
-          isBoardFlipped={isBoardFlipped}
           highlighter={highlighter}
+          pieceSelector={pieceSelector}
+          promotionHandler={promotionHandler}
+          isBoardFlipped={isBoardFlipped}
         />
       </div>
     </div>

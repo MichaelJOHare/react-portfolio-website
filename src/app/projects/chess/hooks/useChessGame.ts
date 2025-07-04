@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  GameState,
   Player,
   Piece,
   PlayerColor,
@@ -10,6 +9,7 @@ import {
   MoveType,
   Square,
   CastlingMove,
+  PromotionMove,
 } from "../types";
 import {
   createPlayer,
@@ -23,6 +23,21 @@ import {
   isKingInCheck,
   isValidCastlingMove,
 } from "../utils";
+
+type GameState = {
+  board: Square[][];
+  players: Player[];
+  piecesByPlayer: Map<Player, Piece[]>;
+  currentPlayerIndex: number;
+  currentPlayerMoves: Move[];
+  capturedPieces: Piece[];
+  kingSquare: Square | undefined;
+  isKingInCheck: boolean;
+  moveHistory: Move[];
+  undoneMoves: Move[];
+  halfMoveClock: number;
+  fullMoveNumber: number;
+};
 
 export const useChessGame = (isBoardFlipped: boolean) => {
   const [gameState, setGameState] = useState<GameState>({
@@ -58,7 +73,7 @@ export const useChessGame = (isBoardFlipped: boolean) => {
 
       setup.forEach(({ type, positions, movementStrategy }) => {
         positions.forEach(({ row, col }) => {
-          const player = isWhite ? player1 : player2;
+          const player = isWhite ? player1 : player2; // change in future for vs computer
           const pieceRow =
             row + (type === PieceType.PAWN ? pawnRow - 1 : rowOffset);
           const square = gameState.board[pieceRow][col];
@@ -215,18 +230,22 @@ export const useChessGame = (isBoardFlipped: boolean) => {
     startCol: number,
     endRow: number,
     endCol: number,
-    playerMoves: Move[]
+    playerMoves: Move[],
+    promotionType?: PieceType
   ) => {
     const piece = gameState.board[startRow][startCol]?.piece;
     if (!piece) return;
 
     const validMove = playerMoves.find(
-      ({ piece: movePiece, from, to }) =>
-        movePiece.id === piece.id &&
-        from.row === startRow &&
-        from.col === startCol &&
-        to.row === endRow &&
-        to.col === endCol
+      ({ ...move }) =>
+        move.piece.id === piece.id &&
+        move.from.row === startRow &&
+        move.from.col === startCol &&
+        move.to.row === endRow &&
+        move.to.col === endCol &&
+        (promotionType
+          ? (move as PromotionMove).promotionType === promotionType
+          : true)
     );
 
     if (!validMove) return;

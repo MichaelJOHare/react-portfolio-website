@@ -27,10 +27,8 @@ export const ChessSquare = ({
   dragStartSquare,
   children,
 }: SquareProps) => {
-  const isDroppable = selectedPieceSquare && isValidMove;
   const { isOver, setNodeRef } = useDroppable({
     id: `${square.row}-${square.col}`,
-    disabled: !isDroppable,
   });
   const isDark = (square.row + square.col) % 2 === 0;
   const isOccupied = !!children;

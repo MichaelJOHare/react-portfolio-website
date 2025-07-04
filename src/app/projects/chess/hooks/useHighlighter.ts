@@ -1,14 +1,33 @@
 import { useState } from "react";
-import {
-  ArrowProps,
-  CircleProps,
-  HighlightedSquares,
-  Highlighter,
-  HighlighterState,
-  Square,
-} from "../types";
+import { Move, Square } from "../types";
 
-export const useHighlighter = (): Highlighter => {
+type HighlighterState = {
+  legalMoveSquares: Move[];
+  arrowCoordinates: ArrowProps;
+  circleCoordinates: CircleProps;
+};
+
+type HighlightedSquares = {
+  previousMoveSquares: Square[];
+  arrowsDrawnOnSquares: ArrowProps[];
+  circlesDrawnOnSquares: CircleProps[];
+  stockfishBestMoveArrow: ArrowProps[];
+};
+
+type ArrowProps = {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  isStockfish?: boolean;
+};
+
+type CircleProps = {
+  cx: number;
+  cy: number;
+};
+
+export const useHighlighter = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasMovedOutOfSquare, setHasMovedOutOfSquare] = useState(false);
   const [originalSquare, setOriginalSquare] = useState<Square | null>(null);
@@ -165,36 +184,44 @@ export const useHighlighter = (): Highlighter => {
     }));
   };
 
+  const addPreviousMoveSquares = (startSquare: Square, endSquare: Square) =>
+    setHighlightedSquares((prev) => ({
+      ...prev,
+      previousMoveSquares: [
+        ...prev.previousMoveSquares,
+        startSquare,
+        endSquare,
+      ],
+    }));
+
+  const clearPreviousMoveSquare = () =>
+    setHighlightedSquares((prev) => ({
+      ...prev,
+      previousMoveSquare: undefined,
+    }));
+
+  const addStockfishBestMoveArrow = (arrowCoords: ArrowProps) =>
+    setHighlightedSquares((prev) => ({
+      ...prev,
+      stockfishBestMoveArrow: [...prev.stockfishBestMoveArrow, arrowCoords],
+    }));
+
+  const clearStockfishBestMoveArrow = () =>
+    setHighlightedSquares((prev) => ({
+      ...prev,
+      stockfishBestMoveArrow: [],
+    }));
+
   return {
     onMouseDown,
     onMouseMove,
     onMouseUp,
     highlightedSquares,
     tempDrawings,
-    addPreviousMoveSquares: (startSquare: Square, endSquare: Square) =>
-      setHighlightedSquares((prev) => ({
-        ...prev,
-        previousMoveSquares: [
-          ...prev.previousMoveSquares,
-          startSquare,
-          endSquare,
-        ],
-      })),
-    clearPreviousMoveSquare: () =>
-      setHighlightedSquares((prev) => ({
-        ...prev,
-        previousMoveSquare: undefined,
-      })),
-    addStockfishBestMoveArrow: (arrowCoords: ArrowProps) =>
-      setHighlightedSquares((prev) => ({
-        ...prev,
-        stockfishBestMoveArrow: [...prev.stockfishBestMoveArrow, arrowCoords],
-      })),
-    clearStockfishBestMoveArrow: () =>
-      setHighlightedSquares((prev) => ({
-        ...prev,
-        stockfishBestMoveArrow: [],
-      })),
+    addPreviousMoveSquares,
+    clearPreviousMoveSquare,
+    addStockfishBestMoveArrow,
+    clearStockfishBestMoveArrow,
   };
 };
 

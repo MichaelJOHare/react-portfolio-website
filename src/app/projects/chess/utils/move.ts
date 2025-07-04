@@ -69,6 +69,7 @@ export const createPromotionMove = (
   from: Square,
   to: Square,
   promotionType: PieceType,
+  isPromotion?: boolean,
   capturedPiece?: Piece
 ): PromotionMove => ({
   type: MoveType.PROMO,
@@ -76,6 +77,7 @@ export const createPromotionMove = (
   from: from,
   to: to,
   promotionType: promotionType,
+  isPromotion: isPromotion,
   capturedPiece: capturedPiece,
 });
 

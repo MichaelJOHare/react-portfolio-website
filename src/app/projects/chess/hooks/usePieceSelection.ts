@@ -1,13 +1,22 @@
 import { useState } from "react";
-import { Highlighter, Piece, PlayerType, Square } from "../types";
-import { useChessGame } from "./useChessGame";
+import {
+  GameManager,
+  Highlighter,
+  Move,
+  Piece,
+  PlayerType,
+  PromotionHandler,
+  Square,
+} from "../types";
 
 export const usePieceSelection = (
-  gameManager: ReturnType<typeof useChessGame>,
-  highlighter: Highlighter
+  gameManager: GameManager,
+  highlighter: Highlighter,
+  promotionHandler: PromotionHandler
 ) => {
   const { board, getLegalMoves, executeMove, players, currentPlayerIndex } =
     gameManager;
+  const { setPromotionDetails } = promotionHandler;
   const playerMoves = getLegalMoves();
   const [selectedPieceSquare, setSelectedPieceSquare] = useState<Square>();
   const [dragStartSquare, setDragStartSquare] = useState<Square>();
@@ -19,7 +28,17 @@ export const usePieceSelection = (
     piece.player.type !== PlayerType.COMPUTER;
 
   const isMoveValid = (row: number, col: number) =>
-    validMoves.some((s) => s.row === row && s.col === col);
+    validMoves.some((s) => s.row === row && s.col === col); // should maybe pass in piece to validate id (ie. 2 knight attacking same square)
+
+  const findMove = (start: Square, end: Square): Move | undefined => {
+    return playerMoves.find(
+      (move) =>
+        move.from.row === start.row &&
+        move.from.col === start.col &&
+        move.to.row === end.row &&
+        move.to.col === end.col
+    );
+  };
 
   const deselectPiece = () => {
     setSelectedPieceSquare(undefined);
@@ -35,9 +54,14 @@ export const usePieceSelection = (
   };
 
   const finalizeMove = (start: Square, end: Square) => {
-    executeMove(start.row, start.col, end.row, end.col, playerMoves);
-    highlighter.addPreviousMoveSquares(start, end);
-    deselectPiece();
+    const move = findMove(start, end);
+    if (move?.isPromotion) {
+      setPromotionDetails(move);
+    } else {
+      executeMove(start.row, start.col, end.row, end.col, playerMoves);
+      highlighter.addPreviousMoveSquares(start, end);
+      deselectPiece();
+    }
   };
 
   const handleClick = (row: number, col: number) => {
