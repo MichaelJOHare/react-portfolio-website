@@ -58,7 +58,7 @@ export const useChessGame = (isBoardFlipped: boolean) => {
 
       setup.forEach(({ type, positions, movementStrategy }) => {
         positions.forEach(({ row, col }) => {
-          const player = color === PlayerColor.WHITE ? player1 : player2;
+          const player = isWhite ? player1 : player2;
           const pieceRow =
             row + (type === PieceType.PAWN ? pawnRow - 1 : rowOffset);
           const square = gameState.board[pieceRow][col];
@@ -91,22 +91,22 @@ export const useChessGame = (isBoardFlipped: boolean) => {
     }));
   };
 
-  const getPlayerMoves = (player: Player, board: Square[][]) => {
-    const playerPieces = gameState.piecesByPlayer.get(player);
+  const getPlayerMoves = (
+    player: Player,
+    board: Square[][],
+    piecesByPlayer: Map<Player, Piece[]>
+  ) => {
+    const playerPieces = piecesByPlayer.get(player);
     const playerMoves: Move[] = [];
 
     playerPieces?.forEach((piece) => {
-      // don't need ternary?
       if (piece.isAlive) {
-        const pieceMoves =
-          piece.type === PieceType.PAWN
-            ? piece.movementStrategy(
-                board,
-                piece,
-                isBoardFlipped,
-                gameState.moveHistory
-              )
-            : piece.movementStrategy(board, piece, isBoardFlipped);
+        const pieceMoves = piece.movementStrategy(
+          board,
+          piece,
+          isBoardFlipped,
+          gameState.moveHistory
+        );
         playerMoves.push(...pieceMoves);
       }
     });
@@ -118,11 +118,27 @@ export const useChessGame = (isBoardFlipped: boolean) => {
     const legalMoves: Move[] = [];
     const player = gameState.players[gameState.currentPlayerIndex];
     const opponent = gameState.players[1 - gameState.currentPlayerIndex];
-    const pieceMoves = getPlayerMoves(player, gameState.board);
+    const pieceMoves = getPlayerMoves(
+      player,
+      gameState.board,
+      gameState.piecesByPlayer
+    );
 
     pieceMoves.forEach((move) => {
       const { tempBoard, capturedPiece } = simulateMove(move, gameState.board);
-      const opponentMoves = getPlayerMoves(opponent, tempBoard);
+      const tempPiecesByPlayer = new Map(gameState.piecesByPlayer);
+      if (capturedPiece) {
+        const opponentPieces = [...(tempPiecesByPlayer.get(opponent) ?? [])];
+        const updatedPieces = opponentPieces.map((p) =>
+          p.id === capturedPiece.id ? { ...p, isAlive: false } : p
+        );
+        tempPiecesByPlayer.set(opponent, updatedPieces);
+      }
+      const opponentMoves = getPlayerMoves(
+        opponent,
+        tempBoard,
+        tempPiecesByPlayer
+      );
 
       const isCastlingMove = move.type === MoveType.CASTLE;
       const isValidMove = isCastlingMove
@@ -132,10 +148,6 @@ export const useChessGame = (isBoardFlipped: boolean) => {
             gameState.board
           )
         : !isKingInCheck(opponentMoves);
-
-      if (capturedPiece) {
-        capturedPiece.isAlive = true;
-      }
 
       if (isValidMove) {
         legalMoves.push(move);
@@ -240,18 +252,22 @@ export const useChessGame = (isBoardFlipped: boolean) => {
 
   const simulateMove = (move: Move, board: Square[][]) => {
     const tempBoard = board.map((row) =>
-      row.map((square) => ({ ...square, piece: square.piece }))
+      row.map((square) => ({
+        ...square,
+        piece: square.piece ? { ...square.piece } : undefined,
+      }))
     );
+
     const { piece, from, to, capturedPiece } = move;
 
-    if (capturedPiece) {
-      capturedPiece.isAlive = false;
-    }
+    const tempCaptured = capturedPiece
+      ? { ...capturedPiece, isAlive: false }
+      : undefined;
 
-    tempBoard[to.row][to.col].piece = piece;
+    tempBoard[to.row][to.col].piece = { ...piece };
     tempBoard[from.row][from.col].piece = undefined;
 
-    return { tempBoard, capturedPiece };
+    return { tempBoard, capturedPiece: tempCaptured };
   };
 
   const updateCheckStatus = (
@@ -267,7 +283,11 @@ export const useChessGame = (isBoardFlipped: boolean) => {
       return;
     }
 
-    const opponentMoves = getPlayerMoves(opponent, board);
+    const opponentMoves = getPlayerMoves(
+      opponent,
+      board,
+      gameState.piecesByPlayer
+    );
     const kingInCheck = isKingInCheck(opponentMoves);
 
     setGameState((prev) => ({
