@@ -52,10 +52,6 @@ export const ChessSquare = ({
     const isSelected = isSameSquare(selectedPieceSquare, square);
     const isKingHere = isSameSquare(kingSquare, square);
 
-    if (isPreviousMoveSquare) {
-      return isDark ? "bg-previousMoveLight" : "bg-previousMoveDark";
-    }
-
     if (isDropTarget) {
       return isValidMove
         ? "bg-green-500"
@@ -65,11 +61,16 @@ export const ChessSquare = ({
     }
 
     if (isKingInCheck && isKingHere) {
-      return "bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-current to-red-500";
+      console.log("King in check at square", square);
+      return "bg-radial from-red-300 to-red-500";
     }
 
     if (isSelected) {
       return "bg-green-300";
+    }
+
+    if (isPreviousMoveSquare) {
+      return isDark ? "bg-previousMoveLight" : "bg-previousMoveDark";
     }
 
     return isDark ? "bg-lightSquare" : "bg-darkSquare";

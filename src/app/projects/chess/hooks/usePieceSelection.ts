@@ -1,41 +1,21 @@
 import { useState } from "react";
-import { Piece, PlayerType, Square } from "../types";
+import { Highlighter, Piece, PlayerType, Square } from "../types";
+import { useChessGame } from "./useChessGame";
 
-type UsePieceSelectionProps = {
-  board: (Square & { piece?: Piece })[][];
-  currentPlayer: { type: PlayerType };
-  getLegalMoves: () => {
-    piece: Piece;
-    to: Square;
-  }[];
-  executeMove: (
-    fromRow: number,
-    fromCol: number,
-    toRow: number,
-    toCol: number,
-    moves: { piece: Piece; to: Square }[]
-  ) => void;
-  highlighter: {
-    addPreviousMoveSquares: (start: Square, end: Square) => void;
-  };
-};
-
-export const usePieceSelection = ({
-  board,
-  currentPlayer,
-  getLegalMoves,
-  executeMove,
-  highlighter,
-}: UsePieceSelectionProps) => {
+export const usePieceSelection = (
+  gameManager: ReturnType<typeof useChessGame>,
+  highlighter: Highlighter
+) => {
+  const { board, getLegalMoves, executeMove, players, currentPlayerIndex } =
+    gameManager;
+  const playerMoves = getLegalMoves();
   const [selectedPieceSquare, setSelectedPieceSquare] = useState<Square>();
   const [dragStartSquare, setDragStartSquare] = useState<Square>();
   const [validMoves, setValidMoves] = useState<Square[]>([]);
 
-  const playerMoves = getLegalMoves();
-
   const isCurrentPlayerPiece = (piece?: Piece) =>
     piece &&
-    piece.player === currentPlayer &&
+    piece.player === players[currentPlayerIndex] &&
     piece.player.type !== PlayerType.COMPUTER;
 
   const isMoveValid = (row: number, col: number) =>

@@ -2,8 +2,8 @@ import { DndContext, DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import { ChessPiece } from "./ChessPiece";
 import { ChessSquare } from "./ChessSquare";
 import { useChessGame } from "../../hooks/useChessGame";
-import { useState } from "react";
-import { Piece, PlayerColor, PlayerType, Square } from "../../types";
+import { usePieceSelection } from "../../hooks/usePieceSelection";
+import { Square } from "../../types";
 import { Arrow } from "../ui/Arrow";
 import { Circle } from "../ui/Circle";
 import { useHighlighter } from "../../hooks/useHighlighter";
@@ -20,20 +20,16 @@ export const Board = ({
   isBoardFlipped,
   highlighter,
 }: BoardProps) => {
-  const { board, getLegalMoves, executeMove } = gameManager;
-  const playerMoves = getLegalMoves();
-  const currentPlayer = gameManager.players[gameManager.currentPlayerIndex];
-  const [selectedPieceSquare, setSelectedPieceSquare] = useState<
-    Square | undefined
-  >(undefined);
-  const [dragStartSquare, setDragStartSquare] = useState<Square | undefined>(
-    undefined
-  );
-  const [validMoves, setValidMoves] = useState<{ row: number; col: number }[]>(
-    []
-  );
+  const { board } = gameManager;
+  const {
+    selectedPieceSquare,
+    dragStartSquare,
+    validMoves,
+    handleClick,
+    handleDragStart,
+    handleDragEnd,
+  } = usePieceSelection(gameManager, highlighter);
 
-  // separate piece selection, valid moves, drag/click moves, etc. into usePieceSelection hook
   const isMoveValid = (row: number, col: number) =>
     validMoves.some((move) => move.row === row && move.col === col);
 
@@ -42,107 +38,26 @@ export const Board = ({
     return { row, col };
   };
 
-  const isCurrentPlayerPiece = (piece: Piece | undefined) => {
-    return (
-      piece &&
-      piece.player.type !== PlayerType.COMPUTER &&
-      piece.player === currentPlayer
-    );
+  const onDragStart = (event: DragStartEvent) => {
+    const { row, col } = parseSquareId(event.active.id as string);
+    handleDragStart(row, col);
   };
 
-  const selectPiece = (row: number, col: number, piece: Piece | undefined) => {
-    setSelectedPieceSquare({ row, col });
-    piece &&
-      setValidMoves(
-        playerMoves
-          .filter((move) => move.piece === piece)
-          .map((move) => ({ row: move.to.row, col: move.to.col }))
-      );
-  };
-
-  const deselectPiece = () => {
-    setSelectedPieceSquare(undefined);
-    setValidMoves([]);
-  };
-
-  const handleClickToMove = (row: number, col: number) => {
-    const piece = board[row][col].piece;
-
-    if (selectedPieceSquare) {
-      if (isMoveValid(row, col)) {
-        finalizeMove(selectedPieceSquare, { row, col });
-      } else if (isCurrentPlayerPiece(piece)) {
-        selectPiece(row, col, piece);
-      } else {
-        deselectPiece();
-      }
-    }
-  };
-
-  const handleDragStart = (event: DragStartEvent) => {
-    const startSquare = parseSquareId(event.active.id as string);
-    const startRow = startSquare.row;
-    const startCol = startSquare.col;
-    const piece = board[startRow][startCol].piece;
-    if (!isCurrentPlayerPiece(piece)) {
-      return;
-    }
-    deselectPiece();
-    selectPiece(startRow, startCol, piece);
-    setDragStartSquare({ row: startRow, col: startCol });
-
-    // used to store valid moves for a piece being dragged so squares can be highlighted if they're legal or not
-    setValidMoves(
-      playerMoves
-        .filter((move) => move.piece === piece)
-        .map((move) => ({ row: move.to.row, col: move.to.col }))
-    );
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    deselectPiece();
-    setValidMoves([]);
-
+  const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    if (!over) return; // early return if drop target is not a square
+    if (!over) return;
 
-    const startSquare = parseSquareId(active.id as string);
-    const endSquare = parseSquareId(over.id as string);
+    const start = parseSquareId(active.id as string);
+    const end = parseSquareId(over.id as string);
 
-    if (
-      startSquare.row === endSquare.row &&
-      startSquare.col === endSquare.col
-    ) {
-      // if the piece is dropped on its original square, treat it as a click
-      handleClickToMove(startSquare.row, startSquare.col);
-    } else {
-      isMoveValid(endSquare.row, endSquare.col) &&
-        finalizeMove(
-          { row: startSquare.row, col: startSquare.col },
-          { row: endSquare.row, col: endSquare.col }
-        );
-    }
-  };
-
-  const handlePromotionSelect = () => {};
-
-  const finalizeMove = (startSquare: Square, endSquare: Square) => {
-    executeMove(
-      startSquare.row,
-      startSquare.col,
-      endSquare.row,
-      endSquare.col,
-      playerMoves
-    );
-    highlighter.addPreviousMoveSquares(startSquare, endSquare);
-    deselectPiece();
+    handleDragEnd(start, end);
   };
 
   const squareGameState = {
     isBoardFlipped,
     isKingInCheck: gameManager.isKingInCheck,
     kingSquare: gameManager.kingSquare,
-    onSquareClick: handleClickToMove,
+    onSquareClick: handleClick,
     selectedPieceSquare,
     previousMoveSquares:
       highlighter.highlightedSquares.previousMoveSquares.slice(-2),
@@ -150,7 +65,7 @@ export const Board = ({
   };
 
   return (
-    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+    <DndContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
       <div
         id="chessboard"
         className="relative grid grid-cols-8 w-[90vmin] h-[90vmin] lg:w-[70vmin] lg:h-[70vmin] touch-none"
