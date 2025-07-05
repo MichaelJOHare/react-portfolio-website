@@ -1,11 +1,12 @@
 import { Board } from "../board/Board";
 import { useGame } from "../../context/GameContext";
+import { ChessUIContainer } from "./ChessUIContainer";
 
 export const ChessGameContainer = () => {
   const { stockfishEnabled } = useGame();
 
   return (
-    <div className="flex flex-col justify-center lg:flex-row">
+    <div className="flex flex-col justify-center pt-2 lg:flex-row">
       <div className="flex justify-center items-center">
         <Board />
         <div
@@ -23,6 +24,7 @@ export const ChessGameContainer = () => {
           ></progress>
         </div>
       </div>
+      <ChessUIContainer />
     </div>
   );
 };

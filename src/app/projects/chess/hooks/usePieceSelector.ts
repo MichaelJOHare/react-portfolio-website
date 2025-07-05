@@ -28,7 +28,8 @@ export const usePieceSelector = (
     piece.player.type !== PlayerType.COMPUTER;
 
   const isMoveValid = (row: number, col: number) =>
-    validMoves.some((s) => s.row === row && s.col === col); // should maybe pass in piece to validate id (ie. 2 knight attacking same square)
+    validMoves.some((s) => s.row === row && s.col === col); // should maybe pass in piece to validate id (ie. 2 knight attacking same square),
+  // although this doesn't seem to be an issue after testing
 
   const findMove = (start: Square, end: Square): Move | undefined => {
     return playerMoves.find(

@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  PropsWithChildren,
-  useEffect,
-} from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import {
   GameManager,
   Highlighter,
@@ -15,6 +9,10 @@ import { useGameManager } from "../hooks/useGameManager";
 import { useHighlighter } from "../hooks/useHighlighter";
 import { usePieceSelector } from "../hooks/usePieceSelector";
 import { usePromotionHandler } from "../hooks/usePromotionHandler";
+
+interface Props {
+  children: React.ReactNode;
+}
 
 type GameContextType = {
   gameManager: GameManager;
@@ -38,7 +36,7 @@ type GameContextType = {
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
-export const GameProvider = ({ children }: PropsWithChildren) => {
+export const GameProvider = ({ children }: Props) => {
   const [isBoardFlipped, setIsBoardFlipped] = useState(false);
   const [stockfishEnabled, setStockfishEnabled] = useState({
     nnueEnabled: false,

@@ -1,25 +1,22 @@
-import { GameManager, PlayerType, Square } from "../../types";
+import { useGame } from "../../context/GameContext";
+import { PlayerType } from "../../types";
 
-interface Direction {
-  left: boolean;
-  right: boolean;
-}
-
-export type ButtonProps = {
-  gameManager: GameManager;
-  direction: Direction;
-  clearUI: () => void;
+type ButtonProps = {
+  direction: "left" | "right";
 };
 
-export default function Button({
-  gameManager,
-  direction,
-  clearUI,
-}: ButtonProps) {
-  const { /* undoMove, redoMove, */ players } = gameManager;
-  const undoMove = () => {};
-  const redoMove = () => {};
-  if (direction.left) {
+export default function Button({ direction }: ButtonProps) {
+  const { gameManager, highlighter, pieceSelector } = useGame();
+  const { undoMove, redoMove, players } = gameManager;
+
+  const clearUI = () => {
+    highlighter.clearDrawnHighlights();
+    highlighter.clearStockfishBestMoveArrow();
+    highlighter.clearPreviousMoveSquares();
+    pieceSelector.deselectPiece();
+  };
+
+  if (direction === "left") {
     return (
       <button
         type="button"
@@ -34,7 +31,7 @@ export default function Button({
           }
           clearUI(); // find way to conditionally clear highlights based on move history length
         }}
-        className="w-full text-white bg-zinc-700 hover:bg-zinc-900 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-1.5 dark:bg-zinc-900 dark:hover:bg-zinc-600 dark:focus:ring-blue-800"
+        className="w-full text-white bg-zinc-700 hover:bg-zinc-900 focus:ring-4 focus:outline-hidden focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-1.5 dark:bg-zinc-900 dark:hover:bg-zinc-600 dark:focus:ring-blue-800"
       >
         <svg
           className="w-full h-full transform rotate-180"
@@ -54,7 +51,7 @@ export default function Button({
         <span className="sr-only">Previous Move</span>
       </button>
     );
-  } else if (direction.right) {
+  } else if (direction === "right") {
     return (
       <button
         type="button"
@@ -69,7 +66,7 @@ export default function Button({
           }
           clearUI();
         }}
-        className="w-full text-white bg-zinc-700 hover:bg-zinc-900  focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center ms-1.5 dark:bg-zinc-900 dark:hover:bg-zinc-600 dark:focus:ring-blue-800"
+        className="w-full text-white bg-zinc-700 hover:bg-zinc-900  focus:ring-4 focus:outline-hidden focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center ms-1.5 dark:bg-zinc-900 dark:hover:bg-zinc-600 dark:focus:ring-blue-800"
       >
         <svg
           className="w-full h-full"

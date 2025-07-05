@@ -1,7 +1,7 @@
 import { CircleProps } from "../../types";
 
 export const Circle = ({ cx, cy }: CircleProps) => {
-  // why so thin when window is small?
+  // why so thin when window is small?.. change vmin to vh?
   return (
     <svg
       className="absolute top-0 left-0 z-10 pointer-events-none"

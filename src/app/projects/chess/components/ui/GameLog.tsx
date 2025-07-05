@@ -5,7 +5,7 @@ import { toFEN } from "../../utils/FEN";
 import { StockfishOptionsModal } from "./StockfishOptionsModal";
 import { useGame } from "../../context/GameContext";
 
-export default function GameLog() {
+export const GameLog = () => {
   const { gameManager, resetGame } = useGame();
   const {
     board,
@@ -38,14 +38,14 @@ export default function GameLog() {
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
-      <form className="h-full w-full max-h-fit pt-2 lg:max-h-[60vmin] relative">
+      <form className="h-full w-full max-h-fit lg:max-h-[60vmin] relative">
         <div className="h-full w-full flex flex-col border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
           <div className="flex items-center justify-center px-3 py-2 border-b dark:border-gray-600">
             <div className="w-full max-w-screen-lg flex justify-between items-center">
               <div className="group relative">
                 <button
                   type="button"
-                  className="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
+                  className="p-2 text-gray-500 rounded-sm hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
                   onClick={toggleFenTextArea}
                 >
                   <svg
@@ -61,7 +61,7 @@ export default function GameLog() {
                   <span className="sr-only">Import FEN</span>
                   <span
                     role="tooltip"
-                    className="pointer-events-none absolute px-2 py-2 -top-10 -left-6 w-max opacity-0 transition-opacity group-hover:opacity-100 text-sm font-medium text-white duration-300 bg-gray-900 rounded-lg shadow-sm dark:bg-gray-800"
+                    className="pointer-events-none absolute px-2 py-2 -top-10 -left-6 w-max opacity-0 transition-opacity group-hover:opacity-100 text-sm font-medium text-white duration-300 bg-gray-900 rounded-lg shadow-xs dark:bg-gray-800"
                   >
                     Import FEN
                   </span>
@@ -70,7 +70,7 @@ export default function GameLog() {
               <div className="group relative">
                 <button
                   type="button"
-                  className="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
+                  className="p-2 text-gray-500 rounded-sm hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
                   onClick={resetGame}
                 >
                   <svg
@@ -102,7 +102,7 @@ export default function GameLog() {
                   <span className="sr-only">Reset Game</span>
                   <span
                     role="tooltip"
-                    className="pointer-events-none absolute px-2 py-2 -top-10 -left-6 w-max opacity-0 transition-opacity group-hover:opacity-100 text-sm font-medium text-white duration-300 bg-gray-900 rounded-lg shadow-sm dark:bg-gray-800"
+                    className="pointer-events-none absolute px-2 py-2 -top-10 -left-6 w-max opacity-0 transition-opacity group-hover:opacity-100 text-sm font-medium text-white duration-300 bg-gray-900 rounded-lg shadow-xs dark:bg-gray-800"
                   >
                     Reset Game
                   </span>
@@ -111,7 +111,7 @@ export default function GameLog() {
               <div className="group relative">
                 <button
                   type="button"
-                  className="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
+                  className="p-2 text-gray-500 rounded-sm hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
                   onClick={toggleStockfishOptions}
                 >
                   <svg
@@ -158,7 +158,7 @@ export default function GameLog() {
                   </svg>
                   <span
                     role="tooltip"
-                    className="pointer-events-none absolute px-2 py-2 -top-10 -left-6 w-max opacity-0 transition-opacity group-hover:opacity-100 text-sm font-medium text-white duration-300 bg-gray-900 rounded-lg shadow-sm dark:bg-gray-800"
+                    className="pointer-events-none absolute px-2 py-2 -top-10 -left-6 w-max opacity-0 transition-opacity group-hover:opacity-100 text-sm font-medium text-white duration-300 bg-gray-900 rounded-lg shadow-xs dark:bg-gray-800"
                   >
                     Stockfish Options
                   </span>
@@ -221,7 +221,7 @@ export default function GameLog() {
           </div>
           {showFenTextArea && (
             <textarea
-              className="mt-2 p-2 border border-gray-300 rounded"
+              className="mt-2 p-2 border border-gray-300 rounded-sm"
               rows={5}
               defaultValue={toFEN(
                 board,
@@ -239,4 +239,4 @@ export default function GameLog() {
       </form>
     </div>
   );
-}
+};

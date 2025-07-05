@@ -1,3 +1,4 @@
+import { plugin } from "postcss";
 import type { Config } from "tailwindcss";
 
 export default {
@@ -14,5 +15,14 @@ export default {
       },
     },
   },
-  plugins: [],
+  darkMode: "class",
+  /*  plugins: [
+    plugin(function ({ addVariant }) {
+      addVariant("progress-unfilled", ["&::-webkit-progress-bar", "&"]);
+      addVariant("progress-filled", [
+        "&::-webkit-progress-value",
+        "&::-moz-progress-bar",
+      ]);
+    }),
+  ], */
 } satisfies Config;

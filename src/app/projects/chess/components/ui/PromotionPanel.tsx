@@ -69,7 +69,7 @@ export const PromotionPanel = ({
     : promotionPieces;
 
   return (
-    <div className="absolute w-full h-full flex flex-col backdrop-filter backdrop-blur-sm z-20">
+    <div className="absolute w-full h-full flex flex-col backdrop-filter backdrop-blur-xs z-20">
       {orderedPromotionPieces.map((type, index) => (
         <div
           key={type}

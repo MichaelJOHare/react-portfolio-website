@@ -1,7 +1,7 @@
-import React, { useRef, useEffect, useState } from "react";
-import BlackKing from "@/public/assets/images/black-king.svg";
-import WhiteKing from "@/public/assets/images/white-king.svg";
-import RandomKing from "@/public/assets/images/random-king.svg";
+import { useRef, useEffect, useState } from "react";
+import BlackKing from "../../../../../../public/assets/images/black-king.svg";
+import WhiteKing from "../../../../../../public/assets/images/white-king.svg";
+import RandomKing from "../../../../../../public/assets/images/random-king.svg";
 import { useGame } from "../../context/GameContext";
 import { StockfishAnalysisToggles } from "./StockfishAnalysisToggles";
 
@@ -39,16 +39,16 @@ export const StockfishOptionsModal = ({
 
   return (
     <div
-      className={`absolute top-0 left-0 w-full lg:h-full mt-2 pb-2 flex items-center justify-center bg-opacity-50 transition-opacity ${
+      className={`absolute top-0 left-0 w-full lg:h-full mt-2 pb-2 flex items-center justify-center transition-opacity ${
         isOpen ? "opacity-100 z-20" : "opacity-0 pointer-events-none z-0"
       }`}
     >
-      <div className="w-full h-full relative">
+      <div className="size-full relative">
         <div className="absolute right-3 top-2">
           <button className="rounded-3xl hover:bg-slate-300" onClick={onClose}>
             <svg
               fill="currentColor"
-              className="w-10 h-10"
+              className="size-10"
               version="1.1"
               id="Layer_1"
               xmlns="http://www.w3.org/2000/svg"
@@ -109,7 +109,7 @@ export const StockfishOptionsModal = ({
                   <button
                     type="button"
                     key={level}
-                    className={`border px-1 text-2xl hover:bg-slate-300 hover:text-slate-600 ${
+                    className={`border border-gray-200 px-1 text-2xl hover:bg-slate-300 hover:text-slate-600 ${
                       level === currentStrengthLevel && !playButtonClicked
                         ? "bg-slate-300"
                         : ""
