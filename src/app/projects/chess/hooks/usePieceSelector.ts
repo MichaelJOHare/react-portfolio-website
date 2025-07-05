@@ -9,7 +9,7 @@ import {
   Square,
 } from "../types";
 
-export const usePieceSelection = (
+export const usePieceSelector = (
   gameManager: GameManager,
   highlighter: Highlighter,
   promotionHandler: PromotionHandler
@@ -104,5 +104,6 @@ export const usePieceSelection = (
     handleClick,
     handleDragStart,
     handleDragEnd,
+    deselectPiece,
   };
 };

@@ -1,13 +1,12 @@
 import { useState } from "react";
-import { MoveType, PieceType, PlayerColor } from "../../types";
+import { GameManager, MoveType, PieceType, PlayerColor } from "../../types";
 import { squareToString, getPieceUnicode } from "../../utils";
 import { toFEN } from "../../utils/FEN";
 import { StockfishOptionsModal } from "./StockfishOptionsModal";
 import { StockfishAnalysisToggles } from "./StockfishAnalysisToggles";
-import { useChessGame } from "../../hooks/useChessGame";
 
-export type GameLogProps = {
-  gameManager: ReturnType<typeof useChessGame>;
+type GameLogProps = {
+  gameManager: GameManager;
   stockfishClassicalChecked: boolean;
   stockfishNnueChecked: boolean;
   onStockfishClassicalChange: (isChecked: boolean) => void;

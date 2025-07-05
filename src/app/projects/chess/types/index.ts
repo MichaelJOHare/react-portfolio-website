@@ -1,7 +1,7 @@
-import { useChessGame } from "../hooks/useChessGame";
+import { useGameManager } from "../hooks/useGameManager";
 import { useHighlighter } from "../hooks/useHighlighter";
-import { usePieceSelection } from "../hooks/usePieceSelection";
-import { usePromotionPanel } from "../hooks/usePromotionPanel";
+import { usePieceSelector } from "../hooks/usePieceSelector";
+import { usePromotionHandler } from "../hooks/usePromotionHandler";
 
 export type Square = {
   row: number;
@@ -92,6 +92,6 @@ export interface PromotionMove extends Move {
 }
 
 export type Highlighter = ReturnType<typeof useHighlighter>;
-export type GameManager = ReturnType<typeof useChessGame>;
-export type PieceSelector = ReturnType<typeof usePieceSelection>;
-export type PromotionHandler = ReturnType<typeof usePromotionPanel>;
+export type GameManager = ReturnType<typeof useGameManager>;
+export type PieceSelector = ReturnType<typeof usePieceSelector>;
+export type PromotionHandler = ReturnType<typeof usePromotionHandler>;

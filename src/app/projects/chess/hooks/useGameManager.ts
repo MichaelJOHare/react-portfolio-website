@@ -23,6 +23,7 @@ import {
   isKingInCheck,
   isValidCastlingMove,
 } from "../utils";
+import { useGame } from "../context/GameContext";
 
 type GameState = {
   board: Square[][];
@@ -39,7 +40,7 @@ type GameState = {
   fullMoveNumber: number;
 };
 
-export const useChessGame = (isBoardFlipped: boolean) => {
+export const useGameManager = (isBoardFlipped: boolean) => {
   const [gameState, setGameState] = useState<GameState>({
     board: defaultBoard(),
     players: [

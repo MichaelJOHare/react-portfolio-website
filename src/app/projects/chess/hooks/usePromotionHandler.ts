@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   GameManager,
+  Highlighter,
   Move,
   Piece,
   PieceType,
@@ -17,9 +18,10 @@ type PromotionPanelState = {
   squaresToHide: Square[];
 };
 
-export const usePromotionPanel = (
-  isBoardFlipped: boolean,
-  gameManager: GameManager
+export const usePromotionHandler = (
+  gameManager: GameManager,
+  highlighter: Highlighter,
+  isBoardFlipped: boolean
 ) => {
   const { executeMove, getLegalMoves, board } = gameManager;
   const [promotionPanelState, setPromotionPanelState] =
@@ -39,6 +41,7 @@ export const usePromotionPanel = (
   };
 
   const setPromotionDetails = (move: Move) => {
+    // add highlighter.clearPreviousMoveSquares() maybe
     const squaresToHide = getSquaresToHideDuringPromotion(
       move,
       move.piece.color,
@@ -87,13 +90,13 @@ export const usePromotionPanel = (
       type
     );
     clearPromotionDetails();
-    togglePromotionPanel(false);
+    highlighter.addPreviousMoveSquares(promotionMove.from, promotionMove.to);
   };
 
   return {
     ...promotionPanelState,
     onPromotionSelect,
-    togglePromotionPanel,
+    togglePromotionPanel, // don't need i think
     setPromotionDetails,
     clearPromotionDetails,
   };

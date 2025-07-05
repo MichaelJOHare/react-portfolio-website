@@ -1,5 +1,4 @@
-import { useChessGame } from "../../hooks/useChessGame";
-import { PlayerType, Square } from "../../types";
+import { GameManager, PlayerType, Square } from "../../types";
 
 interface Direction {
   left: boolean;
@@ -7,19 +6,15 @@ interface Direction {
 }
 
 export type ButtonProps = {
-  gameManager: ReturnType<typeof useChessGame>;
+  gameManager: GameManager;
   direction: Direction;
-  clearAllHighlights: () => void;
-  handleSquaresToHide: (squares: Square[]) => void;
-  handleShowPromotionPanel: (isShown: boolean) => void;
+  clearUI: () => void;
 };
 
 export default function Button({
   gameManager,
   direction,
-  clearAllHighlights,
-  handleSquaresToHide,
-  handleShowPromotionPanel,
+  clearUI,
 }: ButtonProps) {
   const { /* undoMove, redoMove, */ players } = gameManager;
   const undoMove = () => {};
@@ -37,9 +32,7 @@ export default function Button({
           } else {
             undoMove();
           }
-          handleSquaresToHide([]);
-          handleShowPromotionPanel(false);
-          clearAllHighlights(); // find way to conditionally clear highlights based on move history length
+          clearUI(); // find way to conditionally clear highlights based on move history length
         }}
         className="w-full text-white bg-zinc-700 hover:bg-zinc-900 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-1.5 dark:bg-zinc-900 dark:hover:bg-zinc-600 dark:focus:ring-blue-800"
       >
@@ -74,9 +67,7 @@ export default function Button({
           } else {
             redoMove();
           }
-          handleSquaresToHide([]);
-          handleShowPromotionPanel(false);
-          clearAllHighlights();
+          clearUI();
         }}
         className="w-full text-white bg-zinc-700 hover:bg-zinc-900  focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center ms-1.5 dark:bg-zinc-900 dark:hover:bg-zinc-600 dark:focus:ring-blue-800"
       >

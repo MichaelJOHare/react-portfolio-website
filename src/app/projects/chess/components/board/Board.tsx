@@ -4,29 +4,17 @@ import { ChessSquare } from "./ChessSquare";
 import { Arrow } from "../ui/Arrow";
 import { Circle } from "../ui/Circle";
 import { PromotionPanel } from "../ui/PromotionPanel";
-import {
-  GameManager,
-  Highlighter,
-  PieceSelector,
-  PromotionHandler,
-  Square,
-} from "../../types";
+import { Square } from "../../types";
+import { useGame } from "../../context/GameContext";
 
-type BoardProps = {
-  gameManager: GameManager;
-  highlighter: Highlighter;
-  pieceSelector: PieceSelector;
-  promotionHandler: PromotionHandler;
-  isBoardFlipped: boolean;
-};
-
-export const Board = ({
-  gameManager,
-  pieceSelector,
-  highlighter,
-  promotionHandler,
-  isBoardFlipped,
-}: BoardProps) => {
+export const Board = () => {
+  const {
+    gameManager,
+    highlighter,
+    pieceSelector,
+    promotionHandler,
+    isBoardFlipped,
+  } = useGame();
   const { board, kingSquare, isKingInCheck } = gameManager;
   const {
     selectedPieceSquare,

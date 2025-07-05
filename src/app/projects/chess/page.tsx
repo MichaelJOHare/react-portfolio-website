@@ -1,5 +1,12 @@
+"use client";
+
 import { ChessGameContainer } from "./components/ui/ChessGameContainer";
+import { GameProvider } from "./context/GameContext";
 
 export default function Page() {
-  return <ChessGameContainer />;
+  return (
+    <GameProvider>
+      <ChessGameContainer />
+    </GameProvider>
+  );
 }

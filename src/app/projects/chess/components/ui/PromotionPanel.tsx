@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { PieceType, PlayerColor, PromotionHandler, Square } from "../../types";
 
 type PromotionPanelProps = {
@@ -6,9 +7,7 @@ type PromotionPanelProps = {
 };
 
 type Positions = {
-  top: string;
   left: string;
-  topLg: string;
   leftLg: string;
 };
 
@@ -18,8 +17,7 @@ export const PromotionPanel = ({
 }: PromotionPanelProps) => {
   const { promotionSquare, promotingColor, onPromotionSelect } =
     promotionHandler;
-  const isLargeScreen = true;
-  /*   const [isLargeScreen, setIsLargeScreen] = useState(
+  const [isLargeScreen, setIsLargeScreen] = useState(
     window.matchMedia("(min-width: 1024px)").matches
   );
 
@@ -31,7 +29,7 @@ export const PromotionPanel = ({
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
- */
+
   if (!promotionSquare || !promotingColor) return null;
 
   const promotionPieces: PieceType[] =
@@ -39,35 +37,50 @@ export const PromotionPanel = ({
       ? [PieceType.QUEEN, PieceType.ROOK, PieceType.BISHOP, PieceType.KNIGHT]
       : [PieceType.KNIGHT, PieceType.BISHOP, PieceType.ROOK, PieceType.QUEEN];
 
-  // account for isBoardFlipped for both of these
-
-  const calculatePosition = (square: Square, color: PlayerColor): Positions => {
+  const calculatePosition = (square: Square): Positions => {
     return {
-      top: color === PlayerColor.WHITE ? "0vmin" : "90vmin",
       left: `${(90 / 8) * square.col}vmin`,
-      topLg: color === PlayerColor.WHITE ? "0vmin" : "70vmin",
       leftLg: `${(70 / 8) * square.col}vmin`,
     };
   };
 
-  const positions = calculatePosition(promotionSquare, promotingColor);
+  const getTopOffset = (
+    index: number,
+    color: PlayerColor,
+    isLargeScreen: boolean,
+    isFlipped: boolean
+  ): string => {
+    const size = isLargeScreen ? 8.75 : 11;
+    const offset = isLargeScreen ? 35 : 45;
+
+    const whiteBase = index * size;
+    const blackBase = offset + index * size;
+
+    const showWhiteAtTop =
+      (color === PlayerColor.WHITE && !isFlipped) ||
+      (color === PlayerColor.BLACK && isFlipped);
+
+    return `${showWhiteAtTop ? whiteBase : blackBase}vmin`;
+  };
+
+  const positions = calculatePosition(promotionSquare);
+  const orderedPromotionPieces = isBoardFlipped
+    ? promotionPieces.slice().reverse()
+    : promotionPieces;
 
   return (
     <div className="absolute w-full h-full flex flex-col backdrop-filter backdrop-blur-sm z-20">
-      {promotionPieces.map((type, index) => (
+      {orderedPromotionPieces.map((type, index) => (
         <div
           key={type}
           className="absolute w-[11.25vmin] h-[11.25vmin] cursor-pointer lg:w-[8.75vmin] lg:h-[8.75vmin]"
           style={{
-            top: `${
-              promotingColor === PlayerColor.WHITE
-                ? isLargeScreen
-                  ? index * 8.75
-                  : index * 11
-                : isLargeScreen
-                ? 35 + index * 8.75
-                : 45 + index * 11
-            }vmin`,
+            top: getTopOffset(
+              index,
+              promotingColor,
+              isLargeScreen,
+              isBoardFlipped
+            ),
             left: isLargeScreen ? positions.leftLg : positions.left,
           }}
           onClick={() => onPromotionSelect(type)}

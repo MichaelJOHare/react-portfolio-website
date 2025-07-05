@@ -1,37 +1,27 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { Board } from "../board/Board";
-import { useChessGame } from "../../hooks/useChessGame";
-import { useHighlighter } from "../../hooks/useHighlighter";
-import { usePromotionPanel } from "../../hooks/usePromotionPanel";
-import { usePieceSelection } from "../../hooks/usePieceSelection";
+import { useGame } from "../../context/GameContext";
 
 export const ChessGameContainer = () => {
-  const [isBoardFlipped, setisBoardFlipped] = useState(false);
-  const gameManager = useChessGame(isBoardFlipped);
-  const promotionHandler = usePromotionPanel(isBoardFlipped, gameManager);
-  const highlighter = useHighlighter();
-  const pieceSelector = usePieceSelection(
-    gameManager,
-    highlighter,
-    promotionHandler
-  );
-
-  useEffect(() => {
-    gameManager.initializeBoard();
-  }, []);
+  const { stockfishEnabled } = useGame();
 
   return (
     <div className="flex flex-col justify-center lg:flex-row">
       <div className="flex justify-center items-center">
-        <Board
-          gameManager={gameManager}
-          highlighter={highlighter}
-          pieceSelector={pieceSelector}
-          promotionHandler={promotionHandler}
-          isBoardFlipped={isBoardFlipped}
-        />
+        <Board />
+        <div
+          className={`h-[90vmin] w-5 overflow-hidden lg:h-[70vmin] border-[1px] border-slate-800 dark:border-slate-100 border-spacing-0 mx-0.5 ${
+            stockfishEnabled.nnueEnabled || stockfishEnabled.classicalEnabled
+              ? "visible"
+              : "hidden"
+          }`}
+        >
+          <progress
+            id="eval-gauge"
+            className="transform -rotate-90 translate-y-[90vmin] lg:translate-y-[70vmin] origin-top-left w-[90vmin] h-5 lg:w-[70vmin] progress-filled:bg-slate-100 progress-unfilled:bg-stone-900"
+            value={50}
+            max={100}
+          ></progress>
+        </div>
       </div>
     </div>
   );

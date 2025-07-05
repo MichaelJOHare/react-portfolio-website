@@ -194,7 +194,7 @@ export const useHighlighter = () => {
       ],
     }));
 
-  const clearPreviousMoveSquare = () =>
+  const clearPreviousMoveSquares = () =>
     setHighlightedSquares((prev) => ({
       ...prev,
       previousMoveSquare: undefined,
@@ -219,9 +219,10 @@ export const useHighlighter = () => {
     highlightedSquares,
     tempDrawings,
     addPreviousMoveSquares,
-    clearPreviousMoveSquare,
+    clearPreviousMoveSquares,
     addStockfishBestMoveArrow,
     clearStockfishBestMoveArrow,
+    clearDrawnHighlights,
   };
 };
 
