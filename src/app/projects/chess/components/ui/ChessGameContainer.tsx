@@ -10,7 +10,7 @@ export const ChessGameContainer = () => {
       <div className="flex justify-center items-center">
         <Board />
         <div
-          className={`h-[90vmin] w-5 overflow-hidden lg:h-[70vmin] border-[1px] border-slate-800 dark:border-slate-100 border-spacing-0 mx-0.5 ${
+          className={`h-[90vmin] w-5 overflow-hidden lg:h-[70vmin] border border-slate-800 dark:border-slate-100 border-spacing-0 mx-0.5 ${
             stockfishEnabled.nnueEnabled || stockfishEnabled.classicalEnabled
               ? "visible"
               : "hidden"

@@ -25,3 +25,5 @@ Need to figure this out later
   --color-previousMoveLight: #cdd16a;
   --color-previousMoveDark: #aaa23a;
 }
+@custom-variant progress-filled (&::-webkit-progress-bar, &);
+@custom-variant progress-unfilled (&::-webkit-progress-value, &::-moz-progress-bar);

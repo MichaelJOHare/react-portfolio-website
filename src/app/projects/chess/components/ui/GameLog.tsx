@@ -41,7 +41,7 @@ export const GameLog = () => {
       <form className="h-full w-full max-h-fit lg:max-h-[60vmin] relative">
         <div className="h-full w-full flex flex-col border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
           <div className="flex items-center justify-center px-3 py-2 border-b dark:border-gray-600">
-            <div className="w-full max-w-screen-lg flex justify-between items-center">
+            <div className="w-full max-w-(--breakpoint-lg) flex justify-between items-center">
               <div className="group relative">
                 <button
                   type="button"
