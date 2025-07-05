@@ -91,6 +91,19 @@ export interface PromotionMove extends Move {
   promotionType: PieceType;
 }
 
+export type ArrowProps = {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  isStockfish?: boolean;
+};
+
+export type CircleProps = {
+  cx: number;
+  cy: number;
+};
+
 export type Highlighter = ReturnType<typeof useHighlighter>;
 export type GameManager = ReturnType<typeof useGameManager>;
 export type PieceSelector = ReturnType<typeof usePieceSelector>;

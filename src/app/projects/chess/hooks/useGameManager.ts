@@ -327,6 +327,8 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     initializeBoard,
     getLegalMoves,
     executeMove,
+    undoMove,
+    redoMove,
     updatePlayerPieces,
   };
 };

@@ -1,21 +1,20 @@
-import React, { useRef, useEffect, ReactNode, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import BlackKing from "@/public/assets/images/black-king.svg";
 import WhiteKing from "@/public/assets/images/white-king.svg";
 import RandomKing from "@/public/assets/images/random-king.svg";
+import { useGame } from "../../context/GameContext";
+import { StockfishAnalysisToggles } from "./StockfishAnalysisToggles";
 
 type StockfishOptionsModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onPlay: (strengthLevel: number, playerColor: number) => void;
-  analysisToggles: ReactNode;
 };
 
 export const StockfishOptionsModal = ({
   isOpen,
   onClose,
-  onPlay,
-  analysisToggles,
 }: StockfishOptionsModalProps) => {
+  const { setComputerOpponentOptions } = useGame();
   const menuRef = useRef<HTMLDivElement>(null);
   const [currentStrengthLevel, setCurrentStrengthLevel] = useState(0);
   const [currentColorChoice, setCurrentColorChoice] = useState(-1);
@@ -94,7 +93,9 @@ export const StockfishOptionsModal = ({
               <h2 className="pt-4 text-2xl underline self-center">
                 Stockfish Analysis
               </h2>
-              <ul className="pt-2 self-center">{analysisToggles}</ul>
+              <ul className="pt-2 self-center">
+                <StockfishAnalysisToggles />
+              </ul>
             </div>
             <div className="flex flex-col">
               <h2 className="pt-4 text-2xl underline self-center">
@@ -164,10 +165,13 @@ export const StockfishOptionsModal = ({
                   onClick={() => {
                     setPlayButtonClicked(!playButtonClicked);
                     if (!playButtonClicked) {
-                      onPlay(currentStrengthLevel, currentColorChoice);
+                      setComputerOpponentOptions([
+                        currentStrengthLevel,
+                        currentColorChoice,
+                      ]);
                       onClose();
                     } else {
-                      onPlay(0, 0);
+                      setComputerOpponentOptions([0, 0]);
                     }
                   }}
                 >

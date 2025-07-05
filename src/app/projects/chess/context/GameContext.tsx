@@ -31,6 +31,9 @@ type GameContextType = {
     nnueEnabled: boolean;
     classicalEnabled: boolean;
   }) => void;
+  computerOpponentOptions: number[];
+  setComputerOpponentOptions: (options: number[]) => void;
+  resetGame: () => void;
 };
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -41,6 +44,9 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
     nnueEnabled: false,
     classicalEnabled: false,
   });
+  const [computerOpponentOptions, setComputerOpponentOptions] = useState<
+    number[]
+  >([]);
   const gameManager = useGameManager(isBoardFlipped);
   const highlighter = useHighlighter();
   const promotionHandler = usePromotionHandler(
@@ -53,6 +59,19 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
     highlighter,
     promotionHandler
   );
+
+  const resetGame = () => {
+    gameManager.initializeBoard();
+    highlighter.clearPreviousMoveSquares();
+    pieceSelector.deselectPiece();
+    promotionHandler.clearPromotionDetails();
+    setIsBoardFlipped(false);
+    setStockfishEnabled({
+      nnueEnabled: false,
+      classicalEnabled: false,
+    });
+    setComputerOpponentOptions([]);
+  };
 
   useEffect(() => {
     gameManager.initializeBoard();
@@ -69,6 +88,9 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
         setIsBoardFlipped,
         stockfishEnabled,
         setStockfishEnabled,
+        computerOpponentOptions,
+        setComputerOpponentOptions,
+        resetGame,
       }}
     >
       {children}

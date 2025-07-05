@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Move, Square } from "../types";
+import { Move, Square, ArrowProps, CircleProps } from "../types";
 
 type HighlighterState = {
   legalMoveSquares: Move[];
@@ -12,19 +12,6 @@ type HighlightedSquares = {
   arrowsDrawnOnSquares: ArrowProps[];
   circlesDrawnOnSquares: CircleProps[];
   stockfishBestMoveArrow: ArrowProps[];
-};
-
-type ArrowProps = {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  isStockfish?: boolean;
-};
-
-type CircleProps = {
-  cx: number;
-  cy: number;
 };
 
 export const useHighlighter = () => {

@@ -1,29 +1,12 @@
 import { useState } from "react";
-import { GameManager, MoveType, PieceType, PlayerColor } from "../../types";
+import { MoveType, PieceType, PlayerColor } from "../../types";
 import { squareToString, getPieceUnicode } from "../../utils";
 import { toFEN } from "../../utils/FEN";
 import { StockfishOptionsModal } from "./StockfishOptionsModal";
-import { StockfishAnalysisToggles } from "./StockfishAnalysisToggles";
+import { useGame } from "../../context/GameContext";
 
-type GameLogProps = {
-  gameManager: GameManager;
-  stockfishClassicalChecked: boolean;
-  stockfishNnueChecked: boolean;
-  onStockfishClassicalChange: (isChecked: boolean) => void;
-  onStockfishNnueChange: (isChecked: boolean) => void;
-  onPlayButtonClick: (strengthLevel: number, playerColor: number) => void;
-  resetBoard: () => void;
-};
-
-export default function GameLog({
-  gameManager,
-  stockfishClassicalChecked,
-  stockfishNnueChecked,
-  onStockfishClassicalChange,
-  onStockfishNnueChange,
-  onPlayButtonClick,
-  resetBoard,
-}: GameLogProps) {
+export default function GameLog() {
+  const { gameManager, resetGame } = useGame();
   const {
     board,
     players,
@@ -31,9 +14,7 @@ export default function GameLog({
     halfMoveClock,
     fullMoveNumber,
     moveHistory,
-    //undoMove,
-    //resetGame,
-    initializeBoard,
+    undoMove,
   } = gameManager;
   const [showFenTextArea, setShowFenTextArea] = useState(false);
   const [showStockfishOptions, setShowStockfishOptions] = useState(false);
@@ -48,22 +29,10 @@ export default function GameLog({
 
   const updateStateOnFenChange = () => {};
 
-  const resetState = () => {
-    //resetGame();
-    resetBoard();
-    initializeBoard();
-    // fix this in future
-  };
-
-  const handleResetGame = () => {
-    // resetState();
-    location.reload();
-  };
-
   const onMoveClick = (index: number) => {
     const movesToUndo = moveHistory.length - index;
     for (let i = 1; i < movesToUndo; i++) {
-      //undoMove();
+      undoMove();
     }
   };
 
@@ -102,7 +71,7 @@ export default function GameLog({
                 <button
                   type="button"
                   className="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
-                  onClick={handleResetGame}
+                  onClick={resetGame}
                 >
                   <svg
                     className="w-10 h-10"
@@ -198,13 +167,6 @@ export default function GameLog({
               <StockfishOptionsModal
                 isOpen={showStockfishOptions}
                 onClose={() => setShowStockfishOptions(false)}
-                onPlay={onPlayButtonClick}
-                analysisToggles={StockfishAnalysisToggles({
-                  stockfishClassicalChecked,
-                  stockfishNnueChecked,
-                  onStockfishClassicalChange,
-                  onStockfishNnueChange,
-                })}
               />
             </div>
           </div>
