@@ -23,7 +23,6 @@ import {
   isKingInCheck,
   isValidCastlingMove,
 } from "../utils";
-import { useGame } from "../context/GameContext";
 
 type GameState = {
   board: Square[][];
@@ -173,37 +172,31 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     return legalMoves;
   };
 
-  const executeMoveByType = (move: Move, board: Square[][]) => {
-    const capturePiece = (piece?: Piece) => {
-      if (piece) {
-        setGameState((prevState) => ({
-          ...prevState,
-          capturedPieces: [
-            ...prevState.capturedPieces,
-            { ...piece, isAlive: false },
-          ],
-        }));
-        board[piece.currentSquare.row][piece.currentSquare.col].piece =
-          undefined;
-      }
-    };
+  const undoMove = () => {}; // or do these go in Button since context is used?
 
+  const redoMove = () => {};
+
+  const executeMoveByType = (move: Move, board: Square[][]) => {
     let piecesToUpdate: Piece[] = [];
-    capturePiece(move.capturedPiece);
+    const updatedCapturedPieces: Piece[] = [];
+
+    if (move.capturedPiece) {
+      const captured = { ...move.capturedPiece, isAlive: false };
+      updatedCapturedPieces.push(captured);
+      board[captured.currentSquare.row][captured.currentSquare.col].piece =
+        undefined;
+    }
 
     switch (move.type) {
       case MoveType.STNDRD:
         piecesToUpdate = executeStandardMove(move, board, move.capturedPiece);
         break;
-
       case MoveType.CASTLE:
         piecesToUpdate = executeCastlingMove(move, board);
         break;
-
       case MoveType.EP:
         piecesToUpdate = executeEnPassantMove(move, board, move.capturedPiece);
         break;
-
       case MoveType.PROMO:
         piecesToUpdate = executePromoMove(move, board, move.capturedPiece);
         break;
@@ -214,13 +207,16 @@ export const useGameManager = (isBoardFlipped: boolean) => {
         ? 0
         : gameState.halfMoveClock + 1;
 
+    const fullMoveNumber =
+      move.piece.color === PlayerColor.BLACK
+        ? gameState.fullMoveNumber + 1
+        : gameState.fullMoveNumber;
+
     setGameState((prevState) => ({
       ...prevState,
       halfMoveClock,
-      fullMoveNumber:
-        move.piece.color === PlayerColor.BLACK
-          ? prevState.fullMoveNumber + 1
-          : prevState.fullMoveNumber,
+      fullMoveNumber,
+      capturedPieces: [...prevState.capturedPieces, ...updatedCapturedPieces],
     }));
 
     updatePlayerPieces(piecesToUpdate);
@@ -256,18 +252,21 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     );
 
     executeMoveByType(validMove, newBoard);
+    const { isKingInCheck, kingSquare } = getCheckStatus(
+      newBoard,
+      gameState.players[1 - gameState.currentPlayerIndex],
+      gameState.players[gameState.currentPlayerIndex],
+      gameState.piecesByPlayer
+    );
 
     setGameState((prevState) => ({
       ...prevState,
       board: newBoard,
       currentPlayerIndex: prevState.currentPlayerIndex === 0 ? 1 : 0,
       moveHistory: [...prevState.moveHistory, validMove],
+      isKingInCheck,
+      kingSquare,
     }));
-    updateCheckStatus(
-      newBoard,
-      gameState.players[1 - gameState.currentPlayerIndex],
-      gameState.players[gameState.currentPlayerIndex]
-    );
   };
 
   const simulateMove = (move: Move, board: Square[][]) => {
@@ -290,31 +289,25 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     return { tempBoard, capturedPiece: tempCaptured };
   };
 
-  const updateCheckStatus = (
+  const getCheckStatus = (
     board: Square[][],
     player: Player,
-    opponent: Player
-  ) => {
-    const playersKing = gameState.piecesByPlayer
+    opponent: Player,
+    piecesByPlayer: Map<Player, Piece[]>
+  ): { isKingInCheck: boolean; kingSquare?: Square } => {
+    const playersKing = piecesByPlayer
       .get(player)
       ?.find((piece) => piece.type === PieceType.KING);
 
-    if (!playersKing) {
-      return;
-    }
+    if (!playersKing) return { isKingInCheck: false };
 
-    const opponentMoves = getPlayerMoves(
-      opponent,
-      board,
-      gameState.piecesByPlayer
-    );
+    const opponentMoves = getPlayerMoves(opponent, board, piecesByPlayer);
     const kingInCheck = isKingInCheck(opponentMoves);
 
-    setGameState((prev) => ({
-      ...prev,
+    return {
       isKingInCheck: kingInCheck,
       kingSquare: kingInCheck ? playersKing.currentSquare : undefined,
-    }));
+    };
   };
 
   const updatePlayerPieces = (updatedPieces: Piece[]) => {
