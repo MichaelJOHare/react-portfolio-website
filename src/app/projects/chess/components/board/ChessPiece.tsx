@@ -24,7 +24,7 @@ export const ChessPiece = ({ type, color, square }: ChessPieceProps) => {
         <img
           className="h-5/6 z-0 select-none opacity-50 pointer-events-none"
           src={`/assets/images/${color}-${type}.svg`}
-          alt={`${type}-ghost`} // create a ghost image when dragging
+          alt={`${type}-ghost`} // creates a ghost image when dragging
         />
       )}
       <img

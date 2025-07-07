@@ -184,7 +184,13 @@ export const useHighlighter = () => {
   const clearPreviousMoveSquares = () =>
     setHighlightedSquares((prev) => ({
       ...prev,
-      previousMoveSquare: undefined,
+      previousMoveSquares: [],
+    }));
+
+  const undoPreviousMoveSquares = () =>
+    setHighlightedSquares((prev) => ({
+      ...prev,
+      previousMoveSquares: highlightedSquares.previousMoveSquares.slice(0, -2),
     }));
 
   const addStockfishBestMoveArrow = (arrowCoords: ArrowProps) =>
@@ -207,6 +213,7 @@ export const useHighlighter = () => {
     tempDrawings,
     addPreviousMoveSquares,
     clearPreviousMoveSquares,
+    undoPreviousMoveSquares,
     addStockfishBestMoveArrow,
     clearStockfishBestMoveArrow,
     clearDrawnHighlights,

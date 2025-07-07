@@ -1,35 +1,22 @@
 import { useDroppable } from "@dnd-kit/core";
 import React from "react";
 import { Square } from "../../types";
+import { useGame } from "../../context/GameContext";
 
 type SquareProps = {
   square: Square;
-  isBoardFlipped: boolean;
   isValidMove: boolean;
-  isKingInCheck: boolean;
-  kingSquare: Square | undefined;
-  onSquareClick: (row: number, col: number) => void;
-  previousMoveSquares?: Square[];
-  selectedPieceSquare?: Square;
-  dragStartSquare?: Square;
   children: React.ReactNode;
 };
 
-export const ChessSquare = ({
-  square,
-  isBoardFlipped,
-  isValidMove,
-  isKingInCheck,
-  kingSquare,
-  onSquareClick,
-  selectedPieceSquare,
-  previousMoveSquares,
-  dragStartSquare,
-  children,
-}: SquareProps) => {
+export const ChessSquare = ({ square, isValidMove, children }: SquareProps) => {
   const { isOver, setNodeRef } = useDroppable({
     id: `${square.row}-${square.col}`,
   });
+  const { gameManager, highlighter, pieceSelector, isBoardFlipped } = useGame();
+  const { isKingInCheck, kingSquare } = gameManager;
+  const { highlightedSquares } = highlighter;
+  const { handleClick, selectedPieceSquare, dragStartSquare } = pieceSelector;
   const isDark = (square.row + square.col) % 2 === 0;
   const isOccupied = !!children;
   const isLabeledColumn = square.col === 7;
@@ -44,7 +31,9 @@ export const ChessSquare = ({
       a?.row === b?.row && a?.col === b?.col;
 
     const isPreviousMoveSquare =
-      previousMoveSquares?.some((sq) => isSameSquare(sq, square)) ?? false;
+      highlightedSquares.previousMoveSquares
+        ?.slice(-2)
+        .some((sq) => isSameSquare(sq, square)) ?? false;
 
     const isDropTarget =
       isOver && dragStartSquare && !isSameSquare(square, dragStartSquare);
@@ -79,7 +68,7 @@ export const ChessSquare = ({
     <div
       className={`relative flex justify-center items-center w-full h-full aspect-square ${getColor()}`}
       ref={setNodeRef}
-      onClick={() => onSquareClick(square.row, square.col)}
+      onClick={() => handleClick(square.row, square.col)}
     >
       {/* adds green circles and corners for legal moves when piece is dragged */}
       {isValidMove && !isOccupied && (

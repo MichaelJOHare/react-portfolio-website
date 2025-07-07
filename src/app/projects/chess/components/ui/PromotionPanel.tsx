@@ -1,20 +1,14 @@
 import { useEffect, useState } from "react";
-import { PieceType, PlayerColor, PromotionHandler, Square } from "../../types";
-
-type PromotionPanelProps = {
-  isBoardFlipped: boolean;
-  promotionHandler: PromotionHandler;
-};
+import { PieceType, PlayerColor, Square } from "../../types";
+import { useGame } from "../../context/GameContext";
 
 type Positions = {
   left: string;
   leftLg: string;
 };
 
-export const PromotionPanel = ({
-  isBoardFlipped,
-  promotionHandler,
-}: PromotionPanelProps) => {
+export const PromotionPanel = () => {
+  const { isBoardFlipped, promotionHandler } = useGame();
   const { promotionSquare, promotingColor, onPromotionSelect } =
     promotionHandler;
   const [isLargeScreen, setIsLargeScreen] = useState(

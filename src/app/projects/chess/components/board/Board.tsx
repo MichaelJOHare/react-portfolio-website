@@ -15,15 +15,8 @@ export const Board = () => {
     promotionHandler,
     isBoardFlipped,
   } = useGame();
-  const { board, kingSquare, isKingInCheck } = gameManager;
-  const {
-    selectedPieceSquare,
-    dragStartSquare,
-    validMoves,
-    handleClick,
-    handleDragStart,
-    handleDragEnd,
-  } = pieceSelector;
+  const { board } = gameManager;
+  const { validMoves, handleDragStart, handleDragEnd } = pieceSelector;
   const {
     tempDrawings,
     highlightedSquares,
@@ -31,16 +24,6 @@ export const Board = () => {
     onMouseMove,
     onMouseUp,
   } = highlighter;
-
-  const squareGameState = {
-    isBoardFlipped,
-    isKingInCheck: isKingInCheck,
-    kingSquare: kingSquare,
-    onSquareClick: handleClick,
-    selectedPieceSquare,
-    previousMoveSquares: highlightedSquares.previousMoveSquares.slice(-2),
-    dragStartSquare,
-  };
 
   const isMoveValid = (row: number, col: number) =>
     validMoves.some((move) => move.row === row && move.col === col);
@@ -87,11 +70,7 @@ export const Board = () => {
       >
         {promotionHandler.isShown && (
           <div className="absolute top-0 left-0 w-[90vmin] h-[90vmin] bg-black/20 z-20 lg:w-[70vmin] lg:h-[70vmin]">
-            <PromotionPanel
-              isBoardFlipped={isBoardFlipped}
-              // pass deselectPiece maybe
-              promotionHandler={promotionHandler}
-            />
+            <PromotionPanel />
           </div>
         )}
         {/* arrows and circles drawn while holding down right click */}
@@ -113,7 +92,6 @@ export const Board = () => {
               key={`${rowIndex}-${colIndex}`}
               square={{ row: rowIndex, col: colIndex }}
               isValidMove={isMoveValid(rowIndex, colIndex)}
-              {...squareGameState}
             >
               {square.piece &&
                 square.piece.isAlive &&
