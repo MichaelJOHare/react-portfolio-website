@@ -16,7 +16,7 @@ export const StockfishAnalysisToggles = () => {
             onChange={(e) =>
               setStockfishEnabled({
                 classicalEnabled: e.target.checked,
-                nnueEnabled: stockfishEnabled.nnueEnabled, // if classical goes off to on this needs to check if nnue is on and turn it off if so
+                nnueEnabled: false, // test this
               })
             }
           />
@@ -44,7 +44,7 @@ export const StockfishAnalysisToggles = () => {
             onChange={(e) =>
               setStockfishEnabled({
                 nnueEnabled: e.target.checked,
-                classicalEnabled: stockfishEnabled.classicalEnabled, // if nnue goes off to on this needs to check if classical is on and turn it off if so
+                classicalEnabled: false, // test this
               })
             }
           />
