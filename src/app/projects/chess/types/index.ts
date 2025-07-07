@@ -39,6 +39,7 @@ export enum PieceType {
 }
 
 export type Player = {
+  id: string;
   color: PlayerColor;
   type: PlayerType;
 };
