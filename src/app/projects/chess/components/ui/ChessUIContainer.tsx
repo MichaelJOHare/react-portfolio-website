@@ -1,5 +1,5 @@
 import { useGame } from "../../context/GameContext";
-import Button from "./Button";
+import { UndoRedoButton } from "./UndoRedoButton";
 import { GameLog } from "./GameLog";
 
 export const ChessUIContainer = () => {
@@ -15,8 +15,8 @@ export const ChessUIContainer = () => {
         } lg:w-[35vmin] lg:h-[70vmin] lg:mt-0 2xl:w-[50vmin]`}
       >
         <div className="flex justify-between h-[20vmin] w-full pb-2 lg:pt-2 lg:pb-0 lg:h-[10vmin] lg:order-last">
-          <Button direction={"left"} />
-          <Button direction={"right"} />
+          <UndoRedoButton direction={"left"} />
+          <UndoRedoButton direction={"right"} />
         </div>
         <div
           className={`w-full h-1.5 pr-0.5 flex justify-center items-center relative ${

@@ -172,7 +172,9 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     return legalMoves;
   };
 
-  const undoMove = () => {}; // or do these go in Button since context is used?
+  const undoMove = () => {
+    if (gameState.moveHistory.length < 1) return;
+  };
 
   const redoMove = () => {};
 
@@ -329,6 +331,5 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     executeMove,
     undoMove,
     redoMove,
-    updatePlayerPieces,
   };
 };
