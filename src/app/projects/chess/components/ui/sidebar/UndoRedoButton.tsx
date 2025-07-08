@@ -1,5 +1,5 @@
-import { useGame } from "../../context/GameContext";
-import { PlayerType } from "../../types";
+import { useGame } from "../../../context/GameContext";
+import { PlayerType } from "../../../types";
 import RightArrowIcon from "@/assets/icons/right-arrow-icon.svg";
 
 type UndoRedoButtonProps = {

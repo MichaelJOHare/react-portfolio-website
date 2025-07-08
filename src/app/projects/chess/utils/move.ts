@@ -8,9 +8,12 @@ import {
   PieceType,
   Square,
 } from "../types";
-import { isAttackedByOpponent, isEmpty } from "./board";
-import { getMovementStrategyFromType } from "./piece";
-import { createSquare } from "./square";
+import {
+  isAttackedByOpponent,
+  isEmpty,
+  getMovementStrategyFromType,
+  createSquare,
+} from "../utils";
 import { pawnMovementStrategy } from "./strategies";
 
 /*
