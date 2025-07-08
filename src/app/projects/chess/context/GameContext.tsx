@@ -4,11 +4,13 @@ import {
   Highlighter,
   PieceSelector,
   PromotionHandler,
+  StockfishHandler,
 } from "../types";
 import { useGameManager } from "../hooks/useGameManager";
 import { useHighlighter } from "../hooks/useHighlighter";
 import { usePieceSelector } from "../hooks/usePieceSelector";
 import { usePromotionHandler } from "../hooks/usePromotionHandler";
+import { useStockfishHandler } from "../hooks/useStockfishHandler";
 
 interface Props {
   children: React.ReactNode;
@@ -19,6 +21,7 @@ type GameContextType = {
   highlighter: Highlighter;
   pieceSelector: PieceSelector;
   promotionHandler: PromotionHandler;
+  stockfishHandler: StockfishHandler;
   isBoardFlipped: boolean;
   setIsBoardFlipped: (value: boolean) => void;
   stockfishEnabled: {
@@ -37,7 +40,7 @@ type GameContextType = {
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider = ({ children }: Props) => {
-  const [isBoardFlipped, setIsBoardFlipped] = useState(false);
+  const [isBoardFlipped, setIsBoardFlipped] = useState(false); // add button for this
   const [stockfishEnabled, setStockfishEnabled] = useState({
     nnueEnabled: false,
     classicalEnabled: false,
@@ -57,6 +60,7 @@ export const GameProvider = ({ children }: Props) => {
     highlighter,
     promotionHandler
   );
+  const stockfishHandler = useStockfishHandler();
 
   const resetGame = () => {
     gameManager.initializeBoard();
@@ -82,6 +86,7 @@ export const GameProvider = ({ children }: Props) => {
         highlighter,
         pieceSelector,
         promotionHandler,
+        stockfishHandler,
         isBoardFlipped,
         setIsBoardFlipped,
         stockfishEnabled,

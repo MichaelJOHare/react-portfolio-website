@@ -2,6 +2,7 @@ import { useGameManager } from "../hooks/useGameManager";
 import { useHighlighter } from "../hooks/useHighlighter";
 import { usePieceSelector } from "../hooks/usePieceSelector";
 import { usePromotionHandler } from "../hooks/usePromotionHandler";
+import { useStockfishHandler } from "../hooks/useStockfishHandler";
 
 export type Square = {
   row: number;
@@ -109,3 +110,4 @@ export type Highlighter = ReturnType<typeof useHighlighter>;
 export type GameManager = ReturnType<typeof useGameManager>;
 export type PieceSelector = ReturnType<typeof usePieceSelector>;
 export type PromotionHandler = ReturnType<typeof usePromotionHandler>;
+export type StockfishHandler = ReturnType<typeof useStockfishHandler>;

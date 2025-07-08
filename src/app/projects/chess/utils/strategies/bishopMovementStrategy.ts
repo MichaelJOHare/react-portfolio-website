@@ -2,9 +2,9 @@ import { Move, MovementStrategy } from "../../types";
 import { createSquare, createStandardMove, getPieceAt } from "../index";
 
 export const bishopMovementStrategy: MovementStrategy = (board, piece) => {
-  let legalMoves: Move[] = [];
-  let row = piece.currentSquare.row;
-  let col = piece.currentSquare.col;
+  const legalMoves: Move[] = [];
+  const row = piece.currentSquare.row;
+  const col = piece.currentSquare.col;
 
   const directions = [
     [1, 1],

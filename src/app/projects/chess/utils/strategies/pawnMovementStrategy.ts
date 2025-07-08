@@ -119,7 +119,7 @@ export const pawnMovementStrategy: MovementStrategy = (
         if (capturedPiece && newRow === backRank) {
           return;
         }
-        capturedPiece &&
+        if (capturedPiece) {
           legalMoves.push(
             createStandardMove(
               piece,
@@ -128,6 +128,7 @@ export const pawnMovementStrategy: MovementStrategy = (
               capturedPiece
             )
           );
+        }
       }
     });
   };

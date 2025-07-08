@@ -2,9 +2,9 @@ import { MovementStrategy, Move } from "../../types";
 import { createStandardMove, getPieceAt, createSquare } from "../index";
 
 export const rookMovementStrategy: MovementStrategy = (board, piece) => {
-  let legalMoves: Move[] = [];
-  let row = piece.currentSquare.row;
-  let col = piece.currentSquare.col;
+  const legalMoves: Move[] = [];
+  const row = piece.currentSquare.row;
+  const col = piece.currentSquare.col;
 
   const directions = [
     [1, 0],

@@ -8,13 +8,8 @@ import { Square } from "../../types";
 import { useGame } from "../../context/GameContext";
 
 export const Board = () => {
-  const {
-    gameManager,
-    highlighter,
-    pieceSelector,
-    promotionHandler,
-    isBoardFlipped,
-  } = useGame();
+  const { gameManager, highlighter, pieceSelector, promotionHandler } =
+    useGame();
   const { board } = gameManager;
   const { validMoves, handleDragStart, handleDragEnd } = pieceSelector;
   const {

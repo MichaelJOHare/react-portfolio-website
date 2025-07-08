@@ -22,6 +22,7 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
         type="button"
         onClick={() => {
           if (gameManager.moveHistory.length > 0) {
+            // need to fix move -> undo -> different move -> redo -> incorrect last move highlight
             clearUI();
             if (
               players[0].type === PlayerType.COMPUTER ||

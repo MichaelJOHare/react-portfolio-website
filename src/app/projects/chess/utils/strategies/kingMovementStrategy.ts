@@ -12,8 +12,8 @@ export const kingMovementStrategy: MovementStrategy = (
   isBoardFlipped
 ) => {
   const legalMoves: Move[] = [];
-  let row = piece.currentSquare.row;
-  let col = piece.currentSquare.col;
+  const row = piece.currentSquare.row;
+  const col = piece.currentSquare.col;
 
   const directions = [
     [1, 0],
@@ -89,8 +89,8 @@ export const kingMovementStrategy: MovementStrategy = (
   };
 
   directions.forEach(([dRow, dCol]) => {
-    let newRow = row + dRow;
-    let newCol = col + dCol;
+    const newRow = row + dRow;
+    const newCol = col + dCol;
 
     if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
       const targetSquare = createSquare(newRow, newCol, piece);

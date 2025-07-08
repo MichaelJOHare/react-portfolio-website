@@ -67,7 +67,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     const newBoard = gameState.board.map((row) =>
       row.map((square) => ({ ...square }))
     );
-    let newPiecesByPlayer = new Map();
+    const newPiecesByPlayer = new Map();
 
     [PlayerColor.WHITE, PlayerColor.BLACK].forEach((color) => {
       const isWhite = color === PlayerColor.WHITE;
@@ -325,7 +325,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     playerMoves: Move[],
     promotionType?: PieceType
   ) => {
-    const piece = gameState.board[startRow][startCol]?.piece;
+    const piece = gameState.board[startRow][startCol].piece;
     if (!piece) return;
 
     const validMove = playerMoves.find(
