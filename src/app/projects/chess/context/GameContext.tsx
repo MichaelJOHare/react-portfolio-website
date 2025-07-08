@@ -21,7 +21,7 @@ type GameContextType = {
   highlighter: Highlighter;
   pieceSelector: PieceSelector;
   promotionHandler: PromotionHandler;
-  stockfishHandler: StockfishHandler;
+  //stockfishHandler: StockfishHandler;
   isBoardFlipped: boolean;
   setIsBoardFlipped: (value: boolean) => void;
   stockfishEnabled: {
@@ -60,7 +60,7 @@ export const GameProvider = ({ children }: Props) => {
     highlighter,
     promotionHandler
   );
-  const stockfishHandler = useStockfishHandler();
+  //const stockfishHandler = useStockfishHandler();
 
   const resetGame = () => {
     gameManager.initializeBoard();
@@ -75,9 +75,11 @@ export const GameProvider = ({ children }: Props) => {
     setComputerOpponentOptions([]);
   };
 
+  /* eslint-disable-next-line react-hooks/exhaustive-deps */
   useEffect(() => {
     gameManager.initializeBoard();
   }, []);
+  // only running this on mount, don't need gameManager in dep array
 
   return (
     <GameContext.Provider
@@ -86,7 +88,7 @@ export const GameProvider = ({ children }: Props) => {
         highlighter,
         pieceSelector,
         promotionHandler,
-        stockfishHandler,
+        //stockfishHandler,
         isBoardFlipped,
         setIsBoardFlipped,
         stockfishEnabled,

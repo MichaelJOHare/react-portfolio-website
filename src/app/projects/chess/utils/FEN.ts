@@ -71,7 +71,7 @@ function generateCastlingAvailability(board: Square[][]) {
     const king = board[majorPieceRow][4].piece;
     if (king && king.type === PieceType.KING && !king.hasMoved) {
       const rookPositions = [kingSideRookColumn, queenSideRookColumn];
-      for (let position of rookPositions) {
+      for (const position of rookPositions) {
         const rook = board[majorPieceRow][position].piece;
         if (rook && rook.type === PieceType.ROOK && !rook.hasMoved) {
           castlingAvailability += isWhite

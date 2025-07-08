@@ -23,6 +23,10 @@ import {
   executePromoMove,
   isKingInCheck,
   isValidCastlingMove,
+  undoStandardMove,
+  undoCastlingMove,
+  undoEnPassantMove,
+  undoPromoMove,
 } from "../utils";
 
 type GameState = {
@@ -175,61 +179,78 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     return legalMoves;
   };
 
-  const undoMove = () => {
-    const lastMove = gameState.moveHistory.at(-1);
-    if (!lastMove) return;
-    const revivedCapturedPiece = lastMove.capturedPiece
-      ? { ...lastMove.capturedPiece, isAlive: true }
-      : undefined;
-    const updatedMoveHistory = gameState.moveHistory.slice(0, -1);
-    const updatedBoardState = gameState.board.map((row, rowIndex) =>
-      row.map((square, colIndex) => ({
-        ...square,
-        piece:
-          lastMove.from.row === rowIndex && lastMove.from.col === colIndex
-            ? lastMove.piece
-            : revivedCapturedPiece &&
-              lastMove.to.row === rowIndex &&
-              lastMove.to.col === colIndex
-            ? revivedCapturedPiece
-            : square.piece,
-      }))
-    );
+  const undoMoveByType = (
+    move: Move,
+    board: Square[][]
+  ): {
+    updatedPieces: Piece[];
+    capturedPieces: Piece[];
+    halfMoveClock: number;
+    fullMoveNumber: number;
+  } => {
+    let updatedCapturedPieces: Piece[] = [...gameState.capturedPieces];
+    let updatedPieces: Piece[] = [];
 
-    if (lastMove.type === MoveType.EP && revivedCapturedPiece) {
-      const lastMoveEP = lastMove as EnPassantMove;
-      updatedBoardState[lastMoveEP.capturedPieceSquare.row][
-        lastMove.to.col
-      ].piece = revivedCapturedPiece;
-      updatedBoardState[lastMove.to.row][lastMove.to.col].piece = undefined;
-    } else if (!revivedCapturedPiece) {
-      updatedBoardState[lastMove.to.row][lastMove.to.col].piece = undefined;
+    switch (move.type) {
+      case MoveType.STNDRD:
+        updatedPieces = undoStandardMove(move, board, move.capturedPiece);
+        break;
+      case MoveType.CASTLE:
+        updatedPieces = undoCastlingMove(move, board);
+        break;
+      case MoveType.EP:
+        updatedPieces = undoEnPassantMove(move, board, move.capturedPiece);
+        break;
+      case MoveType.PROMO:
+        updatedPieces = undoPromoMove(move, board, move.capturedPiece);
+        break;
     }
 
-    const piecesToUpdate = [lastMove.piece];
-    if (revivedCapturedPiece) piecesToUpdate.push(revivedCapturedPiece);
-
-    const updatedPiecesByPlayer = updatePiecesByPlayer(piecesToUpdate);
-
-    const updatedCapturedPieces =
-      revivedCapturedPiece && gameState.capturedPieces.length > 0
-        ? gameState.capturedPieces.slice(0, -1)
-        : gameState.capturedPieces;
+    if (move.capturedPiece) {
+      const captured = { ...move.capturedPiece, isAlive: true };
+      updatedCapturedPieces = gameState.capturedPieces.filter(
+        (piece) => piece.id !== captured.id
+      );
+      board[captured.currentSquare.row][captured.currentSquare.col].piece =
+        captured;
+    }
 
     const halfMoveClock =
-      lastMove.piece.type === PieceType.PAWN || lastMove.capturedPiece
+      move.piece.type === PieceType.PAWN || move.capturedPiece
         ? gameState.halfMoveClock
         : gameState.halfMoveClock - 1;
 
     const fullMoveNumber =
-      lastMove.piece.color === PlayerColor.BLACK
+      move.piece.color === PlayerColor.BLACK
         ? gameState.fullMoveNumber - 1
         : gameState.fullMoveNumber;
+
+    return {
+      updatedPieces,
+      capturedPieces: updatedCapturedPieces,
+      halfMoveClock,
+      fullMoveNumber,
+    };
+  };
+
+  // this needs to be pure for click on move in MoveList -> undo x amount of times to work
+  const undoMove = (count: number = 1) => {
+    const lastMove = gameState.moveHistory.at(-1);
+    if (!lastMove) return;
+    const updatedMoveHistory = gameState.moveHistory.slice(0, -1);
+    const newBoard = gameState.board.map((row) =>
+      row.map((square) => ({ ...square }))
+    );
+
+    const { updatedPieces, capturedPieces, halfMoveClock, fullMoveNumber } =
+      undoMoveByType(lastMove, newBoard);
+
+    const updatedPiecesByPlayer = updatePiecesByPlayer(updatedPieces);
 
     const currentPlayerIndex = gameState.currentPlayerIndex === 0 ? 1 : 0;
 
     const { isKingInCheck, kingSquare } = getCheckStatus(
-      updatedBoardState,
+      newBoard,
       gameState.players[1 - currentPlayerIndex],
       gameState.players[currentPlayerIndex],
       updatedPiecesByPlayer
@@ -237,12 +258,12 @@ export const useGameManager = (isBoardFlipped: boolean) => {
 
     setGameState((prevState) => ({
       ...prevState,
-      board: updatedBoardState,
+      board: newBoard,
       piecesByPlayer: updatedPiecesByPlayer,
       currentPlayerIndex,
       moveHistory: updatedMoveHistory,
       undoneMoves: [...prevState.undoneMoves, lastMove],
-      capturedPieces: updatedCapturedPieces,
+      capturedPieces: capturedPieces,
       halfMoveClock,
       fullMoveNumber,
       isKingInCheck,
@@ -251,10 +272,10 @@ export const useGameManager = (isBoardFlipped: boolean) => {
   };
 
   const redoMove = () => {
-    const undoneMoves = [...gameState.undoneMoves];
-    const lastUndoneMove = undoneMoves.pop();
+    const lastUndoneMove = gameState.undoneMoves.at(-1);
     if (!lastUndoneMove) return;
 
+    const undoneMoves = [...gameState.undoneMoves.slice(0, -1)];
     const { from, to, isPromotion } = lastUndoneMove;
     const legalMoves = getLegalMoves();
 
@@ -262,7 +283,15 @@ export const useGameManager = (isBoardFlipped: boolean) => {
       ? (lastUndoneMove as PromotionMove).promotionType
       : undefined;
 
-    executeMove(from.row, from.col, to.row, to.col, legalMoves, promotionType);
+    executeMove(
+      from.row,
+      from.col,
+      to.row,
+      to.col,
+      legalMoves,
+      promotionType,
+      undoneMoves
+    );
   };
 
   const executeMoveByType = (
@@ -323,7 +352,8 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     endRow: number,
     endCol: number,
     playerMoves: Move[],
-    promotionType?: PieceType
+    promotionType?: PieceType,
+    remainingUndoneMoves?: Move[]
   ) => {
     const piece = gameState.board[startRow][startCol].piece;
     if (!piece) return;
@@ -361,6 +391,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
       piecesByPlayer: updatedPiecesByPlayer,
       currentPlayerIndex: prevState.currentPlayerIndex === 0 ? 1 : 0,
       moveHistory: [...prevState.moveHistory, validMove],
+      undoneMoves: remainingUndoneMoves ? remainingUndoneMoves : [],
       halfMoveClock,
       fullMoveNumber,
       capturedPieces: [...prevState.capturedPieces, ...capturedPieces],

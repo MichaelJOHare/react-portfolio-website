@@ -60,7 +60,8 @@ export const usePieceSelector = (
       setPromotionDetails(move);
     } else {
       executeMove(start.row, start.col, end.row, end.col, playerMoves);
-      highlighter.addPreviousMoveSquares(start, end); // need to fix move -> undo -> different move -> redo -> incorrect last move highlight
+      //gameManager.clearUndoneMoves();
+      highlighter.addPreviousMoveSquares(start, end);
       deselectPiece();
     }
   };

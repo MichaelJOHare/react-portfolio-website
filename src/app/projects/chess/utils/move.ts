@@ -11,6 +11,7 @@ import {
 import { isAttackedByOpponent, isEmpty } from "./board";
 import { getMovementStrategyFromType } from "./piece";
 import { createSquare } from "./square";
+import { pawnMovementStrategy } from "./strategies";
 
 /*
  ***** MOVE CREATION *****
@@ -185,6 +186,112 @@ export const executePromoMove = (
 
 /*
  ***** MOVE EXECUTION *****
+ */
+
+/*
+ ***** UNDO MOVE EXECUTION *****
+ */
+
+export const undoStandardMove = (
+  move: Move,
+  board: Square[][],
+  capturedPiece: Piece | undefined
+): Piece[] => {
+  const piecesToUpdate: Piece[] = [];
+  const updatedPiece = {
+    ...move.piece,
+    currentSquare: move.from,
+    hasMoved: false, // needs to check if hasMoved was set to true on last move only, if not then keep it set to true
+  };
+  board[move.to.row][move.to.col].piece = undefined;
+  if (updatedPiece) {
+    board[move.from.row][move.from.col].piece = updatedPiece;
+    piecesToUpdate.push(updatedPiece);
+    if (capturedPiece) {
+      capturedPiece.isAlive = true;
+      piecesToUpdate.push(capturedPiece);
+    }
+  }
+
+  return piecesToUpdate;
+};
+
+export const undoEnPassantMove = (
+  move: Move,
+  board: Square[][],
+  epCapturedPiece: Piece | undefined
+): Piece[] => {
+  const piecesToUpdate: Piece[] = [];
+  const enPassantMove = move as EnPassantMove;
+  const updatedPawn = {
+    ...enPassantMove.piece,
+    currentSquare: enPassantMove.from,
+  };
+  board[enPassantMove.to.row][enPassantMove.to.col].piece = undefined;
+  if (updatedPawn) {
+    board[move.from.row][move.from.col].piece = updatedPawn;
+    piecesToUpdate.push(updatedPawn);
+    if (epCapturedPiece) {
+      epCapturedPiece.isAlive = true;
+      piecesToUpdate.push(epCapturedPiece);
+    }
+  }
+
+  return piecesToUpdate;
+};
+
+export const undoCastlingMove = (move: Move, board: Square[][]): Piece[] => {
+  const castlingMove = move as CastlingMove;
+  const updatedKing = {
+    ...castlingMove.piece,
+    currentSquare: castlingMove.kingFrom,
+    hasMoved: false, // this works since undoing a castling move means the castling move pieces must have had hasMoved set to false
+  };
+  const updatedRook = {
+    ...castlingMove.rook,
+    currentSquare: castlingMove.rookFrom,
+    hasMoved: false,
+  };
+
+  board[castlingMove.kingTo.row][castlingMove.kingTo.col].piece = undefined;
+  board[castlingMove.rookTo.row][castlingMove.rookTo.col].piece = undefined;
+
+  board[castlingMove.kingFrom.row][castlingMove.kingFrom.col].piece =
+    updatedKing;
+  board[castlingMove.rookFrom.row][castlingMove.rookFrom.col].piece =
+    updatedRook;
+
+  return [updatedKing, updatedRook];
+};
+
+export const undoPromoMove = (
+  move: Move,
+  board: Square[][],
+  capturedPiecePromo: Piece | undefined
+): Piece[] => {
+  const piecesToUpdate: Piece[] = [];
+  const promotionMove = move as PromotionMove;
+  const unPromotedPawn = {
+    ...promotionMove.piece,
+    currentSquare: promotionMove.from,
+    type: PieceType.PAWN,
+    movementStrategy: pawnMovementStrategy,
+  };
+  board[promotionMove.to.row][promotionMove.to.col].piece = undefined;
+  if (unPromotedPawn) {
+    board[move.from.row][move.from.col].piece = unPromotedPawn;
+    piecesToUpdate.push(unPromotedPawn);
+    if (capturedPiecePromo) {
+      capturedPiecePromo.isAlive = true;
+      piecesToUpdate.push(capturedPiecePromo);
+    }
+  }
+
+  return piecesToUpdate;
+};
+
+/*
+ ***** UNDO MOVE EXECUTION *****
  */
 
 /*
