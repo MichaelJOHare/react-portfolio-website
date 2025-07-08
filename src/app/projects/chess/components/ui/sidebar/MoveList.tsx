@@ -1,6 +1,6 @@
-import { getPieceUnicode, squareToString } from "../../utils";
-import { MoveType, PieceType, PlayerColor } from "../../types";
-import { useGame } from "../../context/GameContext";
+import { getPieceUnicode, squareToString } from "../../../utils";
+import { MoveType, PieceType, PlayerColor } from "../../../types";
+import { useGame } from "../../../context/GameContext";
 
 export const MoveList = () => {
   const { gameManager, highlighter } = useGame();

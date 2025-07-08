@@ -1,8 +1,8 @@
 import { DndContext, DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import { ChessPiece } from "./ChessPiece";
 import { ChessSquare } from "./ChessSquare";
-import { Arrow } from "../ui/Arrow";
-import { Circle } from "../ui/Circle";
+import { Arrow } from "../ui/drawings/Arrow";
+import { Circle } from "../ui/drawings/Circle";
 import { PromotionPanel } from "../ui/PromotionPanel";
 import { Square } from "../../types";
 import { useGame } from "../../context/GameContext";

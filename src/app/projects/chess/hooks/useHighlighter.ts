@@ -74,7 +74,7 @@ export const useHighlighter = () => {
         circleCoordinates: emptyCircle(),
       }));
       setHasMovedOutOfSquare(true);
-    } else if (hasMovedOutOfSquare) {
+    } else if (hasMovedOutOfSquare || (!hasMovedOutOfSquare && isDrawing)) {
       setTempDrawings((prev) => ({
         ...prev,
         arrowCoordinates: emptyArrow(),

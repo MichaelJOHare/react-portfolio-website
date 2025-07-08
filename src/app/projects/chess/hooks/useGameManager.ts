@@ -26,6 +26,7 @@ import {
   undoCastlingMove,
   undoEnPassantMove,
   undoPromoMove,
+  cloneBoard,
 } from "../utils";
 
 type GameState = {
@@ -67,9 +68,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
 
   const initializeBoard = () => {
     const setup = setupPieces(isBoardFlipped);
-    const newBoard = gameState.board.map((row) =>
-      row.map((square) => ({ ...square }))
-    );
+    const newBoard = cloneBoard(gameState.board);
     const newPiecesByPlayer = new Map();
 
     [PlayerColor.WHITE, PlayerColor.BLACK].forEach((color) => {
@@ -233,11 +232,9 @@ export const useGameManager = (isBoardFlipped: boolean) => {
   const undoMove = (count: number = 1) => {
     if (count <= 0) return;
 
-    let newBoard = gameState.board.map((row) =>
-      row.map((square) => ({ ...square }))
-    );
-    let updatedMoveHistory = [...gameState.moveHistory];
-    let updatedUndoneMoves = [...gameState.undoneMoves];
+    const newBoard = cloneBoard(gameState.board);
+    const updatedMoveHistory = [...gameState.moveHistory];
+    const updatedUndoneMoves = [...gameState.undoneMoves];
     let updatedCapturedPieces = [...gameState.capturedPieces];
     let updatedPiecesByPlayer = new Map(gameState.piecesByPlayer);
     let currentPlayerIndex = gameState.currentPlayerIndex;
@@ -382,9 +379,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
 
     if (!validMove) return;
 
-    const newBoard = gameState.board.map((row) =>
-      row.map((square) => ({ ...square }))
-    );
+    const newBoard = cloneBoard(gameState.board);
     const { updatedPieces, capturedPieces, halfMoveClock, fullMoveNumber } =
       executeMoveByType(validMove, newBoard);
     const updatedPiecesByPlayer = updatePiecesByPlayer(updatedPieces);

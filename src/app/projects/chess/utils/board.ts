@@ -28,6 +28,9 @@ export const defaultBoard = (): Square[][] => {
   );
 };
 
+export const cloneBoard = (board: Square[][]) =>
+  board.map((row) => row.map((square) => ({ ...square })));
+
 export const setupPieces = (isBoardFlipped: boolean): PieceSetup[] => [
   {
     type: PieceType.ROOK,

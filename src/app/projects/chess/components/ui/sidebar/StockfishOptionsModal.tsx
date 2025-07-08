@@ -3,7 +3,7 @@ import BlackKing from "@/assets/icons/black-king.svg";
 import WhiteKing from "@/assets/icons/white-king.svg";
 import RandomKing from "@/assets/icons/random-king.svg";
 import CloseModalIcon from "@/assets/icons/close-modal-icon.svg";
-import { useGame } from "../../context/GameContext";
+import { useGame } from "../../../context/GameContext";
 import { StockfishAnalysisToggles } from "./StockfishAnalysisToggles";
 
 type StockfishOptionsModalProps = {
