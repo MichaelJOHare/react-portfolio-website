@@ -203,12 +203,13 @@ export const undoStandardMove = (
     currentSquare: move.from,
     hasMoved: false, // needs to check if hasMoved was set to true on last move only, if not then keep it set to true
   };
-  board[move.to.row][move.to.col].piece = undefined;
   if (updatedPiece) {
     board[move.from.row][move.from.col].piece = updatedPiece;
+    board[move.to.row][move.to.col].piece = undefined;
     piecesToUpdate.push(updatedPiece);
     if (capturedPiece) {
       capturedPiece.isAlive = true;
+      board[move.to.row][move.to.col].piece = capturedPiece;
       piecesToUpdate.push(capturedPiece);
     }
   }
@@ -233,6 +234,9 @@ export const undoEnPassantMove = (
     piecesToUpdate.push(updatedPawn);
     if (epCapturedPiece) {
       epCapturedPiece.isAlive = true;
+      board[enPassantMove.capturedPieceSquare.row][
+        enPassantMove.capturedPieceSquare.col
+      ].piece = epCapturedPiece;
       piecesToUpdate.push(epCapturedPiece);
     }
   }
@@ -282,6 +286,8 @@ export const undoPromoMove = (
     board[move.from.row][move.from.col].piece = unPromotedPawn;
     piecesToUpdate.push(unPromotedPawn);
     if (capturedPiecePromo) {
+      board[promotionMove.to.row][promotionMove.to.col].piece =
+        capturedPiecePromo;
       capturedPiecePromo.isAlive = true;
       piecesToUpdate.push(capturedPiecePromo);
     }

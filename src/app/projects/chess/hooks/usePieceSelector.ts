@@ -17,7 +17,7 @@ export const usePieceSelector = (
   const { board, getLegalMoves, executeMove, players, currentPlayerIndex } =
     gameManager;
   const { setPromotionDetails } = promotionHandler;
-  const playerMoves = getLegalMoves();
+  const playerMoves = getLegalMoves(); // getting called 4 times?
   const [selectedPieceSquare, setSelectedPieceSquare] = useState<Square>();
   const [dragStartSquare, setDragStartSquare] = useState<Square>();
   const [validMoves, setValidMoves] = useState<Square[]>([]);
@@ -60,7 +60,6 @@ export const usePieceSelector = (
       setPromotionDetails(move);
     } else {
       executeMove(start.row, start.col, end.row, end.col, playerMoves);
-      //gameManager.clearUndoneMoves();
       highlighter.addPreviousMoveSquares(start, end);
       deselectPiece();
     }

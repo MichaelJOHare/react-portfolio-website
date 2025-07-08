@@ -7,9 +7,9 @@ export const MoveList = () => {
   const { moveHistory, undoMove } = gameManager;
 
   const onMoveClick = (index: number) => {
-    const movesToUndo = moveHistory.length - index;
-    for (let i = 1; i < movesToUndo; i++) {
-      undoMove();
+    const movesToUndo = moveHistory.length - index - 1;
+    if (movesToUndo > 0) {
+      undoMove(movesToUndo);
     }
   };
 

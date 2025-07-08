@@ -10,7 +10,6 @@ import {
   Square,
   CastlingMove,
   PromotionMove,
-  EnPassantMove,
 } from "../types";
 import {
   createPlayer,
@@ -211,8 +210,6 @@ export const useGameManager = (isBoardFlipped: boolean) => {
       updatedCapturedPieces = gameState.capturedPieces.filter(
         (piece) => piece.id !== captured.id
       );
-      board[captured.currentSquare.row][captured.currentSquare.col].piece =
-        captured;
     }
 
     const halfMoveClock =
@@ -233,21 +230,36 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     };
   };
 
-  // this needs to be pure for click on move in MoveList -> undo x amount of times to work
   const undoMove = (count: number = 1) => {
-    const lastMove = gameState.moveHistory.at(-1);
-    if (!lastMove) return;
-    const updatedMoveHistory = gameState.moveHistory.slice(0, -1);
-    const newBoard = gameState.board.map((row) =>
+    if (count <= 0) return;
+
+    let newBoard = gameState.board.map((row) =>
       row.map((square) => ({ ...square }))
     );
+    let updatedMoveHistory = [...gameState.moveHistory];
+    let updatedUndoneMoves = [...gameState.undoneMoves];
+    let updatedCapturedPieces = [...gameState.capturedPieces];
+    let updatedPiecesByPlayer = new Map(gameState.piecesByPlayer);
+    let currentPlayerIndex = gameState.currentPlayerIndex;
+    let halfMoveClock = gameState.halfMoveClock;
+    let fullMoveNumber = gameState.fullMoveNumber;
 
-    const { updatedPieces, capturedPieces, halfMoveClock, fullMoveNumber } =
-      undoMoveByType(lastMove, newBoard);
+    for (let i = 0; i < count; i++) {
+      const lastMove = updatedMoveHistory.pop();
+      if (!lastMove) break;
 
-    const updatedPiecesByPlayer = updatePiecesByPlayer(updatedPieces);
+      const result = undoMoveByType(lastMove, newBoard);
 
-    const currentPlayerIndex = gameState.currentPlayerIndex === 0 ? 1 : 0;
+      updatedPiecesByPlayer = updatePiecesByPlayer(
+        result.updatedPieces,
+        updatedPiecesByPlayer
+      );
+      updatedCapturedPieces = result.capturedPieces;
+      halfMoveClock = result.halfMoveClock;
+      fullMoveNumber = result.fullMoveNumber;
+      currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
+      updatedUndoneMoves.push(lastMove);
+    }
 
     const { isKingInCheck, kingSquare } = getCheckStatus(
       newBoard,
@@ -259,11 +271,11 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     setGameState((prevState) => ({
       ...prevState,
       board: newBoard,
+      moveHistory: updatedMoveHistory,
+      undoneMoves: updatedUndoneMoves,
+      capturedPieces: updatedCapturedPieces,
       piecesByPlayer: updatedPiecesByPlayer,
       currentPlayerIndex,
-      moveHistory: updatedMoveHistory,
-      undoneMoves: [...prevState.undoneMoves, lastMove],
-      capturedPieces: capturedPieces,
       halfMoveClock,
       fullMoveNumber,
       isKingInCheck,
@@ -309,8 +321,6 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     if (move.capturedPiece) {
       const captured = { ...move.capturedPiece, isAlive: false };
       updatedCapturedPieces.push(captured);
-      board[captured.currentSquare.row][captured.currentSquare.col].piece =
-        undefined;
     }
 
     switch (move.type) {
@@ -420,8 +430,11 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     return { tempBoard, capturedPiece: tempCaptured };
   };
 
-  const updatePiecesByPlayer = (updatedPieces: Piece[]) => {
-    const updatedPiecesByPlayer = new Map(gameState.piecesByPlayer);
+  const updatePiecesByPlayer = (
+    updatedPieces: Piece[],
+    base: Map<string, Piece[]> = new Map(gameState.piecesByPlayer)
+  ) => {
+    const updatedPiecesByPlayer = new Map(base);
     updatedPieces.forEach((updatedPiece) => {
       const playerPieces =
         updatedPiecesByPlayer.get(updatedPiece.player.id) || [];
