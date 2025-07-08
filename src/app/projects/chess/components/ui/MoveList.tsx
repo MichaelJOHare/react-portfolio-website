@@ -3,14 +3,16 @@ import { MoveType, PieceType, PlayerColor } from "../../types";
 import { useGame } from "../../context/GameContext";
 
 export const MoveList = () => {
-  const { gameManager } = useGame();
+  const { gameManager, highlighter } = useGame();
   const { moveHistory, undoMove } = gameManager;
+  const { undoPreviousMoveSquares } = highlighter;
 
   const onMoveClick = (index: number) => {
     const movesToUndo = moveHistory.length - index - 1;
     if (movesToUndo > 0) {
       undoMove(movesToUndo);
     }
+    undoPreviousMoveSquares(movesToUndo);
   };
 
   return (

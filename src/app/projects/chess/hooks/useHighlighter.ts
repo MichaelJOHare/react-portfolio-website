@@ -187,11 +187,19 @@ export const useHighlighter = () => {
       previousMoveSquares: [],
     }));
 
-  const undoPreviousMoveSquares = () =>
+  const undoPreviousMoveSquares = (count: number = 1) => {
+    let updatedPreviousMoveSquares = [
+      ...highlightedSquares.previousMoveSquares,
+    ];
+
+    for (let i = 0; i < count; i++) {
+      updatedPreviousMoveSquares = updatedPreviousMoveSquares.slice(0, -2);
+    }
     setHighlightedSquares((prev) => ({
       ...prev,
-      previousMoveSquares: highlightedSquares.previousMoveSquares.slice(0, -2),
+      previousMoveSquares: updatedPreviousMoveSquares,
     }));
+  };
 
   const addStockfishBestMoveArrow = (arrowCoords: ArrowProps) =>
     setHighlightedSquares((prev) => ({
