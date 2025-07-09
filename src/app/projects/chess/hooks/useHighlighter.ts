@@ -200,6 +200,26 @@ export const useHighlighter = () => {
       previousMoveSquares: updatedPreviousMoveSquares,
     }));
   };
+  const flipAllHighlights = () => {
+    setHighlightedSquares((prev) => {
+      const prevMoves = [...prev.previousMoveSquares];
+      if (prevMoves.length < 2) return prev;
+      const lastTwo = prevMoves.slice(-2);
+
+      const flipped = lastTwo.map((sq) => ({
+        ...sq,
+        row: 7 - sq.row,
+        col: 7 - sq.col,
+      }));
+
+      const updated = [...prevMoves.slice(0, -2), ...flipped];
+
+      return {
+        ...prev,
+        previousMoveSquares: updated,
+      };
+    });
+  };
 
   const addStockfishBestMoveArrow = (arrowCoords: ArrowProps) =>
     setHighlightedSquares((prev) => ({
@@ -222,6 +242,7 @@ export const useHighlighter = () => {
     addPreviousMoveSquares,
     clearPreviousMoveSquares,
     undoPreviousMoveSquares,
+    flipAllHighlights,
     addStockfishBestMoveArrow,
     clearStockfishBestMoveArrow,
     clearDrawnHighlights,

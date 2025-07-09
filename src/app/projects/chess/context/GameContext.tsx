@@ -14,6 +14,7 @@ import { useStockfishHandler } from "../hooks/useStockfishHandler";
 
 interface Props {
   children: React.ReactNode;
+  onResetGame: () => void;
 }
 
 type GameContextType = {
@@ -21,9 +22,9 @@ type GameContextType = {
   highlighter: Highlighter;
   pieceSelector: PieceSelector;
   promotionHandler: PromotionHandler;
-  //stockfishHandler: StockfishHandler;
+  stockfishHandler: StockfishHandler;
   isBoardFlipped: boolean;
-  setIsBoardFlipped: (value: boolean) => void;
+  toggleFlipBoard: () => void;
   stockfishEnabled: {
     nnueEnabled: boolean;
     classicalEnabled: boolean;
@@ -34,13 +35,13 @@ type GameContextType = {
   }) => void;
   computerOpponentOptions: number[];
   setComputerOpponentOptions: (options: number[]) => void;
-  resetGame: () => void;
+  onResetGame: () => void;
 };
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
-export const GameProvider = ({ children }: Props) => {
-  const [isBoardFlipped, setIsBoardFlipped] = useState(false); // add button for this
+export const GameProvider = ({ children, onResetGame }: Props) => {
+  const [isBoardFlipped, setIsBoardFlipped] = useState(false); // add if playing as black -> set to true
   const [stockfishEnabled, setStockfishEnabled] = useState({
     nnueEnabled: false,
     classicalEnabled: false,
@@ -60,26 +61,17 @@ export const GameProvider = ({ children }: Props) => {
     highlighter,
     promotionHandler
   );
-  //const stockfishHandler = useStockfishHandler();
-
-  const resetGame = () => {
-    gameManager.initializeBoard();
-    highlighter.clearPreviousMoveSquares();
-    pieceSelector.deselectPiece();
-    promotionHandler.clearPromotionDetails();
-    setIsBoardFlipped(false);
-    setStockfishEnabled({
-      nnueEnabled: false,
-      classicalEnabled: false,
-    });
-    setComputerOpponentOptions([]);
-  };
+  const stockfishHandler = useStockfishHandler();
 
   /* eslint-disable-next-line react-hooks/exhaustive-deps */
   useEffect(() => {
     gameManager.initializeBoard();
   }, []);
   // only running this on mount, don't need gameManager in dep array
+
+  const toggleFlipBoard = () => {
+    setIsBoardFlipped(!isBoardFlipped);
+  };
 
   return (
     <GameContext.Provider
@@ -88,14 +80,14 @@ export const GameProvider = ({ children }: Props) => {
         highlighter,
         pieceSelector,
         promotionHandler,
-        //stockfishHandler,
+        stockfishHandler,
         isBoardFlipped,
-        setIsBoardFlipped,
+        toggleFlipBoard,
         stockfishEnabled,
         setStockfishEnabled,
         computerOpponentOptions,
         setComputerOpponentOptions,
-        resetGame,
+        onResetGame,
       }}
     >
       {children}

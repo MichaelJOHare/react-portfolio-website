@@ -6,7 +6,7 @@ import { GameLogButton } from "./GameLogButton";
 import { MoveList } from "./MoveList";
 
 export const GameLog = () => {
-  const { gameManager, resetGame } = useGame();
+  const { gameManager, highlighter, onResetGame, toggleFlipBoard } = useGame();
   const {
     board,
     players,
@@ -14,11 +14,19 @@ export const GameLog = () => {
     halfMoveClock,
     fullMoveNumber,
     moveHistory,
+    flipPiecesOnBoard,
   } = gameManager;
+  const { flipAllHighlights } = highlighter;
   const [showFenTextArea, setShowFenTextArea] = useState(false);
   const [showStockfishOptions, setShowStockfishOptions] = useState(false);
 
   const updateStateOnFenChange = () => {};
+
+  const onFlipBoard = () => {
+    toggleFlipBoard();
+    flipPiecesOnBoard();
+    flipAllHighlights();
+  };
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
@@ -27,14 +35,19 @@ export const GameLog = () => {
           <div className="flex items-center justify-center px-3 py-2 border-b dark:border-gray-600">
             <div className="w-full max-w-lg flex justify-between items-center">
               <GameLogButton
+                icon="flipBoard"
+                label="Flip Board"
+                onClick={onFlipBoard}
+              />
+              <GameLogButton
                 icon="fen"
-                label="Import FEN"
+                label="Import/export FEN"
                 onClick={() => setShowFenTextArea((v) => !v)}
               />
               <GameLogButton
                 icon="reset"
                 label="Reset Game"
-                onClick={resetGame}
+                onClick={onResetGame}
               />
               <GameLogButton
                 icon="stockfish"

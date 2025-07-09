@@ -1,15 +1,17 @@
 import ResetIcon from "@/assets/icons/reset-game.svg";
 import FenIcon from "@/assets/icons/fen-icon.svg";
 import StockfishOptionsIcon from "@/assets/icons/stockfish-options-icon.svg";
+import FlipBoardIcon from "@/assets/icons/flip-board.svg";
 
 type GameLogButtonProps = {
-  icon: "fen" | "reset" | "stockfish";
+  icon: "flipBoard" | "fen" | "reset" | "stockfish";
   label: string;
   onClick: () => void;
 };
 
 export const GameLogButton = ({ icon, label, onClick }: GameLogButtonProps) => {
   const icons = {
+    flipBoard: <FlipBoardIcon className="size-10" />,
     fen: <FenIcon className="size-10" />,
     reset: <ResetIcon className="size-10" />,
     stockfish: <StockfishOptionsIcon className="size-10" />,

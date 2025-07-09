@@ -27,6 +27,7 @@ import {
   undoEnPassantMove,
   undoPromoMove,
   cloneBoard,
+  createSquare,
 } from "../utils";
 
 type GameState = {
@@ -462,6 +463,41 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     };
   };
 
+  const flipPiecesOnBoard = () => {
+    const flippedBoard = gameState.board.map((row) =>
+      row.map((square) => createSquare(square.row, square.col, undefined))
+    );
+
+    const newPiecesByPlayer = new Map(gameState.piecesByPlayer);
+
+    gameState.piecesByPlayer.forEach((pieces, playerId) => {
+      const flippedPieces = pieces
+        .filter((piece) => piece.isAlive)
+        .map((piece) => {
+          const oldRow = piece.currentSquare.row;
+          const oldCol = piece.currentSquare.col;
+          const newRow = 7 - oldRow;
+          const newCol = 7 - oldCol;
+          const newSquare = flippedBoard[newRow][newCol];
+
+          const newPiece = {
+            ...piece,
+            currentSquare: newSquare,
+          };
+
+          newSquare.piece = newPiece;
+          return newPiece;
+        });
+      newPiecesByPlayer.set(playerId, flippedPieces);
+    });
+
+    setGameState((prev) => ({
+      ...prev,
+      board: flippedBoard,
+      piecesByPlayer: newPiecesByPlayer,
+    }));
+  };
+
   return {
     ...gameState,
     setGameState,
@@ -470,5 +506,6 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     executeMove,
     undoMove,
     redoMove,
+    flipPiecesOnBoard,
   };
 };

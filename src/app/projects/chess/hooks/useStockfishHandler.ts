@@ -4,7 +4,7 @@ export const useStockfishHandler = () => {
   const workerRef = useRef<Worker | null>(null);
 
   useEffect(() => {
-    workerRef.current = new window.Worker("/stockfish/stockfish-17.js");
+    workerRef.current = new window.Worker("/stockfish/stockfish-16.js");
     const worker = workerRef.current;
 
     worker.onmessage = (e) => {
