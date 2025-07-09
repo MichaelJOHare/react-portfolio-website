@@ -42,6 +42,7 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider = ({ children, onResetGame }: Props) => {
   const [isBoardFlipped, setIsBoardFlipped] = useState(false); // add if playing as black -> set to true
+  const [version, setVersion] = useState<"sf16" | "sf17">("sf16");
   const [stockfishEnabled, setStockfishEnabled] = useState({
     nnueEnabled: false,
     classicalEnabled: false,
@@ -61,13 +62,35 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     highlighter,
     promotionHandler
   );
-  const stockfishHandler = useStockfishHandler();
+  const stockfishHandler = useStockfishHandler(
+    stockfishEnabled.classicalEnabled,
+    stockfishEnabled.nnueEnabled
+  );
 
   /* eslint-disable-next-line react-hooks/exhaustive-deps */
   useEffect(() => {
     gameManager.initializeBoard();
   }, []);
   // only running this on mount, don't need gameManager in dep array
+
+  useEffect(() => {
+    const isEnabled =
+      stockfishEnabled.nnueEnabled || stockfishEnabled.classicalEnabled;
+
+    if (!isEnabled) {
+      stockfishHandler.terminate();
+      return;
+    }
+
+    const script = "/stockfish/stockfish-nnue-16.js";
+    // after implementing drop down selection change this to be dynamic basied on version state
+
+    if (!stockfishHandler.isRunning()) {
+      stockfishHandler.startWorker(script);
+    }
+
+    // after starting (or if already running) configure NNUE setting <- implement this
+  }, [stockfishEnabled, stockfishHandler]);
 
   const toggleFlipBoard = () => {
     setIsBoardFlipped(!isBoardFlipped);

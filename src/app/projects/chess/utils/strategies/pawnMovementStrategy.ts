@@ -170,7 +170,7 @@ export const pawnMovementStrategy: MovementStrategy = (
       row === enPassantEndRow &&
       Math.abs(col - lastMove.to.col) === 1
     ) {
-      const currentSquare: Square = { row, col };
+      const currentSquare: Square = { row, col }; // use createSquare in here?
       const targetSquare: Square = {
         row: row + direction,
         col: lastMove.to.col,
