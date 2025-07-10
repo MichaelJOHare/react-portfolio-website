@@ -3,7 +3,8 @@ import { UndoRedoButton } from "./sidebar/UndoRedoButton";
 import { GameLog } from "./sidebar/GameLog";
 
 export const ChessUIContainer = () => {
-  const { stockfishEnabled } = useGame();
+  const { stockfishHandler, stockfishEnabled } = useGame();
+  const { depthPercentage } = stockfishHandler;
 
   return (
     <div className="flex justify-center items-center">
@@ -28,7 +29,7 @@ export const ChessUIContainer = () => {
           <progress
             id="depth-progress"
             className="h-1.5 w-[97%] rounded-tl-full rounded-tr-full overflow-hidden progress-unfilled:bg-green-700 progress-filled:bg-stone-900"
-            value={0}
+            value={depthPercentage}
             max={100}
           ></progress>
         </div>

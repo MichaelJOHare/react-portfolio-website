@@ -23,12 +23,13 @@ export const GameLog = () => {
   const updateStateOnFenChange = () => {
     // parse fen -> board[row][col].piece = piece etc.
     // set moveHistory/undoneHistory/highlights to empty
+    // if epSquare, need to add move to move history for it to work
   };
 
   const onFlipBoard = () => {
     toggleFlipBoard();
     flipPiecesOnBoard();
-    flipAllHighlights(); // implement flip drawn highlights
+    flipAllHighlights();
   };
 
   return (

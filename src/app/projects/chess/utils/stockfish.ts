@@ -8,7 +8,7 @@ import {
 } from "../types";
 import { createSquare, getSquareFromNotation } from "./square";
 
-export const calculateDepth = (skillLevel: number): number | null =>
+export const calculateDepth = (skillLevel: number): number =>
   skillLevel < 15 ? Math.ceil((skillLevel + 1) / 5) : 24;
 
 export const isCastlingMove = (

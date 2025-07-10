@@ -90,13 +90,13 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     setIsBoardFlipped(!isBoardFlipped);
   };
 
-  // need useEffect because only running this once on mount, don't need gameManager in dep array
+  // useEffect because only running this once on mount, don't need gameManager in dep array
   useEffect(() => {
     gameManager.initializeBoard();
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, []);
 
-  // need useEffect because worker needs to start and terminate based on state
+  // useEffect because worker needs to start and terminate based on state
   useEffect(() => {
     if (!isAnalysisEnabled && !isPlayingVsComputer) {
       stockfishHandler.terminate();

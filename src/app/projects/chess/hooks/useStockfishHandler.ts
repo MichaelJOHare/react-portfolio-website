@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GameManager, Highlighter, PlayerColor } from "../types";
 import {
   calculateDepth,
@@ -25,11 +25,13 @@ export const useStockfishHandler = (
   strengthLevel: number
 ) => {
   const workerRef = useRef<Worker | null>(null);
-  const moveInProgressRef = useRef(false);
+  //const moveInProgressRef = useRef(false); // is this needed? can maybe use only isEngineReady?
   const [engineReady, setEngineReady] = useState(false);
+  const [shouldStopThinking, setShouldStopThinking] = useState(false);
   const [shouldFindMove, setShouldFindMove] = useState(false);
   const [evalCentipawn, setEvalCentipawn] = useState(50);
-  const [depth, setDepth] = useState<number | null>(null);
+  const [depthPercentage, setDepthPercentage] = useState(0);
+  const [depth, setDepth] = useState(-1);
   const [lastDepthUpdate, setLastDepthUpdate] = useState(0);
   const [lastArrowUpdate, setLastArrowUpdate] = useState(0);
   const isPlaying = colorChoice !== -1 && strengthLevel !== -1;
@@ -52,9 +54,10 @@ export const useStockfishHandler = (
       const msg = e.data;
 
       if (msg === "uciok") {
+        console.log(msg);
         setEngineReady(true);
       } else if (msg === "readyok") {
-        applyNNUEOption();
+        console.log(msg);
       } else {
         handleEngineMessage(msg);
       }
@@ -75,13 +78,8 @@ export const useStockfishHandler = (
     if (INFORMS_DEPTH.test(line)) {
       const currentDepth = parseInt(line.match(INFORMS_DEPTH)[1], 10);
       const currentTime = Date.now();
-      const depthProgress = document.getElementById("depth-progress");
-
-      if (depthProgress) {
-        const depthPercentage = (currentDepth / 24) * 100;
-        depthProgress.setAttribute("value", depthPercentage.toString());
-      }
-
+      const percent = (currentDepth / 24) * 100; // test setting 24 to depth state
+      setDepthPercentage(percent);
       if (
         currentDepth === 1 ||
         (currentDepth - lastDepthUpdate >= 3 &&
@@ -104,7 +102,6 @@ export const useStockfishHandler = (
         const fromSq = convertNotationToSquare(from);
         const toSq = convertNotationToSquare(to);
         if (fromSq && toSq) {
-          console.log(fromSq, toSq, legalMoves, promotionType);
           gameManager.executeMove(
             fromSq.row,
             fromSq.col,
@@ -119,7 +116,7 @@ export const useStockfishHandler = (
         highlighter.addStockfishBestMoveArrow(arrowCoords);
       }
       setEngineReady(true);
-      moveInProgressRef.current = false;
+      //moveInProgressRef.current = false;
     }
     if (IS_SYSTEM_MESSAGE.test(line)) {
       return;
@@ -134,6 +131,18 @@ export const useStockfishHandler = (
 
       evalProgress = ((evalValue + evalCap) / (2 * evalCap)) * 100;
       evalProgress = Math.max(0, Math.min(100, evalProgress));
+      /*       if (
+        players[currentPlayerIndex].color === PlayerColor.BLACK &&
+        evalProgress < 50
+      ) {
+        evalProgress = 100 - evalProgress;
+      } else if (
+        players[currentPlayerIndex].color === PlayerColor.BLACK &&
+        evalProgress > 50
+      ) {
+        evalProgress *= -1;
+      } */
+      console.log(evalProgress);
       setEvalCentipawn(evalProgress);
 
       if (INFORMS_MATE.test(line)) {
@@ -146,13 +155,10 @@ export const useStockfishHandler = (
     workerRef.current?.postMessage(cmd);
   };
 
-  const stopEngineThinking = () => {
-    sendCommand("stop"); // figure out how to make this work
-  };
-
   const terminate = () => {
     workerRef.current?.terminate();
     workerRef.current = null;
+    //moveInProgressRef.current = false;
     setEngineReady(false);
   };
 
@@ -160,23 +166,16 @@ export const useStockfishHandler = (
 
   const setSkillLevel = (skillLevel: number) => {
     const depth = isPlaying ? calculateDepth(skillLevel * 2) : 24; // test 24
+    console.log(depth);
     setDepth(depth);
     sendCommand(`setoption name Skill Level value ${skillLevel}`);
   };
 
-  const applyNNUEOption = useCallback(() => {
-    if (!workerRef.current) return;
-
-    const nnueValue = nnueEnabled ? "true" : "false";
-    const threads = nnueEnabled ? calculateThreadsForNNUE() : 1;
-    sendCommand(`setoption name Threads value ${threads}`);
-    sendCommand(`setoption name Use NNUE value ${nnueValue}`);
-  }, [nnueEnabled]);
-
-  // useEffect required since a new set option needs to be sent when classical or nnue is enabled/disabled
+  // useEffect because interaction with worker
   useEffect(() => {
     if (!workerRef.current || !engineReady) return;
 
+    // this needs to not run every time engineReady changes
     sendCommand("stop");
 
     const nnueValue = nnueEnabled ? "true" : "false";
@@ -187,30 +186,11 @@ export const useStockfishHandler = (
     sendCommand("isready");
   }, [nnueEnabled, classicalEnabled, engineReady]);
 
-  // useEffect required since you can't access document elements outside of it
-  useEffect(() => {
-    const evalGauge = document.getElementById("eval-gauge");
-    if (evalGauge) {
-      if (
-        players[currentPlayerIndex].color === PlayerColor.BLACK &&
-        evalCentipawn < 50
-      ) {
-        evalGauge.setAttribute("value", (100 - evalCentipawn).toString());
-      } else if (
-        players[currentPlayerIndex].color === PlayerColor.BLACK &&
-        evalCentipawn > 50
-      ) {
-        evalGauge.setAttribute("value", (evalCentipawn * -1).toString());
-      } else {
-        evalGauge.setAttribute("value", evalCentipawn.toString());
-      }
-    }
-  }, [evalCentipawn, currentPlayerIndex, players]);
-
   // useEffect because of interacting with worker
   useEffect(() => {
-    if (shouldFindMove && engineReady && !moveInProgressRef.current) {
-      moveInProgressRef.current = true;
+    console.log(shouldFindMove, engineReady);
+    if (shouldFindMove && engineReady /* && !moveInProgressRef.current */) {
+      //moveInProgressRef.current = true;
 
       const fen = toFEN(
         board,
@@ -223,8 +203,8 @@ export const useStockfishHandler = (
 
       setEngineReady(false);
       setShouldFindMove(false);
-      workerRef.current?.postMessage(`position fen ${fen}`);
-      workerRef.current?.postMessage(`go depth ${depth}`);
+      sendCommand(`position fen ${fen}`);
+      sendCommand(`go depth ${depth}`);
     }
   }, [
     shouldFindMove,
@@ -238,6 +218,7 @@ export const useStockfishHandler = (
     depth,
   ]);
 
+  // useEffect because need to split up shouldFindMove and findMove to prevent circular dependency
   useEffect(() => {
     const isAnalysisMode = !isPlaying && (nnueEnabled || classicalEnabled);
     const isEngineTurn =
@@ -250,6 +231,9 @@ export const useStockfishHandler = (
     if (isAnalysisMode || isEngineTurn) {
       setShouldFindMove(true);
     }
+    if (!isAnalysisMode) {
+      highlighter.clearStockfishBestMoveArrow();
+    }
   }, [
     isPlaying,
     nnueEnabled,
@@ -260,10 +244,23 @@ export const useStockfishHandler = (
     moveHistory.length,
   ]);
 
+  // useEffect because of interaction with worker
+  useEffect(() => {
+    if (shouldStopThinking) {
+      console.log("stopping");
+      sendCommand("stop");
+      setShouldStopThinking(false); // moved these inside if, test this
+      setShouldFindMove(true);
+      // maybe set engineReady true?
+    }
+  }, [shouldStopThinking]);
+
   return {
     startWorker,
-    stopEngineThinking,
+    setShouldStopThinking,
     terminate,
     isRunning,
+    depthPercentage,
+    evalCentipawn,
   };
 };

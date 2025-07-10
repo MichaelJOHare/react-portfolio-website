@@ -19,7 +19,7 @@ export const usePieceSelector = (
   const { board, getLegalMoves, executeMove, players, currentPlayerIndex } =
     gameManager;
   const { setPromotionDetails } = promotionHandler;
-  const { stopEngineThinking } = stockfishHandler;
+  const { setShouldStopThinking } = stockfishHandler;
   const playerMoves = getLegalMoves(); // getting called 4 times?
   const [selectedPieceSquare, setSelectedPieceSquare] = useState<Square>();
   const [dragStartSquare, setDragStartSquare] = useState<Square>();
@@ -67,7 +67,7 @@ export const usePieceSelector = (
       highlighter.addPreviousMoveSquares(start, end);
       highlighter.clearStockfishBestMoveArrow();
     }
-    stopEngineThinking(); // debug this
+    setShouldStopThinking(true);
   };
 
   const handleClick = (row: number, col: number) => {
