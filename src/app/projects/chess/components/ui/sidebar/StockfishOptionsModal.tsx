@@ -5,6 +5,7 @@ import RandomKing from "@/assets/icons/random-king.svg";
 import CloseModalIcon from "@/assets/icons/close-modal-icon.svg";
 import { useGame } from "../../../context/GameContext";
 import { StockfishAnalysisToggles } from "./StockfishAnalysisToggles";
+import { StockfishVersionMenu } from "./StockfishVersionMenu";
 
 type StockfishOptionsModalProps = {
   isOpen: boolean;
@@ -17,10 +18,25 @@ export const StockfishOptionsModal = ({
 }: StockfishOptionsModalProps) => {
   const { setComputerOpponentOptions } = useGame();
   const menuRef = useRef<HTMLDivElement>(null);
-  const [currentStrengthLevel, setCurrentStrengthLevel] = useState(0);
-  const [currentColorChoice, setCurrentColorChoice] = useState(-1);
-  const [playButtonClicked, setPlayButtonClicked] = useState(false);
+  const [strengthLevel, setStrengthLevel] = useState(-1);
+  const [colorChoice, setColorChoice] = useState(-1);
+  const [playClicked, setPlayClicked] = useState(false);
   const strengthLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  const handlePlayToggle = () => {
+    if (!playClicked) {
+      const actualColor =
+        colorChoice === 2 ? (Math.random() < 0.5 ? 0 : 1) : colorChoice;
+      setComputerOpponentOptions({
+        strengthLevel: strengthLevel,
+        colorChoice: actualColor,
+      });
+      onClose();
+    } else {
+      setComputerOpponentOptions({ strengthLevel: -1, colorChoice: -1 });
+    }
+    setPlayClicked((prev) => !prev);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -38,10 +54,18 @@ export const StockfishOptionsModal = ({
     };
   }, [isOpen, onClose]);
 
+  useEffect(() => {
+    if (isOpen) {
+      setStrengthLevel(-1);
+      setColorChoice(-1);
+      setPlayClicked(false);
+    }
+  }, [isOpen]);
+
   return (
     <div
-      className={`absolute top-0 left-0 w-full lg:h-full mt-2 pb-2 flex items-center justify-center transition-opacity ${
-        isOpen ? "opacity-100 z-20" : "opacity-0 pointer-events-none z-0"
+      className={`absolute top-0 left-0 w-full mt-2 pb-2 flex items-center justify-center transition-opacity lg:h-full limitedHeight:h-auto ${
+        isOpen ? "opacity-100 z-20" : "opacity-0 pointer-events-none z-0 "
       }`}
     >
       <div className="size-full relative">
@@ -54,10 +78,11 @@ export const StockfishOptionsModal = ({
           ref={menuRef}
           className="flex flex-col bg-white rounded-lg p-4 w-full h-full dark:bg-gray-700"
         >
-          <h1 className="flex self-center text-2xl pb-4 pr-4 lg:text-2xl 2xl:text-3xl">
+          <h1 className="flex self-center text-2xl pb-4 pr-4 2xl:text-3xl limitedHeight:text-2xl">
             Stockfish Options
           </h1>
-          <div className="flex flex-col md:flex-row lg:flex-col justify-around">
+          <div className="flex flex-col justify-around lg:flex-col">
+            <StockfishVersionMenu />
             <div className="flex flex-col">
               <h2 className="pt-4 text-2xl underline self-center">
                 Stockfish Analysis
@@ -73,17 +98,15 @@ export const StockfishOptionsModal = ({
               <h3 className="self-center pt-2 font-bold text-xl">
                 Strength level
               </h3>
-              <ul className="self-center grid grid-cols-5 lg:grid-cols-5 gap-1">
+              <ul className="self-center grid grid-cols-5 gap-1">
                 {strengthLevels.map((level) => (
                   <button
                     type="button"
                     key={level}
-                    className={`border border-gray-200 px-1 text-2xl hover:bg-slate-300 hover:text-slate-600 ${
-                      level === currentStrengthLevel && !playButtonClicked
-                        ? "bg-slate-300"
-                        : ""
+                    className={`border px-1 text-2xl hover:bg-slate-300 hover:text-slate-600 rounded-lg ${
+                      level === strengthLevel ? "bg-slate-300" : ""
                     }`}
-                    onClick={() => setCurrentStrengthLevel(level)}
+                    onClick={() => setStrengthLevel(level)}
                   >
                     {level}
                   </button>
@@ -95,34 +118,28 @@ export const StockfishOptionsModal = ({
               <ul className="self-center">
                 <button
                   type="button"
-                  className={`border hover:bg-slate-300 ${
-                    currentColorChoice === 0 && !playButtonClicked
-                      ? "bg-slate-300"
-                      : ""
+                  className={`border hover:bg-slate-300 rounded-lg ${
+                    colorChoice === 0 ? "bg-slate-300" : ""
                   }`}
-                  onClick={() => setCurrentColorChoice(0)}
+                  onClick={() => setColorChoice(0)}
                 >
                   <WhiteKing />
                 </button>
                 <button
                   type="button"
-                  className={`border mx-2 hover:bg-slate-300 ${
-                    currentColorChoice === 2 && !playButtonClicked
-                      ? "bg-slate-300"
-                      : ""
+                  className={`border mx-2 hover:bg-slate-300 rounded-lg ${
+                    colorChoice === 2 ? "bg-slate-300" : ""
                   }`}
-                  onClick={() => setCurrentColorChoice(2)}
+                  onClick={() => setColorChoice(2)}
                 >
                   <RandomKing />
                 </button>
                 <button
                   type="button"
-                  className={`border hover:bg-slate-300 ${
-                    currentColorChoice === 1 && !playButtonClicked
-                      ? "bg-slate-300"
-                      : ""
+                  className={`border hover:bg-slate-300 rounded-lg ${
+                    colorChoice === 1 ? "bg-slate-300" : ""
                   }`}
-                  onClick={() => setCurrentColorChoice(1)}
+                  onClick={() => setColorChoice(1)}
                 >
                   <BlackKing />
                 </button>
@@ -130,21 +147,10 @@ export const StockfishOptionsModal = ({
               <div className="pt-2">
                 <button
                   type="button"
-                  className="text-3xl border w-full hover:bg-slate-300"
-                  onClick={() => {
-                    setPlayButtonClicked(!playButtonClicked);
-                    if (!playButtonClicked) {
-                      setComputerOpponentOptions([
-                        currentStrengthLevel,
-                        currentColorChoice,
-                      ]);
-                      onClose();
-                    } else {
-                      setComputerOpponentOptions([0, 0]);
-                    }
-                  }}
+                  className="text-3xl font-medium pb-1 border w-full hover:bg-slate-300 rounded-lg"
+                  onClick={handlePlayToggle}
                 >
-                  {playButtonClicked ? "Stop" : "Play"}
+                  {playClicked ? "Stop" : "Play"}
                 </button>
               </div>
             </div>

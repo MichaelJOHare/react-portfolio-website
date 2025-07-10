@@ -16,3 +16,9 @@ export const createSquare = (
 export const squareToString = (square: Square): string => {
   return legendLetter[square.col] + legendNumber[square.row];
 };
+
+export const getSquareFromNotation = (notationSquare: string): Square => {
+  const col: number = legendLetter.indexOf(notationSquare.substring(0, 1));
+  const row: number = legendNumber.indexOf(notationSquare.substring(1, 2));
+  return { row, col };
+};

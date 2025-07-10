@@ -12,11 +12,13 @@ export const PromotionPanel = () => {
   const { promotionSquare, promotingColor, onPromotionSelect } =
     promotionHandler;
   const [isLargeScreen, setIsLargeScreen] = useState(
-    window.matchMedia("(min-width: 1024px)").matches
+    window.matchMedia("(min-width: 1024px) and (min-height: 900px)").matches
   );
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+    const mediaQuery = window.matchMedia(
+      "(min-width: 1024px) and (min-height: 900px)"
+    );
     const handleChange = (e: MediaQueryListEvent) =>
       setIsLargeScreen(e.matches);
 
@@ -67,7 +69,7 @@ export const PromotionPanel = () => {
       {orderedPromotionPieces.map((type, index) => (
         <div
           key={type}
-          className="absolute w-[11.25vmin] h-[11.25vmin] cursor-pointer lg:w-[8.75vmin] lg:h-[8.75vmin]"
+          className="absolute w-[11.25vmin] h-[11.25vmin] cursor-pointer lg:w-[8.75vmin] lg:h-[8.75vmin] limitedHeight:w-[11.25vmin] limitedHeight:h-[11.25vmin]"
           style={{
             top: getTopOffset(
               index,

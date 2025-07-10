@@ -77,6 +77,12 @@ export interface Move {
   isPromotion?: boolean;
 }
 
+export type ChessEngineMove = {
+  from: string;
+  to: string;
+  promotion?: string;
+} | null;
+
 export interface CastlingMove extends Move {
   rook: Piece;
   kingFrom: Square;

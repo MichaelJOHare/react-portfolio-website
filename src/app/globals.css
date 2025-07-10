@@ -27,3 +27,4 @@ Need to figure this out later
 }
 @custom-variant progress-filled (&::-webkit-progress-bar, &);
 @custom-variant progress-unfilled (&::-webkit-progress-value, &::-moz-progress-bar);
+@custom-variant limitedHeight (@media (max-height: 900px));

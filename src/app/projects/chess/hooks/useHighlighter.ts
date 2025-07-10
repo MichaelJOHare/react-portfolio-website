@@ -200,23 +200,39 @@ export const useHighlighter = () => {
       previousMoveSquares: updatedPreviousMoveSquares,
     }));
   };
+
   const flipAllHighlights = () => {
     setHighlightedSquares((prev) => {
-      const prevMoves = [...prev.previousMoveSquares];
-      if (prevMoves.length < 2) return prev;
-      const lastTwo = prevMoves.slice(-2);
-
-      const flipped = lastTwo.map((sq) => ({
+      const flippedPrevious = prev.previousMoveSquares.map((sq) => ({
         ...sq,
         row: 7 - sq.row,
         col: 7 - sq.col,
       }));
 
-      const updated = [...prevMoves.slice(0, -2), ...flipped];
+      const flippedArrows = prev.arrowsDrawnOnSquares.map((arrow) => ({
+        x1: 100 - arrow.x1,
+        y1: 100 - arrow.y1,
+        x2: 100 - arrow.x2,
+        y2: 100 - arrow.y2,
+      }));
+
+      const flippedCircles = prev.circlesDrawnOnSquares.map((circle) => ({
+        cx: 100 - circle.cx,
+        cy: 100 - circle.cy,
+      }));
+
+      const flippedStockfish = prev.stockfishBestMoveArrow.map((arrow) => ({
+        x1: 100 - arrow.x1,
+        y1: 100 - arrow.y1,
+        x2: 100 - arrow.x2,
+        y2: 100 - arrow.y2,
+      }));
 
       return {
-        ...prev,
-        previousMoveSquares: updated,
+        previousMoveSquares: flippedPrevious,
+        arrowsDrawnOnSquares: flippedArrows,
+        circlesDrawnOnSquares: flippedCircles,
+        stockfishBestMoveArrow: flippedStockfish,
       };
     });
   };
@@ -224,7 +240,7 @@ export const useHighlighter = () => {
   const addStockfishBestMoveArrow = (arrowCoords: ArrowProps) =>
     setHighlightedSquares((prev) => ({
       ...prev,
-      stockfishBestMoveArrow: [...prev.stockfishBestMoveArrow, arrowCoords],
+      stockfishBestMoveArrow: [arrowCoords],
     }));
 
   const clearStockfishBestMoveArrow = () =>
@@ -250,5 +266,5 @@ export const useHighlighter = () => {
 };
 
 // helper functions for empty states
-const emptyArrow = (): ArrowProps => ({ x1: 0, y1: 0, x2: 0, y2: 0 });
-const emptyCircle = (): CircleProps => ({ cx: 0, cy: 0 });
+export const emptyArrow = (): ArrowProps => ({ x1: 0, y1: 0, x2: 0, y2: 0 });
+export const emptyCircle = (): CircleProps => ({ cx: 0, cy: 0 });

@@ -53,7 +53,7 @@ export const Board = () => {
     <DndContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
       <div
         id="chessboard"
-        className="relative grid grid-cols-8 w-[90vmin] h-[90vmin] lg:w-[70vmin] lg:h-[70vmin] touch-none"
+        className="relative grid grid-cols-8 w-[90vmin] h-[90vmin] lg:w-[70vmin] lg:h-[70vmin] limitedHeight:w-[90vmin] limitedHeight:h-[90vmin] touch-none"
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
@@ -64,7 +64,7 @@ export const Board = () => {
         }}
       >
         {promotionHandler.isShown && (
-          <div className="absolute top-0 left-0 w-[90vmin] h-[90vmin] bg-black/20 z-20 lg:w-[70vmin] lg:h-[70vmin]">
+          <div className="absolute top-0 left-0 w-[90vmin] h-[90vmin] bg-black/20 z-20 lg:w-[70vmin] lg:h-[70vmin] limitedHeight:w-[90vmin] limitedHeight:h-[90vmin]">
             <PromotionPanel />
           </div>
         )}

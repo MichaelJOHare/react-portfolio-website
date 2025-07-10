@@ -33,23 +33,37 @@ type GameContextType = {
     nnueEnabled: boolean;
     classicalEnabled: boolean;
   }) => void;
-  computerOpponentOptions: number[];
-  setComputerOpponentOptions: (options: number[]) => void;
+  computerOpponentOptions: {
+    strengthLevel: number;
+    colorChoice: number;
+  };
+  setComputerOpponentOptions: (value: {
+    strengthLevel: number;
+    colorChoice: number;
+  }) => void;
+  setVersion: (version: "nnue-16" | "17") => void;
   onResetGame: () => void;
 };
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider = ({ children, onResetGame }: Props) => {
-  const [isBoardFlipped, setIsBoardFlipped] = useState(false); // add if playing as black -> set to true
-  const [version, setVersion] = useState<"sf16" | "sf17">("sf16");
+  const [isBoardFlipped, setIsBoardFlipped] = useState(false);
+  const [version, setVersion] = useState<"nnue-16" | "17">("nnue-16");
   const [stockfishEnabled, setStockfishEnabled] = useState({
     nnueEnabled: false,
     classicalEnabled: false,
   });
-  const [computerOpponentOptions, setComputerOpponentOptions] = useState<
-    number[]
-  >([]);
+  const [computerOpponentOptions, setComputerOpponentOptions] = useState({
+    strengthLevel: -1,
+    colorChoice: -1,
+  });
+  const isAnalysisEnabled =
+    stockfishEnabled.nnueEnabled || stockfishEnabled.classicalEnabled;
+
+  const isPlayingVsComputer =
+    computerOpponentOptions.colorChoice !== -1 &&
+    computerOpponentOptions.strengthLevel !== -1;
   const gameManager = useGameManager(isBoardFlipped);
   const highlighter = useHighlighter();
   const promotionHandler = usePromotionHandler(
@@ -57,44 +71,63 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     highlighter,
     isBoardFlipped
   );
+  const stockfishHandler = useStockfishHandler(
+    gameManager,
+    highlighter,
+    stockfishEnabled.classicalEnabled,
+    stockfishEnabled.nnueEnabled,
+    computerOpponentOptions.colorChoice,
+    computerOpponentOptions.strengthLevel
+  );
   const pieceSelector = usePieceSelector(
     gameManager,
     highlighter,
-    promotionHandler
+    promotionHandler,
+    stockfishHandler
   );
-  const stockfishHandler = useStockfishHandler(
-    stockfishEnabled.classicalEnabled,
-    stockfishEnabled.nnueEnabled
-  );
-
-  /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  useEffect(() => {
-    gameManager.initializeBoard();
-  }, []);
-  // only running this on mount, don't need gameManager in dep array
-
-  useEffect(() => {
-    const isEnabled =
-      stockfishEnabled.nnueEnabled || stockfishEnabled.classicalEnabled;
-
-    if (!isEnabled) {
-      stockfishHandler.terminate();
-      return;
-    }
-
-    const script = "/stockfish/stockfish-nnue-16.js";
-    // after implementing drop down selection change this to be dynamic basied on version state
-
-    if (!stockfishHandler.isRunning()) {
-      stockfishHandler.startWorker(script);
-    }
-
-    // after starting (or if already running) configure NNUE setting <- implement this
-  }, [stockfishEnabled, stockfishHandler]);
 
   const toggleFlipBoard = () => {
     setIsBoardFlipped(!isBoardFlipped);
   };
+
+  // need useEffect because only running this once on mount, don't need gameManager in dep array
+  useEffect(() => {
+    gameManager.initializeBoard();
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, []);
+
+  // need useEffect because worker needs to start and terminate based on state
+  useEffect(() => {
+    if (!isAnalysisEnabled && !isPlayingVsComputer) {
+      stockfishHandler.terminate();
+      return;
+    }
+
+    if (isPlayingVsComputer) {
+      // add make playerType = COMPUTER
+      setStockfishEnabled((prev) => {
+        if (prev.nnueEnabled === false && prev.classicalEnabled === false) {
+          return prev;
+        }
+        return { nnueEnabled: false, classicalEnabled: false };
+      });
+
+      setIsBoardFlipped(computerOpponentOptions.colorChoice === 2);
+    }
+
+    const script = `/stockfish/stockfish-${version}.js`;
+
+    if (!stockfishHandler.isRunning()) {
+      stockfishHandler.startWorker(script);
+    }
+  }, [
+    computerOpponentOptions,
+    stockfishEnabled,
+    version,
+    stockfishHandler,
+    isAnalysisEnabled,
+    isPlayingVsComputer,
+  ]);
 
   return (
     <GameContext.Provider
@@ -110,6 +143,7 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
         setStockfishEnabled,
         computerOpponentOptions,
         setComputerOpponentOptions,
+        setVersion,
         onResetGame,
       }}
     >

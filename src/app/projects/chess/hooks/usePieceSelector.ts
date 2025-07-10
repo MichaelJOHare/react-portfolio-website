@@ -7,16 +7,19 @@ import {
   PlayerType,
   PromotionHandler,
   Square,
+  StockfishHandler,
 } from "../types";
 
 export const usePieceSelector = (
   gameManager: GameManager,
   highlighter: Highlighter,
-  promotionHandler: PromotionHandler
+  promotionHandler: PromotionHandler,
+  stockfishHandler: StockfishHandler
 ) => {
   const { board, getLegalMoves, executeMove, players, currentPlayerIndex } =
     gameManager;
   const { setPromotionDetails } = promotionHandler;
+  const { stopEngineThinking } = stockfishHandler;
   const playerMoves = getLegalMoves(); // getting called 4 times?
   const [selectedPieceSquare, setSelectedPieceSquare] = useState<Square>();
   const [dragStartSquare, setDragStartSquare] = useState<Square>();
@@ -60,9 +63,11 @@ export const usePieceSelector = (
       setPromotionDetails(move);
     } else {
       executeMove(start.row, start.col, end.row, end.col, playerMoves);
-      highlighter.addPreviousMoveSquares(start, end);
       deselectPiece();
+      highlighter.addPreviousMoveSquares(start, end);
+      highlighter.clearStockfishBestMoveArrow();
     }
+    stopEngineThinking(); // debug this
   };
 
   const handleClick = (row: number, col: number) => {
