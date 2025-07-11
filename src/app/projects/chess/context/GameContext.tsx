@@ -55,9 +55,7 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider = ({ children, onResetGame }: Props) => {
   const hasStartedWorker = useRef(false);
-  const hasFlippedForComputer = useRef(false);
   const [isBoardFlipped, setIsBoardFlipped] = useState(false);
-  const isBoardFlippedRef = useRef(isBoardFlipped);
   const [version, setVersion] = useState<"sf-16" | "sf-17">("sf-16");
   const [stockfishEnabled, setStockfishEnabled] = useState({
     nnueEnabled: false,
@@ -74,6 +72,7 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     computerOpponentOptions.colorChoice !== -1 &&
     computerOpponentOptions.strengthLevel !== -1;
   const gameManager = useGameManager(isBoardFlipped);
+  const gameManagerRef = useRef<GameManager>(gameManager);
   const highlighter = useHighlighter();
   const promotionHandler = usePromotionHandler(
     gameManager,
@@ -81,10 +80,10 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     isBoardFlipped
   );
   const stockfishHandler = useStockfishHandler(
-    gameManager,
+    gameManagerRef,
     highlighter,
     version,
-    isBoardFlippedRef,
+    isBoardFlipped,
     stockfishEnabled.classicalEnabled,
     stockfishEnabled.nnueEnabled,
     computerOpponentOptions.colorChoice,
@@ -107,10 +106,10 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, []);
 
-  // useEffect for auto flip when choosing black pieces
+  // useEffect because stockfishHandler needs non-stale gameManager since it runs asynchronously
   useEffect(() => {
-    isBoardFlippedRef.current = isBoardFlipped;
-  }, [isBoardFlipped]);
+    gameManagerRef.current = gameManager;
+  }, [gameManager]);
 
   // useEffect because worker needs to start and terminate based on state
   useEffect(() => {
@@ -126,10 +125,9 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
       });
 
       const isBlack = computerOpponentOptions.colorChoice === 1;
-      if (isBlack && !hasFlippedForComputer.current) {
+      if (isBlack && !isBoardFlipped) {
         setIsBoardFlipped(true);
         gameManager.flipPiecesOnBoard();
-        hasFlippedForComputer.current = true;
       }
     }
 

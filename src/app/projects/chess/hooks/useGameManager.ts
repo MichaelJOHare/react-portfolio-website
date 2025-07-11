@@ -363,7 +363,6 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     promotionType?: PieceType,
     remainingUndoneMoves?: Move[]
   ) => {
-    console.log("executing ", startRow, startCol);
     const piece = gameState.board[startRow][startCol].piece;
     if (!piece) return;
 

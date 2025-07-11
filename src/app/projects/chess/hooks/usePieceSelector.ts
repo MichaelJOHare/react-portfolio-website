@@ -20,7 +20,6 @@ export const usePieceSelector = (
     gameManager;
   const { setPromotionDetails } = promotionHandler;
   const { setShouldStopThinking } = stockfishHandler;
-  const playerMoves = getLegalMoves(); // getting called 4 times?
   const [selectedPieceSquare, setSelectedPieceSquare] = useState<Square>();
   const [dragStartSquare, setDragStartSquare] = useState<Square>();
   const [validMoves, setValidMoves] = useState<Square[]>([]);
@@ -34,23 +33,13 @@ export const usePieceSelector = (
     validMoves.some((s) => s.row === row && s.col === col); // should maybe pass in piece to validate id (ie. 2 knight attacking same square),
   // although this doesn't seem to be an issue after testing
 
-  const findMove = (start: Square, end: Square): Move | undefined => {
-    return playerMoves.find(
-      (move) =>
-        move.from.row === start.row &&
-        move.from.col === start.col &&
-        move.to.row === end.row &&
-        move.to.col === end.col
-    );
-  };
-
   const deselectPiece = () => {
     setSelectedPieceSquare(undefined);
     setValidMoves([]);
   };
 
   const selectPiece = (row: number, col: number, piece: Piece | undefined) => {
-    const moves = playerMoves
+    const moves = getLegalMoves()
       .filter((m) => m.piece === piece)
       .map((m) => ({ row: m.to.row, col: m.to.col }));
     setSelectedPieceSquare({ row, col });
@@ -58,7 +47,15 @@ export const usePieceSelector = (
   };
 
   const finalizeMove = (start: Square, end: Square) => {
-    const move = findMove(start, end);
+    const playerMoves = getLegalMoves();
+    const move = playerMoves.find(
+      (move) =>
+        move.from.row === start.row &&
+        move.from.col === start.col &&
+        move.to.row === end.row &&
+        move.to.col === end.col
+    );
+
     if (move?.isPromotion) {
       setPromotionDetails(move);
     } else {
@@ -67,9 +64,9 @@ export const usePieceSelector = (
       highlighter.addPreviousMoveSquares(start, end);
       highlighter.clearStockfishBestMoveArrow();
     }
+
     setShouldStopThinking(true);
   };
-
   const handleClick = (row: number, col: number) => {
     const piece = board[row][col].piece;
     if (selectedPieceSquare) {

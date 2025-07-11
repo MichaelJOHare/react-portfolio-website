@@ -237,7 +237,6 @@ export const useHighlighter = () => {
   };
 
   const addStockfishBestMoveArrow = (move: ChessEngineMove) => {
-    console.log("setting stockfishing arrow: ", move);
     setHighlightedSquares((prev) => ({
       ...prev,
       stockfishBestMove: move,

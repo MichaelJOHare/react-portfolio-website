@@ -48,7 +48,6 @@ export const getStockfishArrow = (
 export const getArrowFromMove = (move: ChessEngineMove): ArrowProps => {
   if (!move) return emptyArrow();
 
-  console.log(move.from, move.to);
   const from = getSquareFromNotation(move.from);
   const to = getSquareFromNotation(move.to);
 

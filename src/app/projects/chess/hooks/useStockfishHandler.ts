@@ -16,16 +16,17 @@ const INFORMS_SCORE = /^info .*\bscore (\w+) (-?\d+)/;
 const INFORMS_MATE = /score mate (\-?\d+)/;
 
 export const useStockfishHandler = (
-  gameManager: GameManager,
+  gameManagerRef: React.RefObject<GameManager>,
   highlighter: Highlighter,
   version: "sf-16" | "sf-17",
-  isBoardFlippedRef: React.RefObject<boolean>,
+  isBoardFlipped: boolean,
   classicalEnabled: boolean,
   nnueEnabled: boolean,
   colorChoice: number,
   strengthLevel: number
 ) => {
   const workerRef = useRef<Worker | null>(null);
+  const isBoardFlippedRef = useRef(isBoardFlipped);
   const [engineReady, setEngineReady] = useState(false);
   const [shouldStopThinking, setShouldStopThinking] = useState(false);
   const [shouldFindMove, setShouldFindMove] = useState(false);
@@ -43,7 +44,7 @@ export const useStockfishHandler = (
     moveHistory,
     halfMoveClock,
     fullMoveNumber,
-  } = gameManager;
+  } = gameManagerRef.current;
 
   const startWorker = (scriptUrl: string) => {
     if (workerRef.current) return;
@@ -85,7 +86,7 @@ export const useStockfishHandler = (
 
   const handleEngineMessage = (event: MessageEvent) => {
     const line = typeof event === "object" ? event.data : event;
-    //console.log(line);
+    console.log(line);
     if (INFORMS_DEPTH.test(line)) {
       const currentDepth = parseInt(line.match(INFORMS_DEPTH)[1], 10);
       const currentTime = Date.now();
@@ -107,13 +108,12 @@ export const useStockfishHandler = (
     if (FOUND_BEST_MOVE.test(line)) {
       const [, from, to, promotion] = line.match(FOUND_BEST_MOVE);
       if (isPlaying) {
-        const legalMoves = gameManager.getLegalMoves();
+        const legalMoves = gameManagerRef.current.getLegalMoves();
         const promotionType = determinePromotionType(promotion);
         const fromSq = convertNotationToSquare(from, isBoardFlippedRef.current);
         const toSq = convertNotationToSquare(to, isBoardFlippedRef.current);
-        console.log(from, to, fromSq, toSq, board); // board stale reference here?
         if (fromSq && toSq) {
-          gameManager.executeMove(
+          gameManagerRef.current.executeMove(
             fromSq.row,
             fromSq.col,
             toSq.row,
@@ -141,10 +141,8 @@ export const useStockfishHandler = (
       evalProgress = ((evalValue + evalCap) / (2 * evalCap)) * 100;
       evalProgress = Math.max(0, Math.min(100, evalProgress));
       if (players[currentPlayerIndex].color === PlayerColor.BLACK) {
-        // also stale reference?
-        evalProgress += -1;
+        evalProgress = 100 - evalProgress;
       }
-      console.log(evalProgress);
       setEvalCentipawn(evalProgress);
 
       if (INFORMS_MATE.test(line)) {
@@ -168,7 +166,6 @@ export const useStockfishHandler = (
   const setSkillLevel = (skillLevel: number) => {
     const depth = isPlaying ? calculateDepth(skillLevel * 2) : defaultDepth;
     setDepth(depth);
-    console.log("setting");
     sendCommand(`setoption name Skill Level value ${skillLevel}`);
   };
 
@@ -196,7 +193,6 @@ export const useStockfishHandler = (
 
   // useEffect because of interacting with worker
   useEffect(() => {
-    //console.log(shouldFindMove, engineReady);
     if (shouldFindMove && engineReady) {
       const fen = toFEN(
         board,
@@ -205,12 +201,11 @@ export const useStockfishHandler = (
         moveHistory,
         halfMoveClock,
         fullMoveNumber,
-        isBoardFlippedRef.current
+        isBoardFlipped
       );
 
       setEngineReady(false);
       setShouldFindMove(false);
-      console.log(fen);
       sendCommand(`position fen ${fen}`);
       sendCommand(`go depth ${depth}`);
     }
@@ -224,7 +219,7 @@ export const useStockfishHandler = (
     halfMoveClock,
     fullMoveNumber,
     depth,
-    isBoardFlippedRef.current,
+    isBoardFlipped,
   ]);
 
   // useEffect because need to split up shouldFindMove and findMove to prevent circular dependency
@@ -237,7 +232,6 @@ export const useStockfishHandler = (
         (players[currentPlayerIndex].color === PlayerColor.BLACK &&
           colorChoice === 0));
 
-    console.log(isAnalysisMode, isEngineTurn);
     if (isAnalysisMode || isEngineTurn) {
       setShouldFindMove(true);
     }
@@ -257,13 +251,17 @@ export const useStockfishHandler = (
   // useEffect because of interaction with worker
   useEffect(() => {
     if (shouldStopThinking) {
-      console.log("stopping");
       sendCommand("stop");
       setShouldStopThinking(false);
       setShouldFindMove(true);
       // maybe set engineReady true?
     }
   }, [shouldStopThinking]);
+
+  // useEffect to prevent stale closure in handleEngineMessage
+  useEffect(() => {
+    isBoardFlippedRef.current = isBoardFlipped;
+  }, [isBoardFlipped]);
 
   return {
     startWorker,
