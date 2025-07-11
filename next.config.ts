@@ -20,7 +20,16 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: "/stockfish/:path*.wasm",
+        source: "/stockfish/sf-16/:path*.wasm",
+        headers: [
+          {
+            key: "Content-Type",
+            value: "application/wasm",
+          },
+        ],
+      },
+      {
+        source: "/stockfish/sf-17/:path*.wasm",
         headers: [
           {
             key: "Content-Type",

@@ -19,7 +19,7 @@ export const StockfishVersionMenu = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSelectVersion = (version: "nnue-16" | "17") => {
+  const handleSelectVersion = (version: "sf-16" | "sf-17") => {
     setVersion(version);
     setIsOpen(false);
   };
@@ -27,6 +27,7 @@ export const StockfishVersionMenu = () => {
   return (
     <div ref={menuRef} className="relative inline-block text-left">
       <div className="flex justify-center">
+        {/* put green circle next to currently selected version */}
         <button
           type="button"
           className="w-56 bg-cyan-600 hover:bg-cyan-700 font-medium rounded-lg px-5 py-1.5 text-center inline-flex justify-between items-center"
@@ -49,20 +50,20 @@ export const StockfishVersionMenu = () => {
         >
           <div className="py-1" role="none">
             <button
-              onClick={() => handleSelectVersion("nnue-16")}
+              onClick={() => handleSelectVersion("sf-16")}
               className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               role="menuitem"
             >
-              Stockfish 16 (default){" "}
-              <span className="float-right text-gray-400">6.6MB</span>
+              Stockfish 16.1 (default){" "}
+              <span className="float-right text-gray-400">7MB</span>
             </button>
             <button
-              onClick={() => handleSelectVersion("17")}
+              onClick={() => handleSelectVersion("sf-17")}
               className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               role="menuitem"
             >
               Stockfish 17{" "}
-              <span className="float-right text-gray-400">66MB</span>
+              <span className="float-right text-gray-400">79MB</span>
             </button>
           </div>
         </div>

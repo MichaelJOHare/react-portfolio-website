@@ -10,7 +10,8 @@ export function toFEN(
   currentPlayerIndex: number,
   moveHistory: Move[],
   halfMoveClock: number,
-  fullMoveNumber: number
+  fullMoveNumber: number,
+  isBoardFlipped: boolean
 ): string {
   let fen = "";
 
@@ -22,30 +23,34 @@ export function toFEN(
     [PieceType.KNIGHT]: { [PlayerColor.WHITE]: "N", [PlayerColor.BLACK]: "n" },
     [PieceType.PAWN]: { [PlayerColor.WHITE]: "P", [PlayerColor.BLACK]: "p" },
   };
-  const epTarget = getEnPassantTarget(moveHistory);
+  const epTarget = getEnPassantTarget(moveHistory, isBoardFlipped);
 
   // piece placement
-  for (let row = 0; row < 8; row++) {
+  for (let fenRank = 0; fenRank < 8; fenRank++) {
     let emptySquares = 0;
-    for (let col = 0; col < 8; col++) {
-      const piece = getPieceAt(board, row, col);
-      if (piece === undefined) {
+
+    const boardRow = isBoardFlipped ? 7 - fenRank : fenRank;
+
+    for (let fenFile = 0; fenFile < 8; fenFile++) {
+      const boardCol = isBoardFlipped ? 7 - fenFile : fenFile;
+
+      const piece = getPieceAt(board, boardRow, boardCol);
+      if (!piece) {
         emptySquares++;
       } else {
-        if (emptySquares !== 0) {
+        if (emptySquares > 0) {
           fen += emptySquares;
           emptySquares = 0;
         }
-        const pieceFEN = piece && pieceToFENMap[piece.type][piece.color];
-        fen += pieceFEN;
+        fen += pieceToFENMap[piece.type][piece.color];
       }
     }
-    if (emptySquares !== 0) {
+
+    if (emptySquares > 0) {
       fen += emptySquares;
     }
-    if (row < 7) {
-      fen += "/";
-    }
+
+    if (fenRank !== 7) fen += "/";
   }
 
   // append other FEN parts (simplified for brevity)
@@ -93,15 +98,24 @@ function generateCastlingAvailability(board: Square[][]) {
   return castlingAvailability || "-";
 }
 
-function getEnPassantTarget(moveHistory: Move[]) {
+function getEnPassantTarget(moveHistory: Move[], isBoardFlipped: boolean) {
   const move =
     moveHistory.length > 0 ? moveHistory[moveHistory.length - 1] : null;
+
   if (
     move &&
     move.piece.type === PieceType.PAWN &&
     Math.abs(move.from.row - move.to.row) === 2
   ) {
-    return createSquare((move.from.row + move.to.row) / 2, move.from.col);
+    let targetRow = (move.from.row + move.to.row) / 2;
+    const targetCol = move.from.col;
+
+    if (isBoardFlipped) {
+      targetRow = 7 - targetRow;
+    }
+
+    return createSquare(targetRow, targetCol);
   }
+
   return null;
 }

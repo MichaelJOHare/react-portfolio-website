@@ -6,6 +6,8 @@ export const ChessUIContainer = () => {
   const { stockfishHandler, stockfishEnabled } = useGame();
   const { depthPercentage } = stockfishHandler;
 
+  // get rid of classical toggle, rename nnue toggle to analysis on and move next to version, change min height for limiteHeight
+
   return (
     <div className="flex justify-center items-center">
       <div

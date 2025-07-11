@@ -363,6 +363,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     promotionType?: PieceType,
     remainingUndoneMoves?: Move[]
   ) => {
+    console.log("executing ", startRow, startCol);
     const piece = gameState.board[startRow][startCol].piece;
     if (!piece) return;
 
@@ -464,6 +465,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
   };
 
   const flipPiecesOnBoard = () => {
+    console.log("flipping");
     const flippedBoard = gameState.board.map((row) =>
       row.map((square) => createSquare(square.row, square.col, undefined))
     );

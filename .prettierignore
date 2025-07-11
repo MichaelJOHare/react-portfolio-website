@@ -1,0 +1,3 @@
+# Ignore these minified files
+/public/stockfish/sf-16/sf16-7.js
+/public/stockfish/sf-17/sf171-79.js

@@ -6,7 +6,13 @@ import { GameLogButton } from "./GameLogButton";
 import { MoveList } from "./MoveList";
 
 export const GameLog = () => {
-  const { gameManager, highlighter, onResetGame, toggleFlipBoard } = useGame();
+  const {
+    gameManager,
+    highlighter,
+    onResetGame,
+    isBoardFlipped,
+    toggleFlipBoard,
+  } = useGame();
   const {
     board,
     players,
@@ -79,7 +85,8 @@ export const GameLog = () => {
                 currentPlayerIndex,
                 moveHistory,
                 halfMoveClock,
-                fullMoveNumber
+                fullMoveNumber,
+                isBoardFlipped
               )}
               onChange={updateStateOnFenChange}
               /* add on move -> update fen, on user change -> update board/state */

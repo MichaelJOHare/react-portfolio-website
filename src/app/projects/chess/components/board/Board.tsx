@@ -6,10 +6,16 @@ import { Circle } from "../ui/drawings/Circle";
 import { PromotionPanel } from "../ui/PromotionPanel";
 import { Square } from "../../types";
 import { useGame } from "../../context/GameContext";
+import { getStockfishArrow } from "../../utils/stockfish";
 
 export const Board = () => {
-  const { gameManager, highlighter, pieceSelector, promotionHandler } =
-    useGame();
+  const {
+    gameManager,
+    highlighter,
+    pieceSelector,
+    promotionHandler,
+    isBoardFlipped,
+  } = useGame();
   const { board } = gameManager;
   const { validMoves, handleDragStart, handleDragEnd } = pieceSelector;
   const {
@@ -79,9 +85,15 @@ export const Board = () => {
         {highlightedSquares.circlesDrawnOnSquares.map((circle, index) => (
           <Circle key={`circle-${index}`} {...circle} />
         ))}
-        {highlightedSquares.stockfishBestMoveArrow.map((arrow, index) => (
-          <Arrow key={`stockfish-arrow-${index}`} {...arrow} />
-        ))}
+        {highlightedSquares.stockfishBestMove && (
+          <Arrow
+            key="stockfish-arrow"
+            {...getStockfishArrow(
+              highlightedSquares.stockfishBestMove,
+              isBoardFlipped
+            )}
+          />
+        )}
         {board.map((row, rowIndex) =>
           row.map((square, colIndex) => (
             <ChessSquare

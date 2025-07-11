@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Move, Square, ArrowProps, CircleProps } from "../types";
+import {
+  Move,
+  Square,
+  ArrowProps,
+  CircleProps,
+  ChessEngineMove,
+} from "../types";
 
 type HighlighterState = {
   legalMoveSquares: Move[];
@@ -11,7 +17,7 @@ type HighlightedSquares = {
   previousMoveSquares: Square[];
   arrowsDrawnOnSquares: ArrowProps[];
   circlesDrawnOnSquares: CircleProps[];
-  stockfishBestMoveArrow: ArrowProps[];
+  stockfishBestMove: ChessEngineMove | null;
 };
 
 export const useHighlighter = () => {
@@ -30,7 +36,7 @@ export const useHighlighter = () => {
       previousMoveSquares: [],
       arrowsDrawnOnSquares: [],
       circlesDrawnOnSquares: [],
-      stockfishBestMoveArrow: [],
+      stockfishBestMove: null,
     });
 
   const calculateArrowCoords = (from: Square, to: Square) => ({
@@ -221,27 +227,22 @@ export const useHighlighter = () => {
         cy: 100 - circle.cy,
       }));
 
-      const flippedStockfish = prev.stockfishBestMoveArrow.map((arrow) => ({
-        x1: 100 - arrow.x1,
-        y1: 100 - arrow.y1,
-        x2: 100 - arrow.x2,
-        y2: 100 - arrow.y2,
-      }));
-
       return {
         previousMoveSquares: flippedPrevious,
         arrowsDrawnOnSquares: flippedArrows,
         circlesDrawnOnSquares: flippedCircles,
-        stockfishBestMoveArrow: flippedStockfish,
+        stockfishBestMove: prev.stockfishBestMove,
       };
     });
   };
 
-  const addStockfishBestMoveArrow = (arrowCoords: ArrowProps) =>
+  const addStockfishBestMoveArrow = (move: ChessEngineMove) => {
+    console.log("setting stockfishing arrow: ", move);
     setHighlightedSquares((prev) => ({
       ...prev,
-      stockfishBestMoveArrow: [arrowCoords],
+      stockfishBestMove: move,
     }));
+  };
 
   const clearStockfishBestMoveArrow = () =>
     setHighlightedSquares((prev) => ({

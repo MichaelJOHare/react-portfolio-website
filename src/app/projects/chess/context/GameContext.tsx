@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 import {
   GameManager,
   Highlighter,
@@ -41,15 +47,18 @@ type GameContextType = {
     strengthLevel: number;
     colorChoice: number;
   }) => void;
-  setVersion: (version: "nnue-16" | "17") => void;
+  setVersion: (version: "sf-16" | "sf-17") => void;
   onResetGame: () => void;
 };
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider = ({ children, onResetGame }: Props) => {
+  const hasStartedWorker = useRef(false);
+  const hasFlippedForComputer = useRef(false);
   const [isBoardFlipped, setIsBoardFlipped] = useState(false);
-  const [version, setVersion] = useState<"nnue-16" | "17">("nnue-16");
+  const isBoardFlippedRef = useRef(isBoardFlipped);
+  const [version, setVersion] = useState<"sf-16" | "sf-17">("sf-16");
   const [stockfishEnabled, setStockfishEnabled] = useState({
     nnueEnabled: false,
     classicalEnabled: false,
@@ -74,6 +83,8 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
   const stockfishHandler = useStockfishHandler(
     gameManager,
     highlighter,
+    version,
+    isBoardFlippedRef,
     stockfishEnabled.classicalEnabled,
     stockfishEnabled.nnueEnabled,
     computerOpponentOptions.colorChoice,
@@ -96,6 +107,11 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, []);
 
+  // useEffect for auto flip when choosing black pieces
+  useEffect(() => {
+    isBoardFlippedRef.current = isBoardFlipped;
+  }, [isBoardFlipped]);
+
   // useEffect because worker needs to start and terminate based on state
   useEffect(() => {
     if (!isAnalysisEnabled && !isPlayingVsComputer) {
@@ -104,27 +120,27 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     }
 
     if (isPlayingVsComputer) {
-      // add make playerType = COMPUTER
       setStockfishEnabled((prev) => {
-        if (prev.nnueEnabled === false && prev.classicalEnabled === false) {
-          return prev;
-        }
+        if (!prev.nnueEnabled && !prev.classicalEnabled) return prev;
         return { nnueEnabled: false, classicalEnabled: false };
       });
 
-      setIsBoardFlipped(computerOpponentOptions.colorChoice === 2);
+      const isBlack = computerOpponentOptions.colorChoice === 1;
+      if (isBlack && !hasFlippedForComputer.current) {
+        setIsBoardFlipped(true);
+        gameManager.flipPiecesOnBoard();
+        hasFlippedForComputer.current = true;
+      }
     }
 
-    const script = `/stockfish/stockfish-${version}.js`;
-
-    if (!stockfishHandler.isRunning()) {
-      stockfishHandler.startWorker(script);
+    if (!hasStartedWorker.current && !stockfishHandler.isRunning()) {
+      stockfishHandler.startWorker(version);
+      hasStartedWorker.current = true;
     }
   }, [
-    computerOpponentOptions,
+    computerOpponentOptions, // maybe silence this linter, idk how to limit calls while satisfying exhaustive deps
     stockfishEnabled,
     version,
-    stockfishHandler,
     isAnalysisEnabled,
     isPlayingVsComputer,
   ]);
