@@ -114,6 +114,7 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
   // useEffect because worker needs to start and terminate based on state
   useEffect(() => {
     if (!isAnalysisEnabled && !isPlayingVsComputer) {
+      highlighter.clearStockfishBestMoveArrow();
       stockfishHandler.terminate();
       return;
     }
@@ -137,10 +138,11 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     }
   }, [
     computerOpponentOptions, // maybe silence this linter, idk how to limit calls while satisfying exhaustive deps
-    stockfishEnabled,
+    stockfishEnabled, // maybe split this up into two effects
     version,
     isAnalysisEnabled,
     isPlayingVsComputer,
+    isBoardFlipped,
   ]);
 
   return (

@@ -328,7 +328,8 @@ export const isValidCastlingMove = (
   if (kingSquare.col - move.kingTo.col < 0) {
     if (
       !isSquareOccupiedOrAttacked(kingSquare.row, kingSquare.col + 1) &&
-      !isSquareOccupiedOrAttacked(kingSquare.row, kingSquare.col + 2)
+      !isSquareOccupiedOrAttacked(kingSquare.row, kingSquare.col + 2) &&
+      !isAttackedByOpponent(opponentMoves, kingSquare)
     ) {
       return true;
     }
@@ -336,7 +337,8 @@ export const isValidCastlingMove = (
   } else {
     if (
       !isSquareOccupiedOrAttacked(kingSquare.row, kingSquare.col - 1) &&
-      !isSquareOccupiedOrAttacked(kingSquare.row, kingSquare.col - 2)
+      !isSquareOccupiedOrAttacked(kingSquare.row, kingSquare.col - 2) &&
+      !isAttackedByOpponent(opponentMoves, kingSquare)
     ) {
       return true;
     }

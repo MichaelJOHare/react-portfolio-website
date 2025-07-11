@@ -28,6 +28,8 @@ export const useStockfishHandler = (
   const workerRef = useRef<Worker | null>(null);
   const isBoardFlippedRef = useRef(isBoardFlipped);
   const [engineReady, setEngineReady] = useState(false);
+  const [engineConfigured, setEngineConfigured] = useState(false);
+  const hasConfiguredEngine = useRef(false);
   const [shouldStopThinking, setShouldStopThinking] = useState(false);
   const [shouldFindMove, setShouldFindMove] = useState(false);
   const [evalCentipawn, setEvalCentipawn] = useState(50);
@@ -58,21 +60,21 @@ export const useStockfishHandler = (
       const msg = e.data;
 
       if (msg.type === "ready") {
-        console.log("Engine ready");
+        console.log("Engine loaded");
 
-        worker.postMessage("uci");
-        worker.postMessage("isready");
-
-        setSkillLevel(strengthLevel);
-      }
-
-      if (msg.data === "uciok") {
+        sendCommand("uci");
+        sendCommand("isready");
+      } else if (msg.data === "uciok") {
         console.log("uciok");
         setEngineReady(true);
       } else if (msg.data === "readyok") {
         console.log("readyok");
-        const threads = calculateThreadsForNNUE();
-        sendCommand(`setoption name Threads value ${threads}`);
+        if (!hasConfiguredEngine.current) {
+          hasConfiguredEngine.current = true;
+          configureEngine(strengthLevel);
+        } else {
+          setEngineConfigured(true);
+        }
       } else {
         handleEngineMessage(msg);
       }
@@ -113,6 +115,7 @@ export const useStockfishHandler = (
         const fromSq = convertNotationToSquare(from, isBoardFlippedRef.current);
         const toSq = convertNotationToSquare(to, isBoardFlippedRef.current);
         if (fromSq && toSq) {
+          // implement delay
           gameManagerRef.current.executeMove(
             fromSq.row,
             fromSq.col,
@@ -163,37 +166,31 @@ export const useStockfishHandler = (
 
   const isRunning = () => !!workerRef.current;
 
-  const setSkillLevel = (skillLevel: number) => {
+  const configureEngine = (skillLevel: number) => {
+    const threads = calculateThreadsForNNUE();
     const depth = isPlaying ? calculateDepth(skillLevel * 2) : defaultDepth;
     setDepth(depth);
     sendCommand(`setoption name Skill Level value ${skillLevel}`);
-  };
-
-  // useEffect because interaction with worker
-  useEffect(() => {
-    if (!workerRef.current) return;
-
-    sendCommand("stop");
+    sendCommand(`setoption name Threads value ${threads}`);
     if (version === "sf-16") {
-      sendCommand("setoption name Use NNUE value true");
-      sendCommand(
-        "setoption name EvalFile value /stockfish/sf-16/nn-ecb35f70ff2a.nnue"
-      );
+      sendCommand("setoption name Use NNUE value true"); // might not be needed?
     }
-
-    sendCommand(
-      "setoption name EvalFile value /stockfish/sf-17/nn-1c0000000000.nnue"
-    );
-    sendCommand(
-      "setoption name EvalFileSmall value /stockfish/sf-17/nn-37f18f62d772.nnue"
-    );
+    console.log("stockfish options configured");
 
     sendCommand("isready");
+  };
+
+  // useEffect because if version changes, it needs to kill and restart with correct nnue file
+  useEffect(() => {
+    if (!workerRef.current) return;
+    terminate();
+
+    startWorker(version);
   }, [version]);
 
   // useEffect because of interacting with worker
   useEffect(() => {
-    if (shouldFindMove && engineReady) {
+    if (shouldFindMove && engineReady && engineConfigured) {
       const fen = toFEN(
         board,
         players,
@@ -212,6 +209,7 @@ export const useStockfishHandler = (
   }, [
     shouldFindMove,
     engineReady,
+    engineConfigured,
     board,
     players,
     currentPlayerIndex,

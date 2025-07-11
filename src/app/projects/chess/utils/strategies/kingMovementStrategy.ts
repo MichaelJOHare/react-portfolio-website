@@ -45,6 +45,7 @@ export const kingMovementStrategy: MovementStrategy = (
       rookPositions.queenSideRookCol
     );
 
+    const direction = isBoardFlipped ? -1 : 1;
     if (kingSideRook && !kingSideRook.hasMoved && !king.hasMoved) {
       legalMoves.push(
         createCastlingMove(
@@ -53,13 +54,13 @@ export const kingMovementStrategy: MovementStrategy = (
           king.currentSquare,
           createSquare(
             king.currentSquare.row,
-            king.currentSquare.col + 2,
+            king.currentSquare.col + 2 * direction,
             king
           ),
           kingSideRook.currentSquare,
           createSquare(
             kingSideRook.currentSquare.row,
-            kingSideRook.currentSquare.col - 2,
+            kingSideRook.currentSquare.col - 2 * direction,
             kingSideRook
           )
         )
@@ -74,13 +75,13 @@ export const kingMovementStrategy: MovementStrategy = (
           king.currentSquare,
           createSquare(
             king.currentSquare.row,
-            king.currentSquare.col - 2,
+            king.currentSquare.col - 2 * direction,
             king
           ),
           queenSideRook.currentSquare,
           createSquare(
             queenSideRook.currentSquare.row,
-            queenSideRook.currentSquare.col + 3,
+            queenSideRook.currentSquare.col + 3 * direction,
             queenSideRook
           )
         )

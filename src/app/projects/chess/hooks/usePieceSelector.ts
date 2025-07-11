@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   GameManager,
   Highlighter,
-  Move,
   Piece,
   PlayerType,
   PromotionHandler,
