@@ -9,6 +9,7 @@ import {
   GameManager,
   Highlighter,
   PieceSelector,
+  PlayerType,
   PromotionHandler,
   StockfishHandler,
 } from "../types";
@@ -41,6 +42,7 @@ type GameContextType = {
     strengthLevel: number;
     colorChoice: number;
   }) => void;
+  version: "sf-16" | "sf-17";
   setVersion: (version: "sf-16" | "sf-17") => void;
   onResetGame: () => void;
 };
@@ -110,8 +112,11 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
 
       const isBlack = computerOpponentOptions.colorChoice === 1;
       if (isBlack && !isBoardFlipped) {
+        gameManager.players[0].type = PlayerType.COMPUTER;
         setIsBoardFlipped(true);
         gameManager.flipPiecesOnBoard();
+      } else {
+        gameManager.players[1].type = PlayerType.COMPUTER;
       }
     }
 
@@ -142,6 +147,7 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
         setStockfishEnabled,
         computerOpponentOptions,
         setComputerOpponentOptions,
+        version,
         setVersion,
         onResetGame,
       }}

@@ -70,15 +70,18 @@ export const StockfishOptionsModal = ({
     >
       <div className="flex size-full relative">
         <div className="absolute right-3 top-2">
-          <button className="rounded-3xl hover:bg-slate-300" onClick={onClose}>
-            <CloseModalIcon className="size-10" />
+          <button
+            className="rounded-3xl bg-red-600 hover:bg-red-800"
+            onClick={onClose}
+          >
+            <CloseModalIcon className="size-10 text-neutral-200" />
           </button>
         </div>
         <div
           ref={menuRef}
           className="flex flex-col bg-white rounded-lg p-4 w-full h-full dark:bg-gray-700"
         >
-          <h1 className="flex self-center text-2xl pb-4 pr-4 2xl:text-3xl limitedHeight:text-2xl">
+          <h1 className="flex self-center text-2xl pb-4 2xl:text-3xl limitedHeight:text-2xl">
             Stockfish Options
           </h1>
           <div className="flex flex-col grow justify-around lg:flex-col">
@@ -88,11 +91,12 @@ export const StockfishOptionsModal = ({
               </ul>
             </div>
             <StockfishVersionMenu />
+            <div className="mt-2 border-t border-gray-300" />
             <div className="flex flex-col">
-              <h2 className="pt-4 text-2xl underline self-center">
+              <h2 className="text-2xl font-medium self-center">
                 Play Versus Computer
               </h2>
-              <h3 className="self-center pt-2 font-bold text-xl">
+              <h3 className="self-center pt-2 pb-1 font-bold text-xl">
                 Strength level
               </h3>
               <ul className="self-center grid grid-cols-5 gap-2">
@@ -100,8 +104,8 @@ export const StockfishOptionsModal = ({
                   <button
                     type="button"
                     key={level}
-                    className={`border px-1 text-4xl hover:bg-slate-300 hover:text-slate-600 rounded-lg ${
-                      level === strengthLevel ? "bg-slate-300" : ""
+                    className={`bg-cyan-600 px-1 text-4xl hover:bg-cyan-800 rounded-lg ${
+                      level === strengthLevel ? "bg-emerald-500" : ""
                     }`}
                     onClick={() => setStrengthLevel(level)}
                   >
@@ -109,43 +113,43 @@ export const StockfishOptionsModal = ({
                   </button>
                 ))}
               </ul>
-              <h3 className="self-center pt-2 font-bold text-xl">
+              <h3 className="self-center pt-2 pb-1 font-bold text-xl">
                 Choose Color
               </h3>
-              <ul className="self-center">
+              <ul className="self-center flex gap-3">
                 <button
                   type="button"
-                  className={`border hover:bg-slate-300 rounded-lg ${
-                    colorChoice === 0 ? "bg-slate-300" : ""
+                  className={`bg-cyan-600 hover:bg-cyan-800 rounded-lg ${
+                    colorChoice === 0 ? "bg-emerald-500" : ""
                   }`}
                   onClick={() => setColorChoice(0)}
                 >
-                  <WhiteKing />
+                  <WhiteKing className="w-18 h-18 scale-[99%]" />
                 </button>
                 <button
                   type="button"
-                  className={`border mx-2 hover:bg-slate-300 rounded-lg ${
-                    colorChoice === 2 ? "bg-slate-300" : ""
+                  className={`bg-cyan-600 hover:bg-cyan-800 rounded-lg ${
+                    colorChoice === 2 ? "bg-emerald-500" : ""
                   }`}
                   onClick={() => setColorChoice(2)} // make these icons/buttons bigger
                 >
-                  <RandomKing />
+                  <RandomKing className="w-18 h-18 scale-[99%]" />
                 </button>
                 <button
                   type="button"
-                  className={`border hover:bg-slate-300 rounded-lg ${
-                    colorChoice === 1 ? "bg-slate-300" : ""
+                  className={`bg-cyan-600 hover:bg-cyan-800 rounded-lg ${
+                    colorChoice === 1 ? "bg-emerald-500" : ""
                   }`}
                   onClick={() => setColorChoice(1)}
                 >
-                  <BlackKing />
+                  <BlackKing className="w-18 h-18 scale-[99%]" />
                 </button>
               </ul>
             </div>
             <div className="pt-2">
               <button
                 type="button"
-                className="text-3xl font-medium pb-1 border w-full hover:bg-slate-300 rounded-lg"
+                className="h-14 text-3xl font-medium pb-1 bg-cyan-600 w-full hover:bg-cyan-700 rounded-lg"
                 onClick={handlePlayToggle}
               >
                 {playClicked ? "Stop" : "Play"}

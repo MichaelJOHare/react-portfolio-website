@@ -80,7 +80,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
 
       setup.forEach(({ type, positions, movementStrategy }) => {
         positions.forEach(({ row, col }) => {
-          const player = isWhite ? player1 : player2; // change in future for vs computer
+          const player = isWhite ? player1 : player2;
           const pieceRow =
             row + (type === PieceType.PAWN ? pawnRow - 1 : rowOffset);
           const square = gameState.board[pieceRow][col];

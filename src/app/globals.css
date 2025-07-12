@@ -25,6 +25,7 @@ Need to figure this out later
   --color-previousMoveLight: #cdd16a;
   --color-previousMoveDark: #aaa23a;
 }
+@custom-variant dark (&:where(.dark, .dark *));
 @custom-variant progress-filled (&::-webkit-progress-bar, &);
 @custom-variant progress-unfilled (&::-webkit-progress-value, &::-moz-progress-bar);
 @custom-variant limitedHeight (@media (max-height: 900px));

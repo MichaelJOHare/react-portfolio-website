@@ -5,7 +5,7 @@ export const StockfishAnalysisToggle = () => {
 
   return (
     <div className="group relative">
-      <label className="group w-60 h-15 bg-neutral-500 relative rounded-full select-none cursor-pointer inline-flex items-center">
+      <label className="group w-56 h-13 bg-neutral-500 relative rounded-full select-none cursor-pointer inline-flex items-center">
         <input
           className="sr-only peer"
           type="checkbox"

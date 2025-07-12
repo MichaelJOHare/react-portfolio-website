@@ -57,7 +57,7 @@ export const getMovementStrategyFromType = (
   return moveStrat;
 };
 
-export function getPieceUnicode(type: PieceType) {
+export const getPieceUnicode = (type: PieceType) => {
   switch (type) {
     case PieceType.KING:
       return "♚";
@@ -70,4 +70,4 @@ export function getPieceUnicode(type: PieceType) {
     case PieceType.KNIGHT:
       return "♞";
   }
-}
+};

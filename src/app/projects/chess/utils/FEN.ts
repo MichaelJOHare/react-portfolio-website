@@ -11,7 +11,7 @@ import { createSquare, squareToString } from "./square";
 
 export const INITIAL_FEN = `rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1`;
 
-export function toFEN(
+export const toFEN = (
   board: Square[][],
   players: Player[],
   currentPlayerIndex: number,
@@ -19,7 +19,7 @@ export function toFEN(
   halfMoveClock: number,
   fullMoveNumber: number,
   isBoardFlipped: boolean
-): string {
+): string => {
   let fen = "";
 
   const pieceToFENMap = {
@@ -69,17 +69,17 @@ export function toFEN(
   fen += " " + fullMoveNumber;
 
   return fen;
-}
+};
 
-function generateCastlingAvailability(board: Square[][]) {
+const generateCastlingAvailability = (board: Square[][]) => {
   let castlingAvailability = "";
 
-  function checkSide(
+  const checkSide = (
     majorPieceRow: number,
     queenSideRookColumn: number,
     kingSideRookColumn: number,
     isWhite: boolean
-  ) {
+  ) => {
     const king = board[majorPieceRow][4].piece;
     if (king && king.type === PieceType.KING && !king.hasMoved) {
       const rookPositions = [kingSideRookColumn, queenSideRookColumn];
@@ -96,16 +96,19 @@ function generateCastlingAvailability(board: Square[][]) {
         }
       }
     }
-  }
+  };
 
   checkSide(7, 0, 7, true);
 
   checkSide(0, 0, 7, false);
 
   return castlingAvailability || "-";
-}
+};
 
-function getEnPassantTarget(moveHistory: MoveHistory, isBoardFlipped: boolean) {
+const getEnPassantTarget = (
+  moveHistory: MoveHistory,
+  isBoardFlipped: boolean
+) => {
   const move =
     moveHistory.moves.length > 0
       ? moveHistory.moves[moveHistory.moves.length - 1]
@@ -127,4 +130,4 @@ function getEnPassantTarget(moveHistory: MoveHistory, isBoardFlipped: boolean) {
   }
 
   return null;
-}
+};

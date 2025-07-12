@@ -8,7 +8,7 @@ Big Eval File - nn-1c0000000000.nnue
 
 Small Eval File - nn-37f18f62d772.nnue
 
-Put it into public/stockfish/sf-17/ where sf171-79.js and sf171-79.wasm files are
+Put them into public/stockfish/sf-17/ where sf171-79.js and sf171-79.wasm files are
 
 **_ You need both big and small eval files, Stockfish 17 uses dual NNUE _**
 

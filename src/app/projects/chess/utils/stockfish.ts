@@ -79,7 +79,7 @@ export const mirrorEngineMove = (move: ChessEngineMove): ChessEngineMove => {
   return null;
 };
 
-function mirrorSquare(square: string): string {
+const mirrorSquare = (square: string): string => {
   const file = square[0];
   const rank = square[1];
 
@@ -90,7 +90,7 @@ function mirrorSquare(square: string): string {
   const mirroredRank = (9 - parseInt(rank)).toString();
 
   return `${mirroredFile}${mirroredRank}`;
-}
+};
 
 export const convertNotationToSquare = (
   notation: string | undefined,
