@@ -1,38 +1,17 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## If you are cloning this repository to implement your own Stockfish web app:
 
-## Getting Started
+Download NNUE files from: https://tests.stockfishchess.org/nns
 
-First, run the development server:
+## Stockfish 17.1 files
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Big Eval File - nn-1c0000000000.nnue
+Small Eval File - nn-37f18f62d772.nnue
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Put it into public/stockfish/sf-17/ where sf171-79.js and sf171-79.wasm files are
+**_ You need both big and small eval files, Stockfish 17 uses dual NNUE _**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Stockfish 16 file
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Eval file - nn-ecb35f70ff2a.nnue
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-Get NNUE files from:
+Put it into public/stockfish/sf-16/ where sf-16-7.js and sf-16-7.wasm files are
