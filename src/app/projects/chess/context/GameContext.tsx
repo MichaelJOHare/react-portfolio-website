@@ -31,14 +31,8 @@ type GameContextType = {
   stockfishHandler: StockfishHandler;
   isBoardFlipped: boolean;
   toggleFlipBoard: () => void;
-  stockfishEnabled: {
-    nnueEnabled: boolean;
-    classicalEnabled: boolean;
-  };
-  setStockfishEnabled: (value: {
-    nnueEnabled: boolean;
-    classicalEnabled: boolean;
-  }) => void;
+  stockfishEnabled: boolean;
+  setStockfishEnabled: (value: boolean) => void;
   computerOpponentOptions: {
     strengthLevel: number;
     colorChoice: number;
@@ -57,16 +51,11 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
   const hasStartedWorker = useRef(false);
   const [isBoardFlipped, setIsBoardFlipped] = useState(false);
   const [version, setVersion] = useState<"sf-16" | "sf-17">("sf-16");
-  const [stockfishEnabled, setStockfishEnabled] = useState({
-    nnueEnabled: false,
-    classicalEnabled: false,
-  });
+  const [stockfishEnabled, setStockfishEnabled] = useState(false);
   const [computerOpponentOptions, setComputerOpponentOptions] = useState({
     strengthLevel: -1,
     colorChoice: -1,
   });
-  const isAnalysisEnabled =
-    stockfishEnabled.nnueEnabled || stockfishEnabled.classicalEnabled;
 
   const isPlayingVsComputer =
     computerOpponentOptions.colorChoice !== -1 &&
@@ -84,8 +73,7 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     highlighter,
     version,
     isBoardFlipped,
-    stockfishEnabled.classicalEnabled,
-    stockfishEnabled.nnueEnabled,
+    stockfishEnabled,
     computerOpponentOptions.colorChoice,
     computerOpponentOptions.strengthLevel
   );
@@ -95,7 +83,6 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     promotionHandler,
     stockfishHandler
   );
-
   const toggleFlipBoard = () => {
     setIsBoardFlipped(!isBoardFlipped);
   };
@@ -106,24 +93,20 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, []);
 
-  // useEffect because stockfishHandler needs non-stale gameManager since it runs asynchronously
+  // useEffect because stockfishHandler needs non-stale gameManager and it runs asynchronously
   useEffect(() => {
     gameManagerRef.current = gameManager;
   }, [gameManager]);
 
   // useEffect because worker needs to start and terminate based on state
   useEffect(() => {
-    if (!isAnalysisEnabled && !isPlayingVsComputer) {
-      highlighter.clearStockfishBestMoveArrow();
+    if (!stockfishEnabled && !isPlayingVsComputer) {
       stockfishHandler.terminate();
       return;
     }
 
     if (isPlayingVsComputer) {
-      setStockfishEnabled((prev) => {
-        if (!prev.nnueEnabled && !prev.classicalEnabled) return prev;
-        return { nnueEnabled: false, classicalEnabled: false };
-      });
+      setStockfishEnabled(false);
 
       const isBlack = computerOpponentOptions.colorChoice === 1;
       if (isBlack && !isBoardFlipped) {
@@ -140,7 +123,7 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     computerOpponentOptions, // maybe silence this linter, idk how to limit calls while satisfying exhaustive deps
     stockfishEnabled, // maybe split this up into two effects
     version,
-    isAnalysisEnabled,
+    stockfishEnabled,
     isPlayingVsComputer,
     isBoardFlipped,
   ]);

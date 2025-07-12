@@ -25,6 +25,10 @@ export const Board = () => {
     onMouseMove,
     onMouseUp,
   } = highlighter;
+  const stockfishArrow = getStockfishArrow(
+    highlightedSquares.stockfishBestMove,
+    isBoardFlipped
+  );
 
   const isMoveValid = (row: number, col: number) =>
     validMoves.some((move) => move.row === row && move.col === col);
@@ -86,13 +90,7 @@ export const Board = () => {
           <Circle key={`circle-${index}`} {...circle} />
         ))}
         {highlightedSquares.stockfishBestMove && (
-          <Arrow
-            key="stockfish-arrow"
-            {...getStockfishArrow(
-              highlightedSquares.stockfishBestMove,
-              isBoardFlipped
-            )}
-          />
+          <Arrow key="stockfish-arrow" {...stockfishArrow} />
         )}
         {board.map((row, rowIndex) =>
           row.map((square, colIndex) => (

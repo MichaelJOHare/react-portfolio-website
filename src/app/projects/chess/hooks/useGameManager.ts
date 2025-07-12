@@ -10,6 +10,7 @@ import {
   Square,
   CastlingMove,
   PromotionMove,
+  MoveHistory,
 } from "../types";
 import {
   createPlayer,
@@ -39,7 +40,7 @@ type GameState = {
   capturedPieces: Piece[];
   kingSquare: Square | undefined;
   isKingInCheck: boolean;
-  moveHistory: Move[];
+  moveHistory: MoveHistory;
   undoneMoves: Move[];
   halfMoveClock: number;
   fullMoveNumber: number;
@@ -58,7 +59,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     isKingInCheck: false,
     kingSquare: undefined,
     currentPlayerIndex: 0,
-    moveHistory: [],
+    moveHistory: { moves: [], wasBoardFlipped: false },
     undoneMoves: [],
     halfMoveClock: 0,
     fullMoveNumber: 1,
@@ -180,7 +181,8 @@ export const useGameManager = (isBoardFlipped: boolean) => {
 
   const undoMoveByType = (
     move: Move,
-    board: Square[][]
+    board: Square[][],
+    wasBoardFlipped: boolean
   ): {
     updatedPieces: Piece[];
     capturedPieces: Piece[];
@@ -192,16 +194,39 @@ export const useGameManager = (isBoardFlipped: boolean) => {
 
     switch (move.type) {
       case MoveType.STNDRD:
-        updatedPieces = undoStandardMove(move, board, move.capturedPiece);
+        updatedPieces = undoStandardMove(
+          move,
+          board,
+          move.capturedPiece,
+          wasBoardFlipped,
+          isBoardFlipped
+        );
         break;
       case MoveType.CASTLE:
-        updatedPieces = undoCastlingMove(move, board);
+        updatedPieces = undoCastlingMove(
+          move,
+          board,
+          wasBoardFlipped,
+          isBoardFlipped
+        );
         break;
       case MoveType.EP:
-        updatedPieces = undoEnPassantMove(move, board, move.capturedPiece);
+        updatedPieces = undoEnPassantMove(
+          move,
+          board,
+          move.capturedPiece,
+          wasBoardFlipped,
+          isBoardFlipped
+        );
         break;
       case MoveType.PROMO:
-        updatedPieces = undoPromoMove(move, board, move.capturedPiece);
+        updatedPieces = undoPromoMove(
+          move,
+          board,
+          move.capturedPiece,
+          wasBoardFlipped,
+          isBoardFlipped
+        );
         break;
     }
 
@@ -234,7 +259,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     if (count <= 0) return;
 
     const newBoard = cloneBoard(gameState.board);
-    const updatedMoveHistory = [...gameState.moveHistory];
+    const updatedMoveHistory = { ...gameState.moveHistory };
     const updatedUndoneMoves = [...gameState.undoneMoves];
     let updatedCapturedPieces = [...gameState.capturedPieces];
     let updatedPiecesByPlayer = new Map(gameState.piecesByPlayer);
@@ -243,10 +268,14 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     let fullMoveNumber = gameState.fullMoveNumber;
 
     for (let i = 0; i < count; i++) {
-      const lastMove = updatedMoveHistory.pop();
+      const lastMove = updatedMoveHistory.moves.pop();
       if (!lastMove) break;
 
-      const result = undoMoveByType(lastMove, newBoard);
+      const result = undoMoveByType(
+        lastMove,
+        newBoard,
+        updatedMoveHistory.wasBoardFlipped
+      );
 
       updatedPiecesByPlayer = updatePiecesByPlayer(
         result.updatedPieces,
@@ -269,7 +298,10 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     setGameState((prevState) => ({
       ...prevState,
       board: newBoard,
-      moveHistory: updatedMoveHistory,
+      moveHistory: {
+        moves: updatedMoveHistory.moves,
+        wasBoardFlipped: isBoardFlipped,
+      },
       undoneMoves: updatedUndoneMoves,
       capturedPieces: updatedCapturedPieces,
       piecesByPlayer: updatedPiecesByPlayer,
@@ -396,7 +428,10 @@ export const useGameManager = (isBoardFlipped: boolean) => {
       board: newBoard,
       piecesByPlayer: updatedPiecesByPlayer,
       currentPlayerIndex: prevState.currentPlayerIndex === 0 ? 1 : 0,
-      moveHistory: [...prevState.moveHistory, validMove],
+      moveHistory: {
+        moves: [...prevState.moveHistory.moves, validMove],
+        wasBoardFlipped: isBoardFlipped,
+      },
       undoneMoves: remainingUndoneMoves ? remainingUndoneMoves : [],
       halfMoveClock,
       fullMoveNumber,
@@ -464,7 +499,6 @@ export const useGameManager = (isBoardFlipped: boolean) => {
   };
 
   const flipPiecesOnBoard = () => {
-    console.log("flipping");
     const flippedBoard = gameState.board.map((row) =>
       row.map((square) => createSquare(square.row, square.col, undefined))
     );

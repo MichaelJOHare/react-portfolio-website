@@ -1,4 +1,11 @@
-import { Move, PieceType, Player, PlayerColor, Square } from "../types";
+import {
+  Move,
+  MoveHistory,
+  PieceType,
+  Player,
+  PlayerColor,
+  Square,
+} from "../types";
 import { getPieceAt } from "./board";
 import { createSquare, squareToString } from "./square";
 
@@ -8,7 +15,7 @@ export function toFEN(
   board: Square[][],
   players: Player[],
   currentPlayerIndex: number,
-  moveHistory: Move[],
+  moveHistory: MoveHistory,
   halfMoveClock: number,
   fullMoveNumber: number,
   isBoardFlipped: boolean
@@ -98,9 +105,11 @@ function generateCastlingAvailability(board: Square[][]) {
   return castlingAvailability || "-";
 }
 
-function getEnPassantTarget(moveHistory: Move[], isBoardFlipped: boolean) {
+function getEnPassantTarget(moveHistory: MoveHistory, isBoardFlipped: boolean) {
   const move =
-    moveHistory.length > 0 ? moveHistory[moveHistory.length - 1] : null;
+    moveHistory.moves.length > 0
+      ? moveHistory.moves[moveHistory.moves.length - 1]
+      : null;
 
   if (
     move &&

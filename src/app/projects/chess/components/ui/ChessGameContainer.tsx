@@ -11,24 +11,16 @@ export const ChessGameContainer = () => {
       <div className="flex justify-center items-center">
         <Board />
         <div
-          className={`h-[90vmin] w-5 overflow-hidden border border-slate-800 dark:border-slate-100 border-spacing-0 mx-0.5 lg:h-[70vmin] limitedHeight:h-[90vmin] ${
-            stockfishEnabled.nnueEnabled || stockfishEnabled.classicalEnabled
-              ? "visible"
-              : "hidden"
-          }`}
+          className={`h-[90vmin] w-5 overflow-hidden bg-neutral-600 border border-slate-800 dark:border-slate-100 border-spacing-0 mx-0.5 lg:h-[70vmin] limitedHeight:h-[90vmin] ${
+            isBoardFlipped ? "" : "rotate-180"
+          } ${stockfishEnabled ? "visible" : "hidden"}`}
         >
-          <progress
-            id="eval-gauge"
-            className={`w-[90vmin] h-5 transform -rotate-90 translate-y-[90vmin] origin-top-left 
-              ${
-                isBoardFlipped
-                  ? "progress-filled:bg-slate-100 progress-unfilled:bg-stone-900"
-                  : "progress-filled:bg-stone-900 progress-unfilled:bg-slate-100"
-              } 
-              lg:translate-y-[70vmin] lg:w-[70vmin] limitedHeight:translate-y-[90vmin] limitedHeight:w-[90vmin]`}
-            value={evalCentipawn}
-            max={100}
-          ></progress>
+          <div
+            className="w-full bg-neutral-600 overflow-hidden"
+            style={{ height: `${evalCentipawn}%` }}
+          >
+            <div className="flex w-full flex-col justify-center h-full bg-slate-200 transition-width duration-500 ease-in-out leading-none"></div>
+          </div>
         </div>
       </div>
       <ChessUIContainer />

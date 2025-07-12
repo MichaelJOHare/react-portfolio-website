@@ -4,7 +4,7 @@ import WhiteKing from "@/assets/icons/white-king.svg";
 import RandomKing from "@/assets/icons/random-king.svg";
 import CloseModalIcon from "@/assets/icons/close-modal-icon.svg";
 import { useGame } from "../../../context/GameContext";
-import { StockfishAnalysisToggles } from "./StockfishAnalysisToggles";
+import { StockfishAnalysisToggle } from "./StockfishAnalysisToggle";
 import { StockfishVersionMenu } from "./StockfishVersionMenu";
 
 type StockfishOptionsModalProps = {
@@ -68,7 +68,7 @@ export const StockfishOptionsModal = ({
         isOpen ? "opacity-100 z-20" : "opacity-0 pointer-events-none z-0 "
       }`}
     >
-      <div className="size-full relative">
+      <div className="flex size-full relative">
         <div className="absolute right-3 top-2">
           <button className="rounded-3xl hover:bg-slate-300" onClick={onClose}>
             <CloseModalIcon className="size-10" />
@@ -81,16 +81,13 @@ export const StockfishOptionsModal = ({
           <h1 className="flex self-center text-2xl pb-4 pr-4 2xl:text-3xl limitedHeight:text-2xl">
             Stockfish Options
           </h1>
-          <div className="flex flex-col justify-around lg:flex-col">
-            <StockfishVersionMenu />
+          <div className="flex flex-col grow justify-around lg:flex-col">
             <div className="flex flex-col">
-              <h2 className="pt-4 text-2xl underline self-center">
-                Stockfish Analysis
-              </h2>
-              <ul className="pt-2 self-center">
-                <StockfishAnalysisToggles />
+              <ul className="pb-2 self-center">
+                <StockfishAnalysisToggle />
               </ul>
             </div>
+            <StockfishVersionMenu />
             <div className="flex flex-col">
               <h2 className="pt-4 text-2xl underline self-center">
                 Play Versus Computer
@@ -98,12 +95,12 @@ export const StockfishOptionsModal = ({
               <h3 className="self-center pt-2 font-bold text-xl">
                 Strength level
               </h3>
-              <ul className="self-center grid grid-cols-5 gap-1">
+              <ul className="self-center grid grid-cols-5 gap-2">
                 {strengthLevels.map((level) => (
                   <button
                     type="button"
                     key={level}
-                    className={`border px-1 text-2xl hover:bg-slate-300 hover:text-slate-600 rounded-lg ${
+                    className={`border px-1 text-4xl hover:bg-slate-300 hover:text-slate-600 rounded-lg ${
                       level === strengthLevel ? "bg-slate-300" : ""
                     }`}
                     onClick={() => setStrengthLevel(level)}
@@ -130,7 +127,7 @@ export const StockfishOptionsModal = ({
                   className={`border mx-2 hover:bg-slate-300 rounded-lg ${
                     colorChoice === 2 ? "bg-slate-300" : ""
                   }`}
-                  onClick={() => setColorChoice(2)}
+                  onClick={() => setColorChoice(2)} // make these icons/buttons bigger
                 >
                   <RandomKing />
                 </button>
@@ -144,15 +141,15 @@ export const StockfishOptionsModal = ({
                   <BlackKing />
                 </button>
               </ul>
-              <div className="pt-2">
-                <button
-                  type="button"
-                  className="text-3xl font-medium pb-1 border w-full hover:bg-slate-300 rounded-lg"
-                  onClick={handlePlayToggle}
-                >
-                  {playClicked ? "Stop" : "Play"}
-                </button>
-              </div>
+            </div>
+            <div className="pt-2">
+              <button
+                type="button"
+                className="text-3xl font-medium pb-1 border w-full hover:bg-slate-300 rounded-lg"
+                onClick={handlePlayToggle}
+              >
+                {playClicked ? "Stop" : "Play"}
+              </button>
             </div>
           </div>
         </div>

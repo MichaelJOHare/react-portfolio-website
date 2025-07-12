@@ -8,7 +8,7 @@ export const MoveList = () => {
   const { undoPreviousMoveSquares } = highlighter;
 
   const onMoveClick = (index: number) => {
-    const movesToUndo = moveHistory.length - index - 1;
+    const movesToUndo = moveHistory.moves.length - index - 1;
     if (movesToUndo > 0) {
       undoMove(movesToUndo);
     }
@@ -18,7 +18,7 @@ export const MoveList = () => {
   return (
     // add disambiguate capture, promotion, etc.
     <ul className="flex flex-wrap items-center">
-      {moveHistory.map((move, index) => {
+      {moveHistory.moves.map((move, index) => {
         const { from, to } = move;
         const isEvenIndex = index % 2 === 0;
         return (
@@ -26,7 +26,7 @@ export const MoveList = () => {
             className={`inline-block cursor-pointer hover:bg-slate-400 dark:hover:bg-slate-600 ${
               isEvenIndex ? "ml-3 mr-1" : ""
             } ${
-              index === moveHistory.length - 1
+              index === moveHistory.moves.length - 1
                 ? "border-2 border-spacing-0 border-blue-600 bg-zinc-400"
                 : ""
             }`}

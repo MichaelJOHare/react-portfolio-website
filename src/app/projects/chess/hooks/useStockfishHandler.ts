@@ -12,16 +12,15 @@ const IS_SYSTEM_MESSAGE = /^(?:(?:uci|ready)ok$|option name)/;
 const INFORMS_CURRENT_MOVE = /pv (\w{4})/;
 const FOUND_BEST_MOVE = /^bestmove ([a-h][1-8])([a-h][1-8])([qrbn])?/;
 const INFORMS_DEPTH = /^info .*\bdepth (\d+) .*\bnps (\d+)/;
-const INFORMS_SCORE = /^info .*\bscore (\w+) (-?\d+)/;
+const INFORMS_WDL = /wdl (\d+) (\d+) (\d+)/;
 const INFORMS_MATE = /score mate (\-?\d+)/;
 
 export const useStockfishHandler = (
-  gameManagerRef: React.RefObject<GameManager>,
+  gmRef: React.RefObject<GameManager>,
   highlighter: Highlighter,
   version: "sf-16" | "sf-17",
   isBoardFlipped: boolean,
-  classicalEnabled: boolean,
-  nnueEnabled: boolean,
+  stockfishEnabled: boolean,
   colorChoice: number,
   strengthLevel: number
 ) => {
@@ -39,14 +38,6 @@ export const useStockfishHandler = (
   const [lastArrowUpdate, setLastArrowUpdate] = useState(0);
   const isPlaying = colorChoice !== -1 && strengthLevel !== -1;
   const defaultDepth = 24;
-  const {
-    board,
-    players,
-    currentPlayerIndex,
-    moveHistory,
-    halfMoveClock,
-    fullMoveNumber,
-  } = gameManagerRef.current;
 
   const startWorker = (scriptUrl: string) => {
     if (workerRef.current) return;
@@ -88,7 +79,6 @@ export const useStockfishHandler = (
 
   const handleEngineMessage = (event: MessageEvent) => {
     const line = typeof event === "object" ? event.data : event;
-    console.log(line);
     if (INFORMS_DEPTH.test(line)) {
       const currentDepth = parseInt(line.match(INFORMS_DEPTH)[1], 10);
       const currentTime = Date.now();
@@ -110,20 +100,23 @@ export const useStockfishHandler = (
     if (FOUND_BEST_MOVE.test(line)) {
       const [, from, to, promotion] = line.match(FOUND_BEST_MOVE);
       if (isPlaying) {
-        const legalMoves = gameManagerRef.current.getLegalMoves();
+        const legalMoves = gmRef.current.getLegalMoves();
         const promotionType = determinePromotionType(promotion);
         const fromSq = convertNotationToSquare(from, isBoardFlippedRef.current);
         const toSq = convertNotationToSquare(to, isBoardFlippedRef.current);
         if (fromSq && toSq) {
-          // implement delay
-          gameManagerRef.current.executeMove(
-            fromSq.row,
-            fromSq.col,
-            toSq.row,
-            toSq.col,
-            legalMoves,
-            promotionType
-          );
+          // intentional delay to make computer move feel more natural
+          const delay = Math.random() * (1200 - 400) + 400;
+          setTimeout(() => {
+            gmRef.current.executeMove(
+              fromSq.row,
+              fromSq.col,
+              toSq.row,
+              toSq.col,
+              legalMoves,
+              promotionType
+            );
+          }, delay);
         }
       } else {
         highlighter.addStockfishBestMoveArrow({ from, to });
@@ -133,23 +126,34 @@ export const useStockfishHandler = (
     if (IS_SYSTEM_MESSAGE.test(line)) {
       return;
     }
-    if (INFORMS_SCORE.test(line) || INFORMS_MATE.test(line)) {
-      let evalValue = parseInt(line.match(INFORMS_SCORE)[2], 10);
-      let evalProgress = 50;
-      const evalCap = 500;
-
-      if (evalValue > evalCap) evalValue = evalCap;
-      if (evalValue < -evalCap) evalValue = -evalCap;
-
-      evalProgress = ((evalValue + evalCap) / (2 * evalCap)) * 100;
-      evalProgress = Math.max(0, Math.min(100, evalProgress));
-      if (players[currentPlayerIndex].color === PlayerColor.BLACK) {
-        evalProgress = 100 - evalProgress;
-      }
-      setEvalCentipawn(evalProgress);
-
+    if (INFORMS_WDL.test(line) || INFORMS_MATE.test(line)) {
       if (INFORMS_MATE.test(line)) {
         setEvalCentipawn(100);
+        return;
+      }
+
+      if (INFORMS_WDL.test(line)) {
+        const match = line.match(INFORMS_WDL);
+        if (match) {
+          const win = parseInt(match[1], 10);
+          const draw = parseInt(match[2], 10);
+          const loss = parseInt(match[3], 10);
+          const total = win + draw + loss;
+
+          if (total > 0) {
+            const { players, currentPlayerIndex } = gmRef.current;
+            let winProb = win / total + 0.5 * (draw / total);
+
+            const currentPlayerColor = players[currentPlayerIndex].color;
+            if (currentPlayerColor === PlayerColor.BLACK) {
+              winProb = 1 - winProb;
+            }
+
+            const evalProgress = winProb * 100;
+            setEvalCentipawn(evalProgress);
+          }
+          return;
+        }
       }
     }
   };
@@ -157,14 +161,6 @@ export const useStockfishHandler = (
   const sendCommand = (cmd: string) => {
     workerRef.current?.postMessage(cmd);
   };
-
-  const terminate = () => {
-    workerRef.current?.terminate();
-    workerRef.current = null;
-    setEngineReady(false);
-  };
-
-  const isRunning = () => !!workerRef.current;
 
   const configureEngine = (skillLevel: number) => {
     const threads = calculateThreadsForNNUE();
@@ -175,9 +171,19 @@ export const useStockfishHandler = (
     if (version === "sf-16") {
       sendCommand("setoption name Use NNUE value true"); // might not be needed?
     }
+    sendCommand("setoption name UCI_ShowWDL value true");
     console.log("stockfish options configured");
 
     sendCommand("isready");
+  };
+
+  const isRunning = () => !!workerRef.current;
+
+  const terminate = () => {
+    workerRef.current?.terminate();
+    workerRef.current = null;
+    setEngineReady(false);
+    highlighter.clearStockfishBestMoveArrow();
   };
 
   // useEffect because if version changes, it needs to kill and restart with correct nnue file
@@ -191,6 +197,14 @@ export const useStockfishHandler = (
   // useEffect because of interacting with worker
   useEffect(() => {
     if (shouldFindMove && engineReady && engineConfigured) {
+      const {
+        board,
+        players,
+        currentPlayerIndex,
+        moveHistory,
+        halfMoveClock,
+        fullMoveNumber,
+      } = gmRef.current;
       const fen = toFEN(
         board,
         players,
@@ -206,23 +220,12 @@ export const useStockfishHandler = (
       sendCommand(`position fen ${fen}`);
       sendCommand(`go depth ${depth}`);
     }
-  }, [
-    shouldFindMove,
-    engineReady,
-    engineConfigured,
-    board,
-    players,
-    currentPlayerIndex,
-    moveHistory,
-    halfMoveClock,
-    fullMoveNumber,
-    depth,
-    isBoardFlipped,
-  ]);
+  }, [shouldFindMove, engineReady, engineConfigured, depth, isBoardFlipped]);
 
   // useEffect because need to split up shouldFindMove and findMove to prevent circular dependency
   useEffect(() => {
-    const isAnalysisMode = !isPlaying && (nnueEnabled || classicalEnabled);
+    const { players, currentPlayerIndex } = gmRef.current;
+    const isAnalysisMode = !isPlaying && stockfishEnabled;
     const isEngineTurn =
       isPlaying &&
       ((players[currentPlayerIndex].color === PlayerColor.WHITE &&
@@ -236,15 +239,7 @@ export const useStockfishHandler = (
     if (!isAnalysisMode) {
       highlighter.clearStockfishBestMoveArrow(); // does this need to be in useEffect? probably don't want highlighter in this dep array
     }
-  }, [
-    isPlaying,
-    nnueEnabled,
-    classicalEnabled,
-    players,
-    currentPlayerIndex,
-    colorChoice,
-    moveHistory.length,
-  ]);
+  }, [isPlaying, stockfishEnabled, colorChoice]);
 
   // useEffect because of interaction with worker
   useEffect(() => {

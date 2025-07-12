@@ -21,7 +21,7 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
       <button
         type="button"
         onClick={() => {
-          if (gameManager.moveHistory.length > 0) {
+          if (gameManager.moveHistory.moves.length > 0) {
             clearUI();
             if (
               players[0].type === PlayerType.COMPUTER || // test for undo during stockfish move

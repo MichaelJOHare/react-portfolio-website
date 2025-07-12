@@ -236,17 +236,16 @@ export const useHighlighter = () => {
     });
   };
 
-  const addStockfishBestMoveArrow = (move: ChessEngineMove) => {
+  const addStockfishBestMoveArrow = (move: ChessEngineMove) =>
     setHighlightedSquares((prev) => ({
       ...prev,
       stockfishBestMove: move,
     }));
-  };
 
   const clearStockfishBestMoveArrow = () =>
     setHighlightedSquares((prev) => ({
       ...prev,
-      stockfishBestMoveArrow: [],
+      stockfishBestMove: null,
     }));
 
   return {

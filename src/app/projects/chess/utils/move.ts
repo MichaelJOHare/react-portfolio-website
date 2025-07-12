@@ -198,23 +198,32 @@ export const executePromoMove = (
 export const undoStandardMove = (
   move: Move,
   board: Square[][],
-  capturedPiece: Piece | undefined
+  capturedPiece: Piece | undefined,
+  wasBoardFlipped: boolean,
+  isBoardFlipped: boolean
 ): Piece[] => {
   const piecesToUpdate: Piece[] = [];
+  const fromSquare = getEffectiveSquare(
+    move.from,
+    wasBoardFlipped,
+    isBoardFlipped
+  );
+  const toSquare = getEffectiveSquare(move.to, wasBoardFlipped, isBoardFlipped);
+
   const updatedPiece = {
     ...move.piece,
-    currentSquare: move.from,
+    currentSquare: fromSquare,
     hasMoved: false, // needs to check if hasMoved was set to true on last move only, if not then keep it set to true
-  };
-  if (updatedPiece) {
-    board[move.from.row][move.from.col].piece = updatedPiece;
-    board[move.to.row][move.to.col].piece = undefined;
-    piecesToUpdate.push(updatedPiece);
-    if (capturedPiece) {
-      capturedPiece.isAlive = true;
-      board[move.to.row][move.to.col].piece = capturedPiece;
-      piecesToUpdate.push(capturedPiece);
-    }
+  }; //                 probably need to attach firstMove to move object, then on move -> hasMoved === true ? firstMove = move : firstMove
+
+  board[fromSquare.row][fromSquare.col].piece = updatedPiece;
+  board[toSquare.row][toSquare.col].piece = undefined;
+  piecesToUpdate.push(updatedPiece);
+
+  if (capturedPiece) {
+    capturedPiece.isAlive = true;
+    board[toSquare.row][toSquare.col].piece = capturedPiece;
+    piecesToUpdate.push(capturedPiece);
   }
 
   return piecesToUpdate;
@@ -223,50 +232,90 @@ export const undoStandardMove = (
 export const undoEnPassantMove = (
   move: Move,
   board: Square[][],
-  epCapturedPiece: Piece | undefined
+  epCapturedPiece: Piece | undefined,
+  wasBoardFlipped: boolean,
+  isBoardFlipped: boolean
 ): Piece[] => {
-  const piecesToUpdate: Piece[] = [];
   const enPassantMove = move as EnPassantMove;
+  const piecesToUpdate: Piece[] = [];
+  const epMoveFrom = getEffectiveSquare(
+    enPassantMove.from,
+    wasBoardFlipped,
+    isBoardFlipped
+  );
+  const epMoveTo = getEffectiveSquare(
+    enPassantMove.to,
+    wasBoardFlipped,
+    isBoardFlipped
+  );
+  const epCaptureSquare = getEffectiveSquare(
+    enPassantMove.capturedPieceSquare,
+    wasBoardFlipped,
+    isBoardFlipped
+  );
+
   const updatedPawn = {
     ...enPassantMove.piece,
-    currentSquare: enPassantMove.from,
+    currentSquare: epMoveFrom,
   };
-  board[enPassantMove.to.row][enPassantMove.to.col].piece = undefined;
-  if (updatedPawn) {
-    board[move.from.row][move.from.col].piece = updatedPawn;
-    piecesToUpdate.push(updatedPawn);
-    if (epCapturedPiece) {
-      epCapturedPiece.isAlive = true;
-      board[enPassantMove.capturedPieceSquare.row][
-        enPassantMove.capturedPieceSquare.col
-      ].piece = epCapturedPiece;
-      piecesToUpdate.push(epCapturedPiece);
-    }
+
+  board[epMoveTo.row][epMoveTo.col].piece = undefined;
+  board[epMoveFrom.row][epMoveFrom.col].piece = updatedPawn;
+  piecesToUpdate.push(updatedPawn);
+
+  if (epCapturedPiece) {
+    epCapturedPiece.isAlive = true;
+    board[epCaptureSquare.row][epCaptureSquare.col].piece = epCapturedPiece;
+    piecesToUpdate.push(epCapturedPiece);
   }
 
   return piecesToUpdate;
 };
 
-export const undoCastlingMove = (move: Move, board: Square[][]): Piece[] => {
+export const undoCastlingMove = (
+  move: Move,
+  board: Square[][],
+  wasBoardFlipped: boolean,
+  isBoardFlipped: boolean
+): Piece[] => {
   const castlingMove = move as CastlingMove;
+  const kingFromSq = getEffectiveSquare(
+    castlingMove.from,
+    wasBoardFlipped,
+    isBoardFlipped
+  );
+  const kingToSq = getEffectiveSquare(
+    castlingMove.to,
+    wasBoardFlipped,
+    isBoardFlipped
+  );
+  const rookFromSq = getEffectiveSquare(
+    castlingMove.rookFrom,
+    wasBoardFlipped,
+    isBoardFlipped
+  );
+  const rookToSq = getEffectiveSquare(
+    castlingMove.rookTo,
+    wasBoardFlipped,
+    isBoardFlipped
+  );
+
   const updatedKing = {
     ...castlingMove.piece,
-    currentSquare: castlingMove.kingFrom,
+    currentSquare: kingFromSq,
     hasMoved: false, // this works since undoing a castling move means the castling move pieces must have had hasMoved set to false
   };
   const updatedRook = {
     ...castlingMove.rook,
-    currentSquare: castlingMove.rookFrom,
+    currentSquare: rookFromSq,
     hasMoved: false,
   };
 
-  board[castlingMove.kingTo.row][castlingMove.kingTo.col].piece = undefined;
-  board[castlingMove.rookTo.row][castlingMove.rookTo.col].piece = undefined;
+  board[kingToSq.row][kingToSq.col].piece = undefined;
+  board[rookToSq.row][rookToSq.col].piece = undefined;
 
-  board[castlingMove.kingFrom.row][castlingMove.kingFrom.col].piece =
-    updatedKing;
-  board[castlingMove.rookFrom.row][castlingMove.rookFrom.col].piece =
-    updatedRook;
+  board[kingFromSq.row][kingFromSq.col].piece = updatedKing;
+  board[rookFromSq.row][rookFromSq.col].piece = updatedRook;
 
   return [updatedKing, updatedRook];
 };
@@ -274,26 +323,38 @@ export const undoCastlingMove = (move: Move, board: Square[][]): Piece[] => {
 export const undoPromoMove = (
   move: Move,
   board: Square[][],
-  capturedPiecePromo: Piece | undefined
+  capturedPiecePromo: Piece | undefined,
+  wasBoardFlipped: boolean,
+  isBoardFlipped: boolean
 ): Piece[] => {
-  const piecesToUpdate: Piece[] = [];
   const promotionMove = move as PromotionMove;
+  const piecesToUpdate: Piece[] = [];
+  const toSquare = getEffectiveSquare(
+    promotionMove.to,
+    isBoardFlipped,
+    wasBoardFlipped
+  );
+  const fromSquare = getEffectiveSquare(
+    promotionMove.from,
+    wasBoardFlipped,
+    isBoardFlipped
+  );
+
   const unPromotedPawn = {
     ...promotionMove.piece,
-    currentSquare: promotionMove.from,
+    currentSquare: fromSquare,
     type: PieceType.PAWN,
     movementStrategy: pawnMovementStrategy,
   };
-  board[promotionMove.to.row][promotionMove.to.col].piece = undefined;
-  if (unPromotedPawn) {
-    board[move.from.row][move.from.col].piece = unPromotedPawn;
-    piecesToUpdate.push(unPromotedPawn);
-    if (capturedPiecePromo) {
-      board[promotionMove.to.row][promotionMove.to.col].piece =
-        capturedPiecePromo;
-      capturedPiecePromo.isAlive = true;
-      piecesToUpdate.push(capturedPiecePromo);
-    }
+
+  board[toSquare.row][toSquare.col].piece = undefined;
+  board[fromSquare.row][fromSquare.col].piece = unPromotedPawn;
+  piecesToUpdate.push(unPromotedPawn);
+
+  if (capturedPiecePromo) {
+    board[toSquare.row][toSquare.col].piece = capturedPiecePromo;
+    capturedPiecePromo.isAlive = true;
+    piecesToUpdate.push(capturedPiecePromo);
   }
 
   return piecesToUpdate;
@@ -348,4 +409,23 @@ export const isValidCastlingMove = (
 
 /*
  ***** CASTLING MOVE VALIDATION *****
+ */
+
+/*
+ ***** HELPER FUNCTIONS FOR UNDOING WITH BOARD FLIPPED *****
+ */
+
+const getEffectiveSquare = (
+  square: Square,
+  wasBoardFlipped: boolean,
+  isBoardFlipped: boolean
+): Square => {
+  return (wasBoardFlipped && !isBoardFlipped) ||
+    (!wasBoardFlipped && isBoardFlipped)
+    ? { row: 7 - square.row, col: 7 - square.col }
+    : square;
+};
+
+/*
+ ***** HELPER FUNCTIONS FOR UNDOING WITH BOARD FLIPPED *****
  */

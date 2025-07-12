@@ -6,15 +6,11 @@ export const ChessUIContainer = () => {
   const { stockfishHandler, stockfishEnabled } = useGame();
   const { depthPercentage } = stockfishHandler;
 
-  // get rid of classical toggle, rename nnue toggle to analysis on and move next to version, change min height for limiteHeight
-
   return (
     <div className="flex justify-center items-center">
       <div
         className={`flex flex-col justify-center w-[90vmin] mt-4 ${
-          stockfishEnabled.classicalEnabled || stockfishEnabled.nnueEnabled
-            ? "mr-5"
-            : "lg:ml-5"
+          stockfishEnabled ? "mr-5" : "lg:ml-5"
         } lg:w-[35vmin] lg:h-[70vmin] lg:mt-0 2xl:w-[50vmin] limitedHeight:w-[90vmin] limitedHeight:h-auto limitedHeight:mt-4`}
       >
         <div className="flex justify-between h-[20vmin] w-full pb-2 lg:pt-2 lg:pb-0 lg:h-[10vmin] lg:order-last limitedHeight:pt-0 limitedHeight:pb-2 limitedHeight:h-[20vmin] limitedHeight:order-none">
@@ -23,9 +19,7 @@ export const ChessUIContainer = () => {
         </div>
         <div
           className={`w-full h-1.5 pr-0.5 flex justify-center items-center relative ${
-            stockfishEnabled.classicalEnabled || stockfishEnabled.nnueEnabled
-              ? "visible"
-              : "hidden"
+            stockfishEnabled ? "visible" : "hidden"
           }`}
         >
           <progress
