@@ -34,9 +34,12 @@ export const PromotionPanel = () => {
       : [PieceType.KNIGHT, PieceType.BISHOP, PieceType.ROOK, PieceType.QUEEN];
 
   const calculatePosition = (square: Square): Positions => {
+    const smallScreenVmin = 90;
+    const bigScreenVmin = 70;
+    const squaresPerRow = 8;
     return {
-      left: `${(90 / 8) * square.col}vmin`,
-      leftLg: `${(70 / 8) * square.col}vmin`,
+      left: `${(smallScreenVmin / squaresPerRow) * square.col}vmin`,
+      leftLg: `${(bigScreenVmin / squaresPerRow) * square.col}vmin`,
     };
   };
 
@@ -46,6 +49,7 @@ export const PromotionPanel = () => {
     isLargeScreen: boolean,
     isFlipped: boolean
   ): string => {
+    console.trace("calling", isBoardFlipped, color);
     const size = isLargeScreen ? 8.75 : 11;
     const offset = isLargeScreen ? 35 : 45;
 

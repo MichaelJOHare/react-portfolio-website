@@ -75,7 +75,7 @@ export const Board = () => {
         }}
       >
         {promotionHandler.isShown && (
-          <div className="absolute top-0 left-0 w-[90vmin] h-[90vmin] bg-black/20 z-20 lg:w-[70vmin] lg:h-[70vmin] limitedHeight:w-[90vmin] limitedHeight:h-[90vmin]">
+          <div className="absolute top-0 left-0 inset-0 bg-black/20 z-20">
             <PromotionPanel />
           </div>
         )}

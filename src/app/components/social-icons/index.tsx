@@ -1,10 +1,9 @@
-import { Mail, Github, Linkedin, Pdf } from "./icons";
+import { Mail, Github, Linkedin } from "./icons";
 
 const components = {
   mail: Mail,
   github: Github,
   linkedin: Linkedin,
-  pdf: Pdf,
 };
 
 type SocialIconProps = {
@@ -13,7 +12,7 @@ type SocialIconProps = {
   size?: number;
 };
 
-const SocialIcon = ({ kind, href, size = 8 }: SocialIconProps) => {
+export const SocialIcon = ({ kind, href, size = 8 }: SocialIconProps) => {
   if (
     !href ||
     (kind === "mail" &&
@@ -37,5 +36,3 @@ const SocialIcon = ({ kind, href, size = 8 }: SocialIconProps) => {
     </a>
   );
 };
-
-export default SocialIcon;

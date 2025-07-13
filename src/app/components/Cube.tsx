@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-const Cube = () => {
+export const Cube = () => {
   const cubeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -58,5 +58,3 @@ const Cube = () => {
     />
   );
 };
-
-export default Cube;

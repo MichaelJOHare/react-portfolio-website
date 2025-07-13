@@ -10,7 +10,7 @@ export default function Home() {
             About Me
           </h1>
         </div>
-        <div className="container py-12 max-w-none">
+        <div className="container py-12 max-w-screen">
           <div className="-m-4 flex flex-wrap justify-center">
             <AboutSection />
           </div>

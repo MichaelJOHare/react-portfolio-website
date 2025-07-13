@@ -20,7 +20,7 @@ export const Card = ({
     <div
       className={`${
         imgSrc && "h-full"
-      }  overflow-hidden rounded-md border-2 border-gray-200 border-opacity-60 dark:border-gray-700 hover:bg-slate-100 dark:hover:bg-zinc-800 flex flex-col`}
+      }  overflow-hidden rounded-md border-2 border-gray-200/60 dark:border-gray-700 hover:bg-slate-100 dark:hover:bg-zinc-800 flex flex-col`}
     >
       {imgSrc &&
         (href ? (

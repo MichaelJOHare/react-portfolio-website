@@ -1,5 +1,5 @@
 import Link from "next/link";
-import SocialIcon from "@/app/components/social-icons";
+import { SocialIcon } from "@/app/components/social-icons";
 import siteMetadata from "@/../data/siteMetadata";
 
 export const Footer = () => {

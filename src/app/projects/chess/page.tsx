@@ -13,7 +13,9 @@ export default function Page() {
 
   return (
     <GameProvider key={gameKey} onResetGame={handleResetGame}>
-      <ChessGameContainer />
+      <div className="overflow-x-hidden w-screen max-w-screen bg-yellow-100">
+        <ChessGameContainer />
+      </div>
     </GameProvider>
   );
 }

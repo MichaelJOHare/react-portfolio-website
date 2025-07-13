@@ -1,14 +1,15 @@
 import siteMetadata from "@/../data/siteMetadata";
 import headerNavLinks from "@/../data/headerNavLinks";
 import Logo from "@/../data/logo.svg";
-import SocialIcon from "./social-icons";
 import Link from "next/link";
-import MobileNav from "./MobileNav";
-import ThemeSwitcher from "./ThemeSwitcher";
+import PDF from "@/assets/icons/pdf.svg";
+import { ThemeSwitch } from "./ThemeSwitch";
+import { MobileNav } from "./MobileNav";
+import { SocialIcon } from "./social-icons";
 
-const Header = () => {
+export const Header = () => {
   return (
-    <header className="flex items-center justify-between pb-5 pt-5">
+    <header className="flex items-center justify-between py-5 px-5">
       <div>
         <Link href="/" aria-label={siteMetadata.headerTitle}>
           <div className="flex items-center justify-between">
@@ -25,24 +26,25 @@ const Header = () => {
           </div>
         </Link>
       </div>
-      <div className="flex items-center space-x-4 leading-5 sm:space-x-6">
+      <div className="flex items-center pr-2">
         {headerNavLinks
           .filter((link) => link.href !== "/")
           .map((link) => (
             <Link
               key={link.title}
               href={link.href}
-              className="hidden font-medium text-gray-900 dark:text-gray-100 sm:block"
+              className="px-3 hidden font-medium text-gray-900 dark:text-gray-100 sm:block"
             >
               {link.title}
             </Link>
           ))}
         <div className="group relative">
-          <SocialIcon
-            kind="pdf"
-            href="/assets/resume/Michael_O'Hare_Resume.pdf"
-            size={8}
-          />
+          <button className="flex pr-4">
+            <PDF
+              className="w-8 h-8"
+              href="/assets/resume/Michael_O'Hare_Resume.pdf"
+            />
+          </button>
           <span
             role="tooltip"
             className="pointer-events-none absolute px-2 py-2 -top-7 -left-4 w-max opacity-0 transition-opacity group-hover:opacity-100 text-sm font-medium text-white duration-300 bg-gray-900 rounded-lg shadow-sm dark:bg-gray-800"
@@ -50,11 +52,9 @@ const Header = () => {
             Resume
           </span>
         </div>
-        <ThemeSwitcher />
+        <ThemeSwitch />
         <MobileNav />
       </div>
     </header>
   );
 };
-
-export default Header;
