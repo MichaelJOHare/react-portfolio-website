@@ -89,7 +89,7 @@ export const GameLog = () => {
                 isBoardFlipped
               )}
               onChange={updateStateOnFenChange}
-              /* add on move -> update fen, on user change -> update board/state */
+              /* add on user change -> update board/state */
             />
           )}
         </div>

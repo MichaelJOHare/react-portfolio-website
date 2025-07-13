@@ -1,11 +1,4 @@
-import {
-  Move,
-  MoveHistory,
-  PieceType,
-  Player,
-  PlayerColor,
-  Square,
-} from "../types";
+import { MoveHistory, PieceType, Player, PlayerColor, Square } from "../types";
 import { getPieceAt } from "./board";
 import { createSquare, squareToString } from "./square";
 

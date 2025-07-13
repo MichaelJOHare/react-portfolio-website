@@ -249,7 +249,7 @@ export const pawnMovementStrategy: MovementStrategy = (
   addNormalMoves(row, col, direction, backRank, piece, board, legalMoves);
   addDoubleMove(row, col, direction, startingRow, piece, board, legalMoves);
   addCaptureMoves(row, col, direction, backRank, piece, board, legalMoves);
-  addEnPassantMoves(row, col, piece, board, moveHistory, legalMoves);
+  addEnPassantMoves(row, col, piece, board, moveHistory.moves, legalMoves);
   addPromotionMoves(row, col, piece, board, legalMoves);
 
   return legalMoves;

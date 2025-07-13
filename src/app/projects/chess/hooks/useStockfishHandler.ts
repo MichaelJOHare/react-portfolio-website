@@ -79,6 +79,7 @@ export const useStockfishHandler = (
 
   const handleEngineMessage = (event: MessageEvent) => {
     const line = typeof event === "object" ? event.data : event;
+    console.log(line);
     if (INFORMS_DEPTH.test(line)) {
       const currentDepth = parseInt(line.match(INFORMS_DEPTH)[1], 10);
       const currentTime = Date.now();
@@ -190,12 +191,16 @@ export const useStockfishHandler = (
   useEffect(() => {
     if (!workerRef.current) return;
     terminate();
+    setEngineConfigured(false);
+    hasConfiguredEngine.current = false;
+    setShouldFindMove(true);
 
     startWorker(version);
   }, [version]);
 
   // useEffect because of interacting with worker
   useEffect(() => {
+    console.log(shouldFindMove, engineReady, engineConfigured);
     if (shouldFindMove && engineReady && engineConfigured) {
       const {
         board,
@@ -220,6 +225,8 @@ export const useStockfishHandler = (
       sendCommand(`position fen ${fen}`);
       sendCommand(`go depth ${depth}`);
     }
+    // esLint doesn't know when a ref ^gmRef^ (which shouldn't be included in dep array) is passed as a prop
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [shouldFindMove, engineReady, engineConfigured, depth, isBoardFlipped]);
 
   // useEffect because need to split up shouldFindMove and findMove to prevent circular dependency
@@ -237,8 +244,11 @@ export const useStockfishHandler = (
       setShouldFindMove(true);
     }
     if (!isAnalysisMode) {
-      highlighter.clearStockfishBestMoveArrow(); // does this need to be in useEffect? probably don't want highlighter in this dep array
+      highlighter.clearStockfishBestMoveArrow();
     }
+    // esLint doesn't know when a ref ^gmRef^ (which shouldn't be included in dep array) is passed as a prop
+    // also, just want stockfish arrow cleared when stockfishEnabled changes, not when highlighter does
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [isPlaying, stockfishEnabled, colorChoice]);
 
   // useEffect because of interaction with worker

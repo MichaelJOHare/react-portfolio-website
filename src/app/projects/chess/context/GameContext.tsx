@@ -50,7 +50,7 @@ type GameContextType = {
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider = ({ children, onResetGame }: Props) => {
-  const hasStartedWorker = useRef(false);
+  // deleted this idk what it was for
   const [isBoardFlipped, setIsBoardFlipped] = useState(false);
   const [version, setVersion] = useState<"sf-16" | "sf-17">("sf-16");
   const [stockfishEnabled, setStockfishEnabled] = useState(false);
@@ -90,6 +90,7 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
   };
 
   // useEffect because only running this once on mount, don't need gameManager in dep array
+  //        can maybe get rid of this if I set gameState equal to what initializeBoard does
   useEffect(() => {
     gameManager.initializeBoard();
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
@@ -100,7 +101,7 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     gameManagerRef.current = gameManager;
   }, [gameManager]);
 
-  // useEffect because worker needs to start and terminate based on state
+  // useEffect because async worker needs to start and terminate based on state
   useEffect(() => {
     if (!stockfishEnabled && !isPlayingVsComputer) {
       stockfishHandler.terminate();
@@ -120,15 +121,13 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
       }
     }
 
-    if (!hasStartedWorker.current && !stockfishHandler.isRunning()) {
+    if (!stockfishHandler.isRunning()) {
       stockfishHandler.startWorker(version);
-      hasStartedWorker.current = true;
     }
   }, [
     computerOpponentOptions, // maybe silence this linter, idk how to limit calls while satisfying exhaustive deps
     stockfishEnabled, // maybe split this up into two effects
     version,
-    stockfishEnabled,
     isPlayingVsComputer,
     isBoardFlipped,
   ]);

@@ -5,7 +5,6 @@ import Link from "next/link";
 import PDF from "@/assets/icons/pdf.svg";
 import { ThemeSwitch } from "./ThemeSwitch";
 import { MobileNav } from "./MobileNav";
-import { SocialIcon } from "./social-icons";
 
 export const Header = () => {
   return (
