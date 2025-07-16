@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useRef,
-} from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import {
   GameManager,
   Highlighter,
@@ -57,9 +51,8 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     colorChoice: -1,
   });
 
-  const isPlayingVsComputer =
-    computerOpponentOptions.colorChoice !== -1 &&
-    computerOpponentOptions.strengthLevel !== -1;
+  const { strengthLevel, colorChoice } = computerOpponentOptions;
+  const isPlayingVsComputer = colorChoice !== -1 && strengthLevel !== -1;
   const gameManager = useGameManager(isBoardFlipped);
   const highlighter = useHighlighter();
   const promotionHandler = usePromotionHandler(
@@ -72,10 +65,10 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     highlighter,
     version,
     isBoardFlipped,
-    stockfishEnabled,
     computerOpponentOptions.colorChoice,
     computerOpponentOptions.strengthLevel
   );
+  const { startWorker, terminate } = stockfishHandler;
   const pieceSelector = usePieceSelector(
     gameManager,
     highlighter,
@@ -96,24 +89,18 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
 
   // useEffect because async worker needs to start and terminate based on state
   useEffect(() => {
-    if (!stockfishEnabled && !isPlayingVsComputer) {
-      stockfishHandler.terminate();
-      return;
-    }
+    terminate();
 
+    if (stockfishEnabled || isPlayingVsComputer) {
+      startWorker(version);
+    } // might need to silence linter?
+  }, [stockfishEnabled, version, isPlayingVsComputer, startWorker, terminate]);
+
+  useEffect(() => {
     if (isPlayingVsComputer) {
       setStockfishEnabled(false);
     }
-
-    if (!stockfishHandler.isRunning()) {
-      stockfishHandler.startWorker(version);
-    }
-  }, [
-    // maybe silence this linter, idk how to limit calls while satisfying exhaustive deps
-    stockfishEnabled,
-    version,
-    isPlayingVsComputer,
-  ]);
+  }, [isPlayingVsComputer]);
 
   return (
     <GameContext.Provider

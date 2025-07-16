@@ -26,21 +26,24 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
   } = highlighter;
   const { deselectPiece } = pieceSelector;
   const { clearPromotionDetails } = promotionHandler;
-  const { setShouldStopThinking } = stockfishHandler;
+  const { setShouldStopThinking, resetEngine } = stockfishHandler;
 
   const clearUI = () => {
+    setShouldStopThinking((prev) => !prev);
+    resetEngine();
     clearPromotionDetails();
     clearDrawnHighlights();
     clearStockfishBestMoveArrow();
     deselectPiece();
   };
 
+  // once isCheckmate ->
+
   if (direction === "left") {
     return (
       <button
         type="button"
         onClick={() => {
-          setShouldStopThinking((prev) => !prev);
           if (moveHistory.length > 0) {
             clearUI();
             if (
@@ -66,10 +69,8 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
       <button
         type="button"
         onClick={() => {
-          console.log(undoneMoveHistory);
           if (undoneMoveHistory.length > 0) {
             clearUI();
-            setShouldStopThinking((prev) => !prev);
             if (
               players[0].type === PlayerType.COMPUTER ||
               players[1].type === PlayerType.COMPUTER

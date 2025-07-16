@@ -269,7 +269,6 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     let currentPlayerIndex = gameState.currentPlayerIndex;
     let halfMoveClock = gameState.halfMoveClock;
     let fullMoveNumber = gameState.fullMoveNumber;
-    console.log(gameState.moveHistory);
 
     for (let i = 0; i < count; i++) {
       const lastRecord = updatedMoveHistory.pop();

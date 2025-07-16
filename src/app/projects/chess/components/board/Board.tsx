@@ -15,6 +15,7 @@ export const Board = () => {
     pieceSelector,
     promotionHandler,
     isBoardFlipped,
+    stockfishEnabled,
   } = useGame();
   const { board } = gameManager;
   const { validMoves, handleDragStart, handleDragEnd } = pieceSelector;
@@ -30,20 +31,6 @@ export const Board = () => {
     isBoardFlipped
   );
 
-  const isMoveValid = (row: number, col: number) =>
-    validMoves.some((move) => move.row === row && move.col === col);
-
-  const parseSquareId = (id: string): Square => {
-    const [row, col] = id.split("-").map(Number);
-    return { row, col };
-  };
-
-  const isSquareToHide = (square: Square) => {
-    return promotionHandler.squaresToHide.find(
-      (s) => s.row === square.row && s.col === square.col
-    );
-  };
-
   const onDragStart = (event: DragStartEvent) => {
     const { row, col } = parseSquareId(event.active.id as string);
     handleDragStart(row, col);
@@ -57,6 +44,23 @@ export const Board = () => {
     const end = parseSquareId(over.id as string);
 
     handleDragEnd(start, end);
+  };
+
+  const isMoveValid = (row: number, col: number) =>
+    validMoves.some((move) => move.row === row && move.col === col);
+
+  const shouldShowStockfishArrow = () =>
+    highlightedSquares.stockfishBestMove && stockfishEnabled;
+
+  const parseSquareId = (id: string): Square => {
+    const [row, col] = id.split("-").map(Number);
+    return { row, col };
+  };
+
+  const isSquareToHide = (square: Square) => {
+    return promotionHandler.squaresToHide.find(
+      (s) => s.row === square.row && s.col === square.col
+    );
   };
 
   return (
@@ -89,7 +93,7 @@ export const Board = () => {
         {highlightedSquares.circlesDrawnOnSquares.map((circle, index) => (
           <Circle key={`circle-${index}`} {...circle} />
         ))}
-        {highlightedSquares.stockfishBestMove && (
+        {shouldShowStockfishArrow() && (
           <Arrow key="stockfish-arrow" {...stockfishArrow} />
         )}
         {board.map((row, rowIndex) =>
