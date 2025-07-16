@@ -13,6 +13,7 @@ import {
   isEmpty,
   getMovementStrategyFromType,
   createSquare,
+  flipSquare,
 } from "../utils";
 import { pawnMovementStrategy } from "./strategies";
 
@@ -415,14 +416,14 @@ export const isValidCastlingMove = (
  ***** HELPER FUNCTIONS FOR UNDOING WITH BOARD FLIPPED *****
  */
 
-const getEffectiveSquare = (
+export const getEffectiveSquare = (
   square: Square,
   wasBoardFlipped: boolean,
   isBoardFlipped: boolean
 ): Square => {
   return (wasBoardFlipped && !isBoardFlipped) ||
     (!wasBoardFlipped && isBoardFlipped)
-    ? { row: 7 - square.row, col: 7 - square.col }
+    ? flipSquare(square)
     : square;
 };
 

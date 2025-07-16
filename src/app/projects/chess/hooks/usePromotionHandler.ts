@@ -8,7 +8,11 @@ import {
   PlayerColor,
   Square,
 } from "../types";
-import { createPromotionMove, getSquaresToHideDuringPromotion } from "../utils";
+import {
+  createPromotionMove,
+  flipSquare,
+  getSquaresToHideDuringPromotion,
+} from "../utils";
 
 type PromotionPanelState = {
   isShown: boolean;
@@ -33,23 +37,16 @@ export const usePromotionHandler = (
       squaresToHide: [],
     });
 
-  const togglePromotionPanel = (isShown: boolean) => {
-    setPromotionPanelState((prev) => ({
-      ...prev,
-      isShown,
-    }));
-  };
-
   const setPromotionDetails = (move: Move) => {
     // add highlighter.clearPreviousMoveSquares() maybe?  but don't want to clear array, just hide temporarily so undo/redo works with highlighter
+    const logicalTo = isBoardFlipped ? flipSquare(move.to) : move.to;
     const squaresToHide = getSquaresToHideDuringPromotion(
       move,
-      move.piece.color,
-      isBoardFlipped
+      move.piece.color
     );
     setPromotionPanelState({
       isShown: true,
-      promotionSquare: move.to,
+      promotionSquare: logicalTo,
       promotingPawn: move.piece,
       promotingColor: move.piece.color,
       squaresToHide: squaresToHide,
@@ -96,7 +93,6 @@ export const usePromotionHandler = (
   return {
     ...promotionPanelState,
     onPromotionSelect,
-    togglePromotionPanel, // don't need i think
     setPromotionDetails,
     clearPromotionDetails,
   };

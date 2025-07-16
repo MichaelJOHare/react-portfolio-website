@@ -26,7 +26,7 @@ export interface MovementStrategy {
     board: Square[][],
     piece: Piece,
     isBoardFlipped: boolean,
-    moveHistory: MoveHistory
+    moveHistory: Move[]
   ): Move[];
 }
 
@@ -69,7 +69,7 @@ export enum MoveType {
 }
 
 export type MoveHistory = {
-  moves: Move[];
+  move: Move;
   wasBoardFlipped: boolean;
 };
 

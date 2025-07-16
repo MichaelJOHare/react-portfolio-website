@@ -11,14 +11,13 @@ export const PromotionPanel = () => {
   const { isBoardFlipped, promotionHandler } = useGame();
   const { promotionSquare, promotingColor, onPromotionSelect } =
     promotionHandler;
-  const [isLargeScreen, setIsLargeScreen] = useState(
-    window.matchMedia("(min-width: 1024px) and (min-height: 900px)").matches
-  );
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(
       "(min-width: 1024px) and (min-height: 900px)"
     );
+    setIsLargeScreen(mediaQuery.matches);
     const handleChange = (e: MediaQueryListEvent) =>
       setIsLargeScreen(e.matches);
 
@@ -33,13 +32,16 @@ export const PromotionPanel = () => {
       ? [PieceType.QUEEN, PieceType.ROOK, PieceType.BISHOP, PieceType.KNIGHT]
       : [PieceType.KNIGHT, PieceType.BISHOP, PieceType.ROOK, PieceType.QUEEN];
 
-  const calculatePosition = (square: Square): Positions => {
+  const calculatePosition = (square: Square, isFlipped: boolean): Positions => {
     const smallScreenVmin = 90;
     const bigScreenVmin = 70;
     const squaresPerRow = 8;
+
+    const col = isFlipped ? squaresPerRow - 1 - square.col : square.col;
+
     return {
-      left: `${(smallScreenVmin / squaresPerRow) * square.col}vmin`,
-      leftLg: `${(bigScreenVmin / squaresPerRow) * square.col}vmin`,
+      left: `${(smallScreenVmin / squaresPerRow) * col}vmin`,
+      leftLg: `${(bigScreenVmin / squaresPerRow) * col}vmin`,
     };
   };
 
@@ -49,7 +51,7 @@ export const PromotionPanel = () => {
     isLargeScreen: boolean,
     isFlipped: boolean
   ): string => {
-    //console.trace("calling", isBoardFlipped, color);
+    console.log("calling", isBoardFlipped, color);
     const size = isLargeScreen ? 8.75 : 11;
     const offset = isLargeScreen ? 35 : 45;
 
@@ -63,7 +65,7 @@ export const PromotionPanel = () => {
     return `${showWhiteAtTop ? whiteBase : blackBase}vmin`;
   };
 
-  const positions = calculatePosition(promotionSquare);
+  const positions = calculatePosition(promotionSquare, isBoardFlipped);
   const orderedPromotionPieces = isBoardFlipped
     ? promotionPieces.slice().reverse()
     : promotionPieces;

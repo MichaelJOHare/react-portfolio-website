@@ -19,6 +19,7 @@ export const StockfishOptionsModal = ({
 }: StockfishOptionsModalProps) => {
   const {
     gameManager,
+    highlighter,
     isBoardFlipped,
     setComputerOpponentOptions,
     toggleFlipBoard,
@@ -44,6 +45,7 @@ export const StockfishOptionsModal = ({
       if (isBlack !== isBoardFlipped) {
         toggleFlipBoard();
         gameManager.flipPiecesOnBoard();
+        highlighter.flipAllHighlights();
       }
 
       setComputerOpponentOptions({
@@ -150,7 +152,7 @@ export const StockfishOptionsModal = ({
                   className={`bg-cyan-600 hover:bg-cyan-800 rounded-lg ${
                     colorChoice === 2 ? "bg-emerald-500" : ""
                   }`}
-                  onClick={() => setColorChoice(2)} // make these icons/buttons bigger
+                  onClick={() => setColorChoice(2)}
                 >
                   <RandomKing className="w-18 h-18 scale-[99%]" />
                 </button>

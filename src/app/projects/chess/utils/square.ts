@@ -22,3 +22,10 @@ export const getSquareFromNotation = (notationSquare: string): Square => {
   const row: number = legendNumber.indexOf(notationSquare.substring(1, 2));
   return { row, col };
 };
+
+export const flipSquare = (square: Square): Square => {
+  return {
+    row: 7 - square.row,
+    col: 7 - square.col,
+  };
+};

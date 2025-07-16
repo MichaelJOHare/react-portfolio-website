@@ -9,7 +9,6 @@ import {
   GameManager,
   Highlighter,
   PieceSelector,
-  PlayerType,
   PromotionHandler,
   StockfishHandler,
 } from "../types";
@@ -50,7 +49,6 @@ type GameContextType = {
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider = ({ children, onResetGame }: Props) => {
-  // deleted this idk what it was for
   const [isBoardFlipped, setIsBoardFlipped] = useState(false);
   const [version, setVersion] = useState<"sf-16" | "sf-17">("sf-16");
   const [stockfishEnabled, setStockfishEnabled] = useState(false);
@@ -63,7 +61,6 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     computerOpponentOptions.colorChoice !== -1 &&
     computerOpponentOptions.strengthLevel !== -1;
   const gameManager = useGameManager(isBoardFlipped);
-  const gameManagerRef = useRef<GameManager>(gameManager);
   const highlighter = useHighlighter();
   const promotionHandler = usePromotionHandler(
     gameManager,
@@ -71,7 +68,7 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     isBoardFlipped
   );
   const stockfishHandler = useStockfishHandler(
-    gameManagerRef,
+    gameManager,
     highlighter,
     version,
     isBoardFlipped,
@@ -97,11 +94,6 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, []);
 
-  // useEffect because stockfishHandler needs non-stale gameManager and it runs asynchronously
-  useEffect(() => {
-    gameManagerRef.current = gameManager;
-  }, [gameManager]);
-
   // useEffect because async worker needs to start and terminate based on state
   useEffect(() => {
     if (!stockfishEnabled && !isPlayingVsComputer) {
@@ -118,7 +110,7 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     }
   }, [
     // maybe silence this linter, idk how to limit calls while satisfying exhaustive deps
-    stockfishEnabled, // maybe split this up into two effects
+    stockfishEnabled,
     version,
     isPlayingVsComputer,
   ]);

@@ -16,7 +16,7 @@ const INFORMS_WDL = /wdl (\d+) (\d+) (\d+)/;
 const INFORMS_MATE = /score mate (\-?\d+)/;
 
 export const useStockfishHandler = (
-  gmRef: React.RefObject<GameManager>,
+  gameManager: GameManager,
   highlighter: Highlighter,
   version: "sf-16" | "sf-17",
   isBoardFlipped: boolean,
@@ -25,6 +25,7 @@ export const useStockfishHandler = (
   strengthLevel: number
 ) => {
   const workerRef = useRef<Worker | null>(null);
+  const gmRef = useRef(gameManager);
   const isBoardFlippedRef = useRef(isBoardFlipped);
   const [engineReady, setEngineReady] = useState(false);
   const [engineConfigured, setEngineConfigured] = useState(false);
@@ -113,7 +114,6 @@ export const useStockfishHandler = (
             colorChoice === 1) ||
           (players[currentPlayerIndex].color === PlayerColor.BLACK &&
             colorChoice === 0);
-        console.log(players, currentPlayerIndex);
 
         if (fromSq && toSq && isEngineTurn) {
           // intentional delay to make computer move feel more natural
@@ -220,11 +220,12 @@ export const useStockfishHandler = (
         halfMoveClock,
         fullMoveNumber,
       } = gmRef.current;
+      const movesHistory = moveHistory.map((record) => record.move);
       const fen = toFEN(
         board,
         players,
         currentPlayerIndex,
-        moveHistory,
+        movesHistory,
         halfMoveClock,
         fullMoveNumber,
         isBoardFlipped
@@ -238,6 +239,11 @@ export const useStockfishHandler = (
     // esLint doesn't know when a ref ^gmRef^ (which shouldn't be included in dep array) is passed as a prop
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [shouldFindMove, engineReady, engineConfigured, depth, isBoardFlipped]);
+
+  // useEffect because stockfishHandler needs non-stale gameManager and it runs asynchronously
+  useEffect(() => {
+    gmRef.current = gameManager;
+  }, [gameManager]);
 
   // useEffect because need to split up shouldFindMove and findMove to prevent circular dependency
   useEffect(() => {

@@ -66,6 +66,7 @@ export const usePieceSelector = (
 
     setShouldStopThinking(true);
   };
+
   const handleClick = (row: number, col: number) => {
     const piece = board[row][col].piece;
     if (selectedPieceSquare) {

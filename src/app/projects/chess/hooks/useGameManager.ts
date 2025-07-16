@@ -29,6 +29,7 @@ import {
   undoPromoMove,
   cloneBoard,
   createSquare,
+  getEffectiveSquare,
 } from "../utils";
 
 type GameState = {
@@ -40,8 +41,8 @@ type GameState = {
   capturedPieces: Piece[];
   kingSquare: Square | undefined;
   isKingInCheck: boolean;
-  moveHistory: MoveHistory;
-  undoneMoves: Move[];
+  moveHistory: MoveHistory[];
+  undoneMoveHistory: MoveHistory[];
   halfMoveClock: number;
   fullMoveNumber: number;
 };
@@ -59,8 +60,8 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     isKingInCheck: false,
     kingSquare: undefined,
     currentPlayerIndex: 0,
-    moveHistory: { moves: [], wasBoardFlipped: false },
-    undoneMoves: [],
+    moveHistory: [],
+    undoneMoveHistory: [],
     halfMoveClock: 0,
     fullMoveNumber: 1,
   });
@@ -120,6 +121,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
   ) => {
     const playerPieces = piecesByPlayer.get(player.id);
     const playerMoves: Move[] = [];
+    const moveHistory = gameState.moveHistory.map((record) => record.move);
 
     playerPieces?.forEach((piece) => {
       if (piece.isAlive) {
@@ -127,7 +129,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
           board,
           piece,
           isBoardFlipped,
-          gameState.moveHistory
+          moveHistory
         );
         playerMoves.push(...pieceMoves);
       }
@@ -182,7 +184,8 @@ export const useGameManager = (isBoardFlipped: boolean) => {
   const undoMoveByType = (
     move: Move,
     board: Square[][],
-    wasBoardFlipped: boolean
+    wasBoardFlipped: boolean,
+    isBoardFlipped: boolean
   ): {
     updatedPieces: Piece[];
     capturedPieces: Piece[];
@@ -259,22 +262,25 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     if (count <= 0) return;
 
     const newBoard = cloneBoard(gameState.board);
-    const updatedMoveHistory = { ...gameState.moveHistory };
-    const updatedUndoneMoves = [...gameState.undoneMoves];
+    const updatedMoveHistory = [...gameState.moveHistory];
+    const updatedUndoneMoves = [...gameState.undoneMoveHistory];
     let updatedCapturedPieces = [...gameState.capturedPieces];
     let updatedPiecesByPlayer = new Map(gameState.piecesByPlayer);
     let currentPlayerIndex = gameState.currentPlayerIndex;
     let halfMoveClock = gameState.halfMoveClock;
     let fullMoveNumber = gameState.fullMoveNumber;
+    console.log(gameState.moveHistory);
 
     for (let i = 0; i < count; i++) {
-      const lastMove = updatedMoveHistory.moves.pop();
-      if (!lastMove) break;
+      const lastRecord = updatedMoveHistory.pop();
+      if (!lastRecord) break;
+      const { move, wasBoardFlipped } = lastRecord;
 
       const result = undoMoveByType(
-        lastMove,
+        move,
         newBoard,
-        updatedMoveHistory.wasBoardFlipped
+        wasBoardFlipped,
+        isBoardFlipped
       );
 
       updatedPiecesByPlayer = updatePiecesByPlayer(
@@ -285,7 +291,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
       halfMoveClock = result.halfMoveClock;
       fullMoveNumber = result.fullMoveNumber;
       currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
-      updatedUndoneMoves.push(lastMove);
+      updatedUndoneMoves.push(lastRecord);
     }
 
     const { isKingInCheck, kingSquare } = getCheckStatus(
@@ -298,11 +304,8 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     setGameState((prevState) => ({
       ...prevState,
       board: newBoard,
-      moveHistory: {
-        moves: updatedMoveHistory.moves,
-        wasBoardFlipped: isBoardFlipped,
-      },
-      undoneMoves: updatedUndoneMoves,
+      moveHistory: updatedMoveHistory,
+      undoneMoveHistory: updatedUndoneMoves,
       capturedPieces: updatedCapturedPieces,
       piecesByPlayer: updatedPiecesByPlayer,
       currentPlayerIndex,
@@ -314,22 +317,25 @@ export const useGameManager = (isBoardFlipped: boolean) => {
   };
 
   const redoMove = () => {
-    const lastUndoneMove = gameState.undoneMoves.at(-1);
-    if (!lastUndoneMove) return;
-
-    const undoneMoves = [...gameState.undoneMoves.slice(0, -1)];
-    const { from, to, isPromotion } = lastUndoneMove;
+    const lastUndoneRecord = gameState.undoneMoveHistory.at(-1);
+    if (!lastUndoneRecord) return;
     const legalMoves = getLegalMoves();
+    const { move, wasBoardFlipped } = lastUndoneRecord;
+
+    const undoneMoves = [...gameState.undoneMoveHistory.slice(0, -1)];
+    const { from, to, isPromotion } = move;
+    const fromSq = getEffectiveSquare(from, wasBoardFlipped, isBoardFlipped);
+    const toSq = getEffectiveSquare(to, wasBoardFlipped, isBoardFlipped);
 
     const promotionType = isPromotion
-      ? (lastUndoneMove as PromotionMove).promotionType
+      ? (move as PromotionMove).promotionType
       : undefined;
 
     executeMove(
-      from.row,
-      from.col,
-      to.row,
-      to.col,
+      fromSq.row,
+      fromSq.col,
+      toSq.row,
+      toSq.col,
       legalMoves,
       promotionType,
       undoneMoves
@@ -393,7 +399,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     endCol: number,
     playerMoves: Move[],
     promotionType?: PieceType,
-    remainingUndoneMoves?: Move[]
+    remainingUndoneMoves?: MoveHistory[]
   ) => {
     const piece = gameState.board[startRow][startCol].piece;
     if (!piece) return;
@@ -416,6 +422,11 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     const { updatedPieces, capturedPieces, halfMoveClock, fullMoveNumber } =
       executeMoveByType(validMove, newBoard);
     const updatedPiecesByPlayer = updatePiecesByPlayer(updatedPieces);
+    const updatedMoveHistory = [...gameState.moveHistory];
+    updatedMoveHistory.push({
+      move: validMove,
+      wasBoardFlipped: isBoardFlipped,
+    });
     const { isKingInCheck, kingSquare } = getCheckStatus(
       newBoard,
       gameState.players[1 - gameState.currentPlayerIndex],
@@ -428,11 +439,8 @@ export const useGameManager = (isBoardFlipped: boolean) => {
       board: newBoard,
       piecesByPlayer: updatedPiecesByPlayer,
       currentPlayerIndex: prevState.currentPlayerIndex === 0 ? 1 : 0,
-      moveHistory: {
-        moves: [...prevState.moveHistory.moves, validMove],
-        wasBoardFlipped: isBoardFlipped,
-      },
-      undoneMoves: remainingUndoneMoves ? remainingUndoneMoves : [],
+      moveHistory: updatedMoveHistory,
+      undoneMoveHistory: remainingUndoneMoves ? remainingUndoneMoves : [],
       halfMoveClock,
       fullMoveNumber,
       capturedPieces: [...prevState.capturedPieces, ...capturedPieces],
