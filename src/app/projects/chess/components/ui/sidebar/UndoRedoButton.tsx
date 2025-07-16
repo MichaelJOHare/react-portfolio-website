@@ -7,13 +7,22 @@ type UndoRedoButtonProps = {
 };
 
 export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
-  const { gameManager, highlighter, pieceSelector } = useGame();
-  const { undoMove, redoMove, players } = gameManager;
+  const { gameManager, highlighter, pieceSelector, stockfishHandler } =
+    useGame();
+  const { undoMove, redoMove, players, undoneMoves, moveHistory } = gameManager;
+  const {
+    clearDrawnHighlights,
+    clearStockfishBestMoveArrow,
+    undoPreviousMoveSquares,
+    addPreviousMoveSquares,
+  } = highlighter;
+  const { deselectPiece } = pieceSelector;
+  const { setShouldStopThinking } = stockfishHandler;
 
   const clearUI = () => {
-    highlighter.clearDrawnHighlights();
-    highlighter.clearStockfishBestMoveArrow();
-    pieceSelector.deselectPiece();
+    clearDrawnHighlights();
+    clearStockfishBestMoveArrow();
+    deselectPiece();
   };
 
   if (direction === "left") {
@@ -21,8 +30,9 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
       <button
         type="button"
         onClick={() => {
-          if (gameManager.moveHistory.moves.length > 0) {
+          if (moveHistory.moves.length > 0) {
             clearUI();
+            setShouldStopThinking((prev) => !prev);
             if (
               players[0].type === PlayerType.COMPUTER || // test for undo during stockfish move
               players[1].type === PlayerType.COMPUTER
@@ -30,7 +40,7 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
               [0, 1].forEach(() => undoMove());
             } else {
               undoMove();
-              highlighter.undoPreviousMoveSquares();
+              undoPreviousMoveSquares();
             }
           }
         }}
@@ -45,19 +55,20 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
       <button
         type="button"
         onClick={() => {
-          if (gameManager.undoneMoves.length > 0) {
+          if (undoneMoves.length > 0) {
             clearUI();
+            setShouldStopThinking((prev) => !prev);
             if (
               players[0].type === PlayerType.COMPUTER ||
               players[1].type === PlayerType.COMPUTER
             ) {
               [0, 1].forEach(() => redoMove());
             }
-            const move = gameManager.undoneMoves.at(-1);
+            const move = undoneMoves.at(-1);
             if (!move) return;
 
             redoMove();
-            highlighter.addPreviousMoveSquares(move.from, move.to);
+            addPreviousMoveSquares(move.from, move.to);
           }
         }}
         className="w-full text-white bg-zinc-700 hover:bg-zinc-900  focus:ring-4 focus:outline-hidden focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center ms-1.5 dark:bg-zinc-900 dark:hover:bg-zinc-600 dark:focus:ring-blue-800"

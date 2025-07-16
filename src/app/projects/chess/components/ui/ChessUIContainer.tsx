@@ -1,6 +1,6 @@
 import { useGame } from "../../context/GameContext";
 import { UndoRedoButton } from "./sidebar/UndoRedoButton";
-import { GameLog } from "./sidebar/GameLog";
+import { GameLog } from "./sidebar/Sidebar";
 
 export const ChessUIContainer = () => {
   const { stockfishHandler, stockfishEnabled } = useGame();

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { toFEN } from "../../../utils/FEN";
 import { StockfishOptionsModal } from "./StockfishOptionsModal";
 import { useGame } from "../../../context/GameContext";
-import { GameLogButton } from "./GameLogButton";
+import { GameLogButton } from "./SidebarButton";
 import { MoveList } from "./MoveList";
 
 export const GameLog = () => {

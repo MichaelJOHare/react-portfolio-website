@@ -90,6 +90,7 @@ export const useStockfishHandler = (
         (currentDepth - lastDepthUpdate >= 3 &&
           currentTime - lastArrowUpdate >= 3000)
       ) {
+        //                                                              debounce this and mybe move into seprate function
         const moveData = line.match(INFORMS_CURRENT_MOVE);
         const from = moveData[1].substring(0, 2);
         const to = moveData[1].substring(2, 4);
@@ -200,7 +201,6 @@ export const useStockfishHandler = (
 
   // useEffect because of interacting with worker
   useEffect(() => {
-    console.log(shouldFindMove, engineReady, engineConfigured);
     if (shouldFindMove && engineReady && engineConfigured) {
       const {
         board,
@@ -221,7 +221,7 @@ export const useStockfishHandler = (
       );
 
       setEngineReady(false);
-      setShouldFindMove(false);
+      setShouldFindMove(false); // should some of these state setting/reactions be calls to functions instead?
       sendCommand(`position fen ${fen}`);
       sendCommand(`go depth ${depth}`);
     }
