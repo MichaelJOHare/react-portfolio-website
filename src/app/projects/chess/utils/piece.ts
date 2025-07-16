@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import {
   Player,
   PieceType,
@@ -23,7 +22,7 @@ export const createPiece = (
   isAlive: boolean,
   hasMoved?: boolean
 ): Piece => ({
-  id: uuidv4(),
+  id: `${color}_${type}_${currentSquare.row}_${currentSquare.col}`,
   player,
   type,
   color,

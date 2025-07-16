@@ -6,6 +6,7 @@ import CloseModalIcon from "@/assets/icons/close-modal-icon.svg";
 import { useGame } from "../../../context/GameContext";
 import { StockfishAnalysisToggle } from "./StockfishAnalysisToggle";
 import { StockfishVersionMenu } from "./StockfishVersionMenu";
+import { PlayerType } from "../../../types";
 
 type StockfishOptionsModalProps = {
   isOpen: boolean;
@@ -16,7 +17,12 @@ export const StockfishOptionsModal = ({
   isOpen,
   onClose,
 }: StockfishOptionsModalProps) => {
-  const { setComputerOpponentOptions } = useGame();
+  const {
+    gameManager,
+    isBoardFlipped,
+    setComputerOpponentOptions,
+    toggleFlipBoard,
+  } = useGame();
   const menuRef = useRef<HTMLDivElement>(null);
   const [strengthLevel, setStrengthLevel] = useState(-1);
   const [colorChoice, setColorChoice] = useState(-1);
@@ -27,8 +33,21 @@ export const StockfishOptionsModal = ({
     if (!playClicked) {
       const actualColor =
         colorChoice === 2 ? (Math.random() < 0.5 ? 0 : 1) : colorChoice;
+
+      const isBlack = actualColor === 1;
+      if (isBlack) {
+        gameManager.players[0].type = PlayerType.COMPUTER;
+      } else {
+        gameManager.players[1].type = PlayerType.COMPUTER;
+      }
+
+      if (isBlack !== isBoardFlipped) {
+        toggleFlipBoard();
+        gameManager.flipPiecesOnBoard();
+      }
+
       setComputerOpponentOptions({
-        strengthLevel: strengthLevel,
+        strengthLevel,
         colorChoice: actualColor,
       });
       onClose();

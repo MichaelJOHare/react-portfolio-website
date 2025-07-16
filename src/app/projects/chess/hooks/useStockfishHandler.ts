@@ -104,9 +104,18 @@ export const useStockfishHandler = (
       if (isPlaying) {
         const legalMoves = gmRef.current.getLegalMoves();
         const promotionType = determinePromotionType(promotion);
+        const players = gmRef.current.players;
+        const currentPlayerIndex = gmRef.current.currentPlayerIndex;
         const fromSq = convertNotationToSquare(from, isBoardFlippedRef.current);
         const toSq = convertNotationToSquare(to, isBoardFlippedRef.current);
-        if (fromSq && toSq) {
+        const isEngineTurn =
+          (players[currentPlayerIndex].color === PlayerColor.WHITE &&
+            colorChoice === 1) ||
+          (players[currentPlayerIndex].color === PlayerColor.BLACK &&
+            colorChoice === 0);
+        console.log(players, currentPlayerIndex);
+
+        if (fromSq && toSq && isEngineTurn) {
           // intentional delay to make computer move feel more natural
           const delay = Math.random() * (1200 - 400) + 400;
           setTimeout(() => {
@@ -118,6 +127,7 @@ export const useStockfishHandler = (
               legalMoves,
               promotionType
             );
+            highlighter.addPreviousMoveSquares(fromSq, toSq);
           }, delay);
         }
       } else {
@@ -243,13 +253,17 @@ export const useStockfishHandler = (
     if (isAnalysisMode || isEngineTurn) {
       setShouldFindMove(true);
     }
+    // esLint doesn't know when a ref ^gmRef^ (which shouldn't be included in dep array) is passed as a prop
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, [isPlaying, stockfishEnabled, colorChoice]);
+
+  // i don't think this needs to be useEffect, just want stockfish arrow cleared when stockfishEnabled changes, not when highlighter does
+  useEffect(() => {
+    const isAnalysisMode = !isPlaying && stockfishEnabled;
     if (!isAnalysisMode) {
       highlighter.clearStockfishBestMoveArrow();
     }
-    // esLint doesn't know when a ref ^gmRef^ (which shouldn't be included in dep array) is passed as a prop
-    // also, just want stockfish arrow cleared when stockfishEnabled changes, not when highlighter does
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [isPlaying, stockfishEnabled, colorChoice]);
+  }, [isPlaying, stockfishEnabled]);
 
   // useEffect because of interaction with worker
   useEffect(() => {

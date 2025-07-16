@@ -85,6 +85,7 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     promotionHandler,
     stockfishHandler
   );
+
   const toggleFlipBoard = () => {
     setIsBoardFlipped(!isBoardFlipped);
   };
@@ -110,26 +111,16 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
 
     if (isPlayingVsComputer) {
       setStockfishEnabled(false);
-
-      const isBlack = computerOpponentOptions.colorChoice === 1;
-      if (isBlack && !isBoardFlipped) {
-        gameManager.players[0].type = PlayerType.COMPUTER;
-        setIsBoardFlipped(true);
-        gameManager.flipPiecesOnBoard();
-      } else {
-        gameManager.players[1].type = PlayerType.COMPUTER;
-      }
     }
 
     if (!stockfishHandler.isRunning()) {
       stockfishHandler.startWorker(version);
     }
   }, [
-    computerOpponentOptions, // maybe silence this linter, idk how to limit calls while satisfying exhaustive deps
+    // maybe silence this linter, idk how to limit calls while satisfying exhaustive deps
     stockfishEnabled, // maybe split this up into two effects
     version,
     isPlayingVsComputer,
-    isBoardFlipped,
   ]);
 
   return (
