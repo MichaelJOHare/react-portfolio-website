@@ -61,6 +61,7 @@ export const useStockfishHandler = (
   );
 
   const resetEngine = useCallback(() => {
+    setShouldStopThinking(true);
     hasConfiguredEngine.current = false;
     sendCommand("ucinewgame");
     sendCommand("isready");
@@ -117,7 +118,8 @@ export const useStockfishHandler = (
 
           if (fromSq && toSq && isEngineTurn) {
             // intentional delay to make computer move feel more natural
-            const delay = Math.random() * (1200 - 400) + 400;
+            const delay = Math.random() * (1400 - 600) + 600;
+            console.log(delay);
             setTimeout(() => {
               gmRef.current.executeMove(
                 fromSq.row,

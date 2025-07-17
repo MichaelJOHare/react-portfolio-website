@@ -75,13 +75,13 @@ export const ChessSquare = ({ square, isValidMove, children }: SquareProps) => {
       onClick={() => handleClick(square.row, square.col)}
     >
       {/* adds green circles and corners for legal moves when piece is dragged */}
-      {isValidMove && !isOccupied && (
-        <div className="absolute w-4 h-4 rounded-full bg-green-600"></div>
+      {isValidMove && !isOccupied && !isOver && (
+        <div className="absolute w-1/3 h-1/3 rounded-full bg-green-600"></div>
       )}
-      {isValidMove && isOccupied && (
+      {isValidMove && isOccupied && !isOver && (
         <div className="absolute w-full h-full flex justify-center items-center bg-green-600 overflow-hidden">
           <div
-            className={`relative w-full h-full rounded-full ${getColor()} transform scale-110`}
+            className={`relative w-full h-full rounded-full ${getColor()} transform scale-115`}
           ></div>
         </div>
       )}

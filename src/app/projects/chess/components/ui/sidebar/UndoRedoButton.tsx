@@ -25,10 +25,9 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
   } = highlighter;
   const { deselectPiece } = pieceSelector;
   const { clearPromotionDetails } = promotionHandler;
-  const { setShouldStopThinking, resetEngine } = stockfishHandler;
+  const { resetEngine } = stockfishHandler;
 
   const clearUI = () => {
-    setShouldStopThinking((prev) => !prev);
     resetEngine();
     clearPromotionDetails();
     clearDrawnHighlights();
@@ -40,8 +39,8 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
     if (moveHistory.length === 0) return;
     clearUI();
     const isVsComputer =
-      players[0].type === PlayerType.COMPUTER || // test for undo during stockfish move
-      players[1].type === PlayerType.COMPUTER; // make button unclickable if players[currentPlayerIndex].type === PlayerType.COMPUTER
+      players[0].type === PlayerType.COMPUTER ||
+      players[1].type === PlayerType.COMPUTER;
     const undoCount = isVsComputer ? 2 : 1;
     if (moveHistory.length < undoCount) return;
 
@@ -75,7 +74,7 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
       });
 
     replayMoves(redoCount, false);
-    previousMoveSquares.forEach(({ startSquare, endSquare }) => {
+    previousMoveSquares.reverse().forEach(({ startSquare, endSquare }) => {
       addPreviousMoveSquares(startSquare, endSquare);
     });
   };

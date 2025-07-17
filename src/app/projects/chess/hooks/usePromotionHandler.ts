@@ -38,6 +38,7 @@ export const usePromotionHandler = (
     });
 
   const setPromotionDetails = (move: Move) => {
+    console.log("calling");
     // add highlighter.clearPreviousMoveSquares() maybe?  but don't want to clear array, just hide temporarily so undo/redo works with highlighter
     const logicalTo = isBoardFlipped ? flipSquare(move.to) : move.to;
     const squaresToHide = getSquaresToHideDuringPromotion(

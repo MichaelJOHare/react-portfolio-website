@@ -28,7 +28,7 @@ export const StockfishOptionsModal = ({
   const [strengthLevel, setStrengthLevel] = useState(-1);
   const [colorChoice, setColorChoice] = useState(-1);
   const [playClicked, setPlayClicked] = useState(false);
-  const strengthLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const strengthLevels = [1, 2, 3, 4, 5, 6, 7, 8];
 
   const handlePlayToggle = () => {
     if (!playClicked) {
@@ -120,12 +120,12 @@ export const StockfishOptionsModal = ({
               <h3 className="self-center pt-2 pb-1 font-bold text-xl">
                 Strength level
               </h3>
-              <ul className="self-center grid grid-cols-5 gap-2">
+              <ul className="self-center grid grid-cols-4 gap-2">
                 {strengthLevels.map((level) => (
                   <button
                     type="button"
                     key={level}
-                    className={`bg-cyan-600 px-1 text-4xl hover:bg-cyan-800 rounded-lg ${
+                    className={`size-12 bg-cyan-600 px-1 text-4xl hover:bg-cyan-800 rounded-lg ${
                       level === strengthLevel ? "bg-emerald-500" : ""
                     }`}
                     onClick={() => setStrengthLevel(level)}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { toFEN } from "../../../utils/FEN";
 import { StockfishOptionsModal } from "./StockfishOptionsModal";
 import { useGame } from "../../../context/GameContext";
-import { GameLogButton } from "./SidebarButton";
+import { SidebarButton } from "./SidebarButton";
 import { MoveList } from "./MoveList";
 
 export const GameLog = () => {
@@ -25,6 +25,7 @@ export const GameLog = () => {
   const { flipAllHighlights } = highlighter;
   const [showFenTextArea, setShowFenTextArea] = useState(false);
   const [showStockfishOptions, setShowStockfishOptions] = useState(false);
+  const movesHistory = moveHistory.map((record) => record.move);
 
   const updateStateOnFenChange = () => {
     // parse fen -> board[row][col].piece = piece etc.
@@ -44,22 +45,22 @@ export const GameLog = () => {
         <div className="h-full w-full flex flex-col border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
           <div className="flex items-center justify-center px-3 py-2 border-b dark:border-gray-600">
             <div className="w-full max-w-lg flex justify-between items-center">
-              <GameLogButton
+              <SidebarButton
                 icon="flipBoard"
                 label="Flip Board"
                 onClick={onFlipBoard}
               />
-              <GameLogButton
+              <SidebarButton
                 icon="fen"
                 label="Import/export FEN"
                 onClick={() => setShowFenTextArea((v) => !v)}
               />
-              <GameLogButton
+              <SidebarButton
                 icon="reset"
                 label="Reset Game"
                 onClick={onResetGame}
               />
-              <GameLogButton
+              <SidebarButton
                 icon="stockfish"
                 label="Stockfish Options"
                 onClick={() => setShowStockfishOptions(true)}
@@ -83,7 +84,7 @@ export const GameLog = () => {
                 board,
                 players,
                 currentPlayerIndex,
-                moveHistory,
+                movesHistory,
                 halfMoveClock,
                 fullMoveNumber,
                 isBoardFlipped

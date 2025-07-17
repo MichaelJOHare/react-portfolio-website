@@ -9,7 +9,7 @@ type GameLogButtonProps = {
   onClick: () => void;
 };
 
-export const GameLogButton = ({ icon, label, onClick }: GameLogButtonProps) => {
+export const SidebarButton = ({ icon, label, onClick }: GameLogButtonProps) => {
   const icons = {
     flipBoard: <FlipBoardIcon className="size-10" />,
     fen: <FenIcon className="size-10" />,

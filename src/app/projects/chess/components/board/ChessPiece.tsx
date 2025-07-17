@@ -29,7 +29,7 @@ export const ChessPiece = ({ type, color, square }: ChessPieceProps) => {
       )}
       <img
         className={`h-5/6 z-10 select-none absolute ${
-          isDragging ? "cursor-grabbing" : "cursor-pointer"
+          isDragging ? "cursor-grabbing z-20" : "cursor-pointer"
         }`}
         ref={setNodeRef}
         style={style}
