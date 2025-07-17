@@ -61,6 +61,7 @@ export default function RootLayout({
     <html
       lang={siteMetadata.language}
       className="scroll-smooth"
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <meta

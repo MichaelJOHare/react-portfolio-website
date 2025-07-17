@@ -1,8 +1,8 @@
 interface Project {
   title: string;
   description: string;
-  href?: string;
-  imgSrc?: string;
+  href: string;
+  imgSrc: string;
   playable?: boolean;
 }
 

@@ -11,8 +11,8 @@ export default function Projects() {
             Projects
           </h1>
         </div>
-        <div className="container py-12 2xl:max-w-none">
-          <div className="-m-4 flex flex-wrap 2xl:justify-center">
+        <div className="py-12 lg:max-w-none">
+          <div className="-m-4 flex flex-wrap lg:justify-center">
             {projectsData.map((d) => (
               <Card
                 key={d.title}
