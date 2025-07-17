@@ -16,8 +16,7 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
     stockfishHandler,
     isBoardFlipped,
   } = useGame();
-  const { undoMove, redoMove, players, undoneMoveHistory, moveHistory } =
-    gameManager;
+  const { replayMoves, players, undoneMoveHistory, moveHistory } = gameManager;
   const {
     clearDrawnHighlights,
     clearStockfishBestMoveArrow,
@@ -37,26 +36,56 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
     deselectPiece();
   };
 
-  // once isCheckmate ->
+  const handleUndoMove = () => {
+    if (moveHistory.length === 0) return;
+    clearUI();
+    const isVsComputer =
+      players[0].type === PlayerType.COMPUTER || // test for undo during stockfish move
+      players[1].type === PlayerType.COMPUTER; // make button unclickable if players[currentPlayerIndex].type === PlayerType.COMPUTER
+    const undoCount = isVsComputer ? 2 : 1;
+    if (moveHistory.length < undoCount) return;
+
+    replayMoves(undoCount, true);
+    undoPreviousMoveSquares(undoCount);
+  };
+
+  const handleRedoMove = () => {
+    if (undoneMoveHistory.length === 0) return;
+    clearUI();
+    const isVsComputer =
+      players[0].type === PlayerType.COMPUTER ||
+      players[1].type === PlayerType.COMPUTER;
+    const redoCount = isVsComputer ? 2 : 1;
+    if (undoneMoveHistory.length < redoCount) return;
+
+    const previousMoveSquares = undoneMoveHistory
+      .slice(-redoCount)
+      .map(({ move, wasBoardFlipped }) => {
+        const fromSq = getEffectiveSquare(
+          move.from,
+          wasBoardFlipped,
+          isBoardFlipped
+        );
+        const toSq = getEffectiveSquare(
+          move.to,
+          wasBoardFlipped,
+          isBoardFlipped
+        );
+        return { startSquare: fromSq, endSquare: toSq };
+      });
+
+    replayMoves(redoCount, false);
+    previousMoveSquares.forEach(({ startSquare, endSquare }) => {
+      addPreviousMoveSquares(startSquare, endSquare);
+    });
+  };
 
   if (direction === "left") {
     return (
       <button
         type="button"
         onClick={() => {
-          if (moveHistory.length > 0) {
-            clearUI();
-            if (
-              players[0].type === PlayerType.COMPUTER || // test for undo during stockfish move
-              players[1].type === PlayerType.COMPUTER // make button unclickable if players[currentPlayerIndex].type === PlayerType.COMPUTER
-            ) {
-              undoMove(2);
-              undoPreviousMoveSquares(2);
-            } else {
-              undoMove();
-              undoPreviousMoveSquares();
-            }
-          }
+          handleUndoMove();
         }}
         className="w-full text-white bg-zinc-700 hover:bg-zinc-900 focus:ring-4 focus:outline-hidden focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-1.5 dark:bg-zinc-900 dark:hover:bg-zinc-600 dark:focus:ring-blue-800"
       >
@@ -69,31 +98,7 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
       <button
         type="button"
         onClick={() => {
-          if (undoneMoveHistory.length > 0) {
-            clearUI();
-            if (
-              players[0].type === PlayerType.COMPUTER ||
-              players[1].type === PlayerType.COMPUTER
-            ) {
-              [0, 1].forEach(() => redoMove());
-            }
-            const lastRecord = undoneMoveHistory.at(-1);
-            if (!lastRecord) return;
-            const { move, wasBoardFlipped } = lastRecord;
-            const fromSq = getEffectiveSquare(
-              move.from,
-              wasBoardFlipped,
-              isBoardFlipped
-            );
-            const toSq = getEffectiveSquare(
-              move.to,
-              wasBoardFlipped,
-              isBoardFlipped
-            );
-
-            redoMove();
-            addPreviousMoveSquares(fromSq, toSq);
-          }
+          handleRedoMove();
         }}
         className="w-full text-white bg-zinc-700 hover:bg-zinc-900  focus:ring-4 focus:outline-hidden focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center ms-1.5 dark:bg-zinc-900 dark:hover:bg-zinc-600 dark:focus:ring-blue-800"
       >

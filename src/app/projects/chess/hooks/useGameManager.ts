@@ -258,87 +258,86 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     };
   };
 
-  const undoMove = (count: number = 1) => {
+  const replayMoves = (count: number, isUndo: boolean) => {
     if (count <= 0) return;
 
-    const newBoard = cloneBoard(gameState.board);
-    const updatedMoveHistory = [...gameState.moveHistory];
-    const updatedUndoneMoves = [...gameState.undoneMoveHistory];
-    let updatedCapturedPieces = [...gameState.capturedPieces];
-    let updatedPiecesByPlayer = new Map(gameState.piecesByPlayer);
+    const boardCopy = cloneBoard(gameState.board);
+    const moveHistory = [...gameState.moveHistory];
+    const undoneMoves = [...gameState.undoneMoveHistory];
+    let capturedPieces = [...gameState.capturedPieces];
+    let piecesByPlayer = new Map(gameState.piecesByPlayer);
     let currentPlayerIndex = gameState.currentPlayerIndex;
     let halfMoveClock = gameState.halfMoveClock;
     let fullMoveNumber = gameState.fullMoveNumber;
 
     for (let i = 0; i < count; i++) {
-      const lastRecord = updatedMoveHistory.pop();
-      if (!lastRecord) break;
-      const { move, wasBoardFlipped } = lastRecord;
+      if (isUndo) {
+        const lastRecord = moveHistory.pop();
+        if (!lastRecord) break;
+        const { move, wasBoardFlipped } = lastRecord;
 
-      const result = undoMoveByType(
-        move,
-        newBoard,
-        wasBoardFlipped,
-        isBoardFlipped
-      );
+        const result = undoMoveByType(
+          move,
+          boardCopy,
+          wasBoardFlipped,
+          isBoardFlipped
+        );
 
-      updatedPiecesByPlayer = updatePiecesByPlayer(
-        result.updatedPieces,
-        updatedPiecesByPlayer
-      );
-      updatedCapturedPieces = result.capturedPieces;
-      halfMoveClock = result.halfMoveClock;
-      fullMoveNumber = result.fullMoveNumber;
-      currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
-      updatedUndoneMoves.push(lastRecord);
+        piecesByPlayer = updatePiecesByPlayer(
+          result.updatedPieces,
+          piecesByPlayer
+        );
+        capturedPieces = result.capturedPieces;
+        halfMoveClock = result.halfMoveClock;
+        fullMoveNumber = result.fullMoveNumber;
+        currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
+        undoneMoves.push(lastRecord);
+      } else {
+        const lastUndone = undoneMoves.pop();
+        if (!lastUndone) break;
+        const { move, wasBoardFlipped } = lastUndone;
+
+        const effectiveMove = {
+          ...move,
+          from: getEffectiveSquare(move.from, wasBoardFlipped, isBoardFlipped),
+          to: getEffectiveSquare(move.to, wasBoardFlipped, isBoardFlipped),
+        };
+
+        const result = executeMoveByType(effectiveMove, boardCopy);
+
+        capturedPieces = [...capturedPieces, ...result.capturedPieces];
+        piecesByPlayer = updatePiecesByPlayer(
+          result.updatedPieces,
+          piecesByPlayer
+        );
+        moveHistory.push({ move, wasBoardFlipped });
+
+        halfMoveClock = result.halfMoveClock;
+        fullMoveNumber = result.fullMoveNumber;
+        currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
+      }
     }
 
     const { isKingInCheck, kingSquare } = getCheckStatus(
-      newBoard,
+      boardCopy,
       gameState.players[1 - currentPlayerIndex],
       gameState.players[currentPlayerIndex],
-      updatedPiecesByPlayer
+      piecesByPlayer
     );
 
     setGameState((prevState) => ({
       ...prevState,
-      board: newBoard,
-      moveHistory: updatedMoveHistory,
-      undoneMoveHistory: updatedUndoneMoves,
-      capturedPieces: updatedCapturedPieces,
-      piecesByPlayer: updatedPiecesByPlayer,
+      board: boardCopy,
+      moveHistory,
+      undoneMoveHistory: undoneMoves,
+      capturedPieces,
+      piecesByPlayer,
       currentPlayerIndex,
       halfMoveClock,
       fullMoveNumber,
       isKingInCheck,
       kingSquare,
     }));
-  };
-
-  const redoMove = () => {
-    const lastUndoneRecord = gameState.undoneMoveHistory.at(-1);
-    if (!lastUndoneRecord) return;
-    const legalMoves = getLegalMoves();
-    const { move, wasBoardFlipped } = lastUndoneRecord;
-
-    const undoneMoves = [...gameState.undoneMoveHistory.slice(0, -1)];
-    const { from, to, isPromotion } = move;
-    const fromSq = getEffectiveSquare(from, wasBoardFlipped, isBoardFlipped);
-    const toSq = getEffectiveSquare(to, wasBoardFlipped, isBoardFlipped);
-
-    const promotionType = isPromotion
-      ? (move as PromotionMove).promotionType
-      : undefined;
-
-    executeMove(
-      fromSq.row,
-      fromSq.col,
-      toSq.row,
-      toSq.col,
-      legalMoves,
-      promotionType,
-      undoneMoves
-    );
   };
 
   const executeMoveByType = (
@@ -545,9 +544,8 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     setGameState,
     initializeBoard,
     getLegalMoves,
+    replayMoves,
     executeMove,
-    undoMove,
-    redoMove,
     flipPiecesOnBoard,
   };
 };

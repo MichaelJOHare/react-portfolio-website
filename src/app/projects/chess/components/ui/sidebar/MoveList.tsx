@@ -4,14 +4,14 @@ import { useGame } from "../../../context/GameContext";
 
 export const MoveList = () => {
   const { gameManager, highlighter } = useGame();
-  const { moveHistory, undoMove } = gameManager;
+  const { replayMoves, moveHistory } = gameManager;
   const { undoPreviousMoveSquares } = highlighter;
   const movesHistory = moveHistory.map((record) => record.move);
 
   const onMoveClick = (index: number) => {
     const movesToUndo = movesHistory.length - index - 1;
     if (movesToUndo > 0) {
-      undoMove(movesToUndo);
+      replayMoves(movesToUndo, true);
     }
     undoPreviousMoveSquares(movesToUndo);
   };

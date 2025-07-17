@@ -68,7 +68,7 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     computerOpponentOptions.colorChoice,
     computerOpponentOptions.strengthLevel
   );
-  const { startWorker, terminate } = stockfishHandler;
+  const { startWorker } = stockfishHandler;
   const pieceSelector = usePieceSelector(
     gameManager,
     highlighter,
@@ -89,12 +89,10 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
 
   // useEffect because async worker needs to start and terminate based on state
   useEffect(() => {
-    terminate();
-
     if (stockfishEnabled || isPlayingVsComputer) {
       startWorker(version);
     } // might need to silence linter?
-  }, [stockfishEnabled, version, isPlayingVsComputer, startWorker, terminate]);
+  }, [stockfishEnabled, version, isPlayingVsComputer, startWorker]);
 
   useEffect(() => {
     if (isPlayingVsComputer) {

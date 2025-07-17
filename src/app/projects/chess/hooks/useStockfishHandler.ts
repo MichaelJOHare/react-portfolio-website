@@ -60,6 +60,19 @@ export const useStockfishHandler = (
     [isPlaying, version]
   );
 
+  const resetEngine = useCallback(() => {
+    hasConfiguredEngine.current = false;
+    sendCommand("ucinewgame");
+    sendCommand("isready");
+  }, []);
+
+  const terminate = useCallback(() => {
+    workerRef.current?.terminate();
+    workerRef.current = null;
+    setEngineReady(false);
+    setEngineConfigured(false);
+  }, []);
+
   const handleEngineMessage = useCallback(
     (event: MessageEvent) => {
       const line = typeof event === "object" ? event.data : event;
@@ -161,7 +174,7 @@ export const useStockfishHandler = (
 
   const startWorker = useCallback(
     (scriptUrl: string) => {
-      if (workerRef.current) return;
+      terminate();
 
       const worker = new window.Worker("/stockfish/stockfish-worker.js", {
         type: "module",
@@ -198,20 +211,8 @@ export const useStockfishHandler = (
         data: { version: scriptUrl },
       });
     },
-    [strengthLevel, configureEngine, handleEngineMessage]
+    [strengthLevel, configureEngine, handleEngineMessage, terminate]
   );
-
-  const resetEngine = useCallback(() => {
-    hasConfiguredEngine.current = false;
-    sendCommand("ucinewgame");
-    sendCommand("isready");
-  }, []);
-
-  const terminate = useCallback(() => {
-    workerRef.current?.terminate();
-    workerRef.current = null;
-    setEngineReady(false);
-  }, []);
 
   const sendCommand = (cmd: string) => {
     workerRef.current?.postMessage(cmd);

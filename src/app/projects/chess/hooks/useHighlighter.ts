@@ -193,7 +193,7 @@ export const useHighlighter = () => {
       previousMoveSquares: [],
     }));
 
-  const undoPreviousMoveSquares = (count: number = 1) => {
+  const undoPreviousMoveSquares = (count: number) => {
     let updatedPreviousMoveSquares = [
       ...highlightedSquares.previousMoveSquares,
     ];
