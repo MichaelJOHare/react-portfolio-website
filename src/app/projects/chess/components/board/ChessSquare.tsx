@@ -41,6 +41,10 @@ export const ChessSquare = ({ square, isValidMove, children }: SquareProps) => {
     const isSelected = isSameSquare(selectedPieceSquare, square);
     const isKingHere = isSameSquare(kingSquare, square);
 
+    if (isPreviousMoveSquare && !(isOver && isValidMove)) {
+      return isDark ? "bg-previousMoveLight" : "bg-previousMoveDark";
+    }
+
     if (isDropTarget && !(isKingInCheck && isKingHere)) {
       return isValidMove
         ? "bg-green-500"
@@ -55,10 +59,6 @@ export const ChessSquare = ({ square, isValidMove, children }: SquareProps) => {
 
     if (isSelected) {
       return "bg-green-300";
-    }
-
-    if (isPreviousMoveSquare) {
-      return isDark ? "bg-previousMoveLight" : "bg-previousMoveDark";
     }
 
     return isDark ? "bg-lightSquare" : "bg-darkSquare";
