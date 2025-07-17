@@ -26,19 +26,17 @@ export const Header = () => {
         </Link>
       </div>
       <div className="flex items-center pr-2">
-        {headerNavLinks
-          .filter((link) => link.href !== "/")
-          .map((link) => (
-            <Link
-              key={link.title}
-              href={link.href}
-              className="px-3 hidden font-medium text-gray-900 dark:text-gray-100 sm:block"
-            >
-              {link.title}
-            </Link>
-          ))}
+        {headerNavLinks.map((link) => (
+          <Link
+            key={link.title}
+            href={link.href}
+            className="px-4 hidden font-bold text-gray-900 dark:text-gray-100 sm:block"
+          >
+            {link.title}
+          </Link>
+        ))}
         <div className="group relative">
-          <button className="flex pr-4">
+          <button className="flex px-4">
             <PDF
               className="w-8 h-8"
               href="/assets/resume/Michael_O'Hare_Resume.pdf"
@@ -51,7 +49,9 @@ export const Header = () => {
             Resume
           </span>
         </div>
-        <ThemeSwitch />
+        <div className="size-9 pl-2">
+          <ThemeSwitch />
+        </div>
         <MobileNav />
       </div>
     </header>

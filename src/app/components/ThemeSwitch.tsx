@@ -17,14 +17,14 @@ export const ThemeSwitch = () => {
   return (
     <button
       aria-label="Toggle Dark Mode"
-      className="text-2xl"
+      className="text-2xl w-full h-full"
       onClick={() =>
         setTheme(
           theme === "dark" || resolvedTheme === "dark" ? "light" : "dark"
         )
       }
     >
-      <ThemeToggle className="w-6 h-6" />
+      <ThemeToggle className="w-full h-full pb-0.5" />
     </button>
   );
 };

@@ -19,7 +19,7 @@ export const MobileNav = () => {
   };
 
   return (
-    <>
+    <div className="pl-6 pt-1">
       <button
         aria-label="Toggle Menu"
         onClick={onToggleNav}
@@ -77,6 +77,6 @@ export const MobileNav = () => {
           ))}
         </nav>
       </div>
-    </>
+    </div>
   );
 };

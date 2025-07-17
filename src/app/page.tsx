@@ -6,7 +6,7 @@ export default function Home() {
     <>
       <div className="divide-y divide-gray-200 dark:divide-gray-700">
         <div className="pb-8 pt-6 md:space-y-5">
-          <h1 className="text-6xl pl-6 font-extrabold text-gray-900 dark:text-gray-100">
+          <h1 className="text-6xl pl-16 font-extrabold text-gray-900 dark:text-gray-100">
             About Me
           </h1>
         </div>

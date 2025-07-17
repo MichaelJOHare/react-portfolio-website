@@ -51,7 +51,6 @@ export const PromotionPanel = () => {
     isLargeScreen: boolean,
     isFlipped: boolean
   ): string => {
-    console.log("calling", isBoardFlipped, color);
     const size = isLargeScreen ? 8.75 : 11;
     const offset = isLargeScreen ? 35 : 45;
 
