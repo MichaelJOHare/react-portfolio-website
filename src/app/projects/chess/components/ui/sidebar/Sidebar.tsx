@@ -5,7 +5,7 @@ import { useGame } from "../../../context/GameContext";
 import { SidebarButton } from "./SidebarButton";
 import { MoveList } from "./MoveList";
 
-export const GameLog = () => {
+export const Sidebar = () => {
   const {
     gameManager,
     highlighter,
@@ -41,9 +41,9 @@ export const GameLog = () => {
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
-      <form className="h-full w-full max-h-fit relative">
-        <div className="h-full w-full flex flex-col border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-          <div className="flex items-center justify-center px-3 py-2 border-b dark:border-gray-600">
+      <div className="h-full w-full relative">
+        <div className="h-full w-full flex flex-col border border-gray-200 rounded-lg bg-neutral-300 dark:bg-gray-700 dark:border-gray-600">
+          <div className="flex items-center justify-center px-3 py-2 border-b border-gray-400 dark:border-gray-600">
             <div className="w-full max-w-lg flex justify-between items-center">
               <SidebarButton
                 icon="flipBoard"
@@ -71,8 +71,11 @@ export const GameLog = () => {
               />
             </div>
           </div>
-          <div className="h-full flex flex-col px-4 py-2 min-h-64 bg-white rounded-b-lg dark:bg-gray-800">
-            <div className="h-full overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="h-full flex flex-col px-4 py-2 min-h-64 bg-neutral-100 rounded-b-lg dark:bg-gray-800">
+            <div
+              className="h-full max-h-[50vmin] overflow-y-auto"
+              style={{ scrollbarGutter: "stable" }}
+            >
               <MoveList />
             </div>
           </div>
@@ -94,7 +97,7 @@ export const GameLog = () => {
             />
           )}
         </div>
-      </form>
+      </div>
     </div>
   );
 };

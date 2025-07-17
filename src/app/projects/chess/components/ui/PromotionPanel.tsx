@@ -74,7 +74,7 @@ export const PromotionPanel = () => {
       {orderedPromotionPieces.map((type, index) => (
         <div
           key={type}
-          className="absolute w-[11.25vmin] h-[11.25vmin] cursor-pointer lg:w-[8.75vmin] lg:h-[8.75vmin] limitedHeight:w-[11.25vmin] limitedHeight:h-[11.25vmin]"
+          className="absolute w-[11.25vmin] h-[11.25vmin] cursor-pointer desktop-md:w-[8.75vmin] desktop-md:h-[8.75vmin] limitedHeight:w-[11.25vmin] limitedHeight:h-[11.25vmin]"
           style={{
             top: getTopOffset(
               index,

@@ -4,6 +4,7 @@ import "./globals.css";
 import siteMetadata from "../../data/siteMetadata";
 import { ThemeProvider } from "./ThemeProvider";
 import { Header } from "./components/Header";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -73,7 +74,7 @@ export default function RootLayout({
         content="#000"
       />
       <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-white text-black dark:bg-zinc-900 dark:text-white antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-neutral-200 text-black dark:bg-zinc-900 dark:text-white antialiased`}
       >
         <ThemeProvider
           attribute="class"
@@ -83,6 +84,7 @@ export default function RootLayout({
         >
           <Header />
           {children}
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>

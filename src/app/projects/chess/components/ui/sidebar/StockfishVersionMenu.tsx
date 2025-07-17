@@ -30,7 +30,7 @@ export const StockfishVersionMenu = () => {
         {/* put green circle next to currently selected version */}
         <button
           type="button"
-          className="w-56 bg-sky-600 hover:bg-sky-700 font-medium rounded-md px-5 py-1.5 text-center inline-flex justify-between items-center"
+          className="w-56 text-neutral-100 hover:shadow-sm bg-neutral-500 hover:bg-neutral-700 hover:shadow-neutral-600 font-medium rounded-md px-5 py-1.5 text-center inline-flex justify-between items-center dark:bg-teal-700 dark:hover:bg-teal-800 dark:hover:shadow-slate-800"
           id="menu-button"
           aria-expanded={isOpen}
           aria-haspopup="true"

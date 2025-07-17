@@ -85,34 +85,34 @@ export const StockfishOptionsModal = ({
 
   return (
     <div
-      className={`absolute top-0 left-0 w-full mt-2 pb-2 flex items-center justify-center transition-opacity lg:h-full limitedHeight:h-auto ${
+      className={`absolute top-0 left-0 w-full mt-2 pb-2 flex items-center justify-center transition-opacity desktop-md:h-full desktop-md:mt-0 desktop-md:pb-0 limitedHeight:h-auto ${
         isOpen ? "opacity-100 z-20" : "opacity-0 pointer-events-none z-0 "
       }`}
     >
       <div className="flex size-full relative">
         <div className="absolute right-3 top-2">
           <button
-            className="rounded-3xl bg-red-600 hover:bg-red-800"
+            className="rounded-3xl bg-rose-600 hover:bg-rose-800"
             onClick={onClose}
           >
-            <CloseModalIcon className="size-10 text-neutral-200" />
+            <CloseModalIcon className="size-10 text-neutral-200 scale-[99%]" />
           </button>
         </div>
         <div
           ref={menuRef}
-          className="flex flex-col bg-white rounded-lg p-4 w-full h-full dark:bg-gray-700"
+          className="flex flex-col bg-neutral-300 rounded-lg p-4 w-full h-full dark:bg-gray-700"
         >
           <h1 className="flex self-center text-2xl pb-4 2xl:text-3xl limitedHeight:text-2xl">
             Stockfish Options
           </h1>
-          <div className="flex flex-col grow justify-around lg:flex-col">
+          <div className="flex flex-col grow justify-around desktop-md:flex-col">
             <div className="flex flex-col">
               <ul className="pb-2 self-center">
                 <StockfishAnalysisToggle />
               </ul>
             </div>
             <StockfishVersionMenu />
-            <div className="mt-2 border-t border-gray-300" />
+            <div className="mt-2 border-t dark:border-gray-300" />
             <div className="flex flex-col">
               <h2 className="text-2xl font-medium self-center">
                 Play Versus Computer
@@ -125,8 +125,10 @@ export const StockfishOptionsModal = ({
                   <button
                     type="button"
                     key={level}
-                    className={`size-12 bg-cyan-600 px-1 text-4xl hover:bg-cyan-800 rounded-lg ${
-                      level === strengthLevel ? "bg-emerald-500" : ""
+                    className={`size-12 text-neutral-100 hover:shadow-md  px-1 text-4xl rounded-lg ${
+                      level === strengthLevel
+                        ? "bg-emerald-500 dark:bg-emerald-400 hover:shadow-neutral-600 dark:hover:shadow-slate-900"
+                        : "bg-neutral-500 dark:bg-teal-700 hover:bg-neutral-800 dark:hover:bg-teal-800 hover:shadow-neutral-600 dark:hover:shadow-slate-900"
                     }`}
                     onClick={() => setStrengthLevel(level)}
                   >
@@ -140,8 +142,10 @@ export const StockfishOptionsModal = ({
               <ul className="self-center flex gap-3">
                 <button
                   type="button"
-                  className={`bg-cyan-600 hover:bg-cyan-800 rounded-lg ${
-                    colorChoice === 0 ? "bg-emerald-500" : ""
+                  className={`hover:shadow-md rounded-lg ${
+                    colorChoice === 0
+                      ? "bg-emerald-500 dark:bg-emerald-400"
+                      : "bg-neutral-500 dark:bg-teal-700 hover:bg-neutral-600 dark:hover:bg-teal-800 hover:shadow-neutral-600 dark:hover:shadow-slate-900"
                   }`}
                   onClick={() => setColorChoice(0)}
                 >
@@ -149,8 +153,10 @@ export const StockfishOptionsModal = ({
                 </button>
                 <button
                   type="button"
-                  className={`bg-cyan-600 hover:bg-cyan-800 rounded-lg ${
-                    colorChoice === 2 ? "bg-emerald-500" : ""
+                  className={`hover:shadow-md rounded-lg ${
+                    colorChoice === 2
+                      ? "bg-emerald-500 dark:bg-emerald-400"
+                      : "bg-neutral-500 dark:bg-teal-700 hover:bg-neutral-600 dark:hover:bg-teal-800 hover:shadow-neutral-600 dark:hover:shadow-slate-900"
                   }`}
                   onClick={() => setColorChoice(2)}
                 >
@@ -158,8 +164,10 @@ export const StockfishOptionsModal = ({
                 </button>
                 <button
                   type="button"
-                  className={`bg-cyan-600 hover:bg-cyan-800 rounded-lg ${
-                    colorChoice === 1 ? "bg-emerald-500" : ""
+                  className={`rounded-lg hover:shadow-md ${
+                    colorChoice === 3
+                      ? "bg-emerald-500 dark:bg-emerald-400"
+                      : "bg-neutral-500 dark:bg-teal-700 hover:bg-neutral-600 dark:hover:bg-teal-800 hover:shadow-neutral-600 dark:hover:shadow-slate-900"
                   }`}
                   onClick={() => setColorChoice(1)}
                 >
@@ -170,7 +178,7 @@ export const StockfishOptionsModal = ({
             <div className="pt-2">
               <button
                 type="button"
-                className="h-14 text-3xl font-medium pb-1 bg-cyan-600 w-full hover:bg-cyan-700 rounded-lg"
+                className="h-14 w-full text-3xl font-medium pb-1 text-neutral-100 hover:shadow-sm dark:hover:shadow-md bg-zinc-700 dark:bg-teal-700 hover:bg-zinc-800 dark:hover:bg-teal-800 hover:shadow-zinc-800 dark:hover:shadow-slate-900 rounded-lg"
                 onClick={handlePlayToggle}
               >
                 {playClicked ? "Stop" : "Play"}

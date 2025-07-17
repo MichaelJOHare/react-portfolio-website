@@ -30,13 +30,13 @@ export const Header = () => {
           <Link
             key={link.title}
             href={link.href}
-            className="px-4 hidden font-bold text-gray-900 dark:text-gray-100 sm:block"
+            className="px-4 hidden font-bold sm:block"
           >
             {link.title}
           </Link>
         ))}
         <div className="group relative">
-          <button className="flex px-4">
+          <button id="resume" className="flex px-4">
             <PDF
               className="w-8 h-8"
               href="/assets/resume/Michael_O'Hare_Resume.pdf"
@@ -44,12 +44,12 @@ export const Header = () => {
           </button>
           <span
             role="tooltip"
-            className="pointer-events-none absolute px-2 py-2 -top-7 -left-4 w-max opacity-0 transition-opacity group-hover:opacity-100 text-sm font-medium text-white duration-300 bg-gray-900 rounded-lg shadow-sm dark:bg-gray-800"
+            className="pointer-events-none absolute px-2 py-2 -top-7 -left-4 w-max opacity-0 transition-opacity group-hover:opacity-100 text-sm font-medium duration-300 bg-zinc-700 text-neutral-100 rounded-lg shadow-sm dark:bg-neutral-300 dark:text-neutral-900"
           >
             Resume
           </span>
         </div>
-        <div className="size-9 pl-2">
+        <div className="size-8 pl-2">
           <ThemeSwitch />
         </div>
         <MobileNav />

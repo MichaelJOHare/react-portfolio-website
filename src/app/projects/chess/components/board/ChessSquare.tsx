@@ -86,7 +86,7 @@ export const ChessSquare = ({ square, isValidMove, children }: SquareProps) => {
 
       {isLabeledColumn && (
         <div
-          className={`absolute top-0 right-0 pt-1 pr-1 text-xs lg:text-sm ${
+          className={`absolute top-0 right-0 pt-1 pr-1 text-xs desktop-md:text-sm ${
             isDark ? "text-yellow-900" : "text-orange-200"
           } select-none`}
         >
@@ -95,7 +95,7 @@ export const ChessSquare = ({ square, isValidMove, children }: SquareProps) => {
       )}
       {isLabeledRow && (
         <div
-          className={`absolute bottom-0 left-0 pl-1 text-xs lg:text-sm ${
+          className={`absolute bottom-0 left-0 pl-1 text-xs desktop-md:text-sm ${
             isDark ? "text-yellow-900" : "text-orange-200"
           } select-none`}
         >

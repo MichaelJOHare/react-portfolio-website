@@ -68,7 +68,7 @@ export const Board = () => {
       {/* try to make corner squares rounded, right side not rounded when sf enabled */}
       <div
         id="chessboard"
-        className="relative grid grid-cols-8 w-[90vmin] h-[90vmin] lg:w-[70vmin] lg:h-[70vmin] limitedHeight:w-[90vmin] limitedHeight:h-[90vmin] touch-none"
+        className="relative grid grid-cols-8 w-[90vmin] h-[90vmin] desktop-md:w-[70vmin] desktop-md:h-[70vmin] limitedHeight:w-[90vmin] limitedHeight:h-[90vmin] touch-none"
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}

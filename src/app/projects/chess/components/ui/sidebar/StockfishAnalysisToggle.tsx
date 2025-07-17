@@ -1,7 +1,21 @@
+import { useEffect, useState } from "react";
 import { useGame } from "../../../context/GameContext";
+import StockfishOptionsIcon from "@/assets/icons/stockfish-options-icon.svg";
 
 export const StockfishAnalysisToggle = () => {
   const { setStockfishEnabled, stockfishEnabled } = useGame();
+  const [showIcon, setShowIcon] = useState(stockfishEnabled);
+
+  // delay icon toggle to sync with animation
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+    if (stockfishEnabled) {
+      timeout = setTimeout(() => setShowIcon(true), 100);
+    } else {
+      setShowIcon(false);
+    }
+    return () => clearTimeout(timeout);
+  }, [stockfishEnabled]);
 
   return (
     <div className="group relative">
@@ -13,12 +27,16 @@ export const StockfishAnalysisToggle = () => {
           checked={stockfishEnabled}
           onChange={(e) => setStockfishEnabled(e.target.checked)}
         />
-        <div className="w-30 h-full bg-cyan-700 rounded-full shadow-blue-500 group-hover:shadow-sm peer-checked:left-[7.5rem] peer-checked:bg-cyan-600 absolute peer-checked:ring-cyan-600 left-0 transition-all duration-300"></div>
-        <span className="transition relative w-30 h-full flex items-center justify-center font-medium">
+        <div className="w-30 h-full bg-neutral-400 rounded-full group-hover:shadow-md shadow-zinc-500 dark:shadow-slate-900 peer-checked:left-[6.5rem] peer-checked:bg-emerald-700 dark:peer-checked:bg-emerald-600 absolute left-0 transition-all duration-300"></div>
+        <span className="transition relative w-30 h-full flex items-center justify-center font-medium text-xl peer-checked:text-neutral-100">
           Off
         </span>
-        <span className="transition relative w-30 h-full flex items-center justify-center font-medium">
-          On
+        <span className="transition relative w-30 h-full flex items-center justify-center font-medium text-xl">
+          {showIcon ? (
+            <StockfishOptionsIcon className="ml-6 w-10 h-10 text-orange-300 drop-shadow-sfOn" />
+          ) : (
+            "On"
+          )}
         </span>
       </label>
     </div>
