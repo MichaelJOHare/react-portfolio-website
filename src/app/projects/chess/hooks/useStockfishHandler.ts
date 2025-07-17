@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GameManager, Highlighter, PlayerColor } from "../types";
 import {
-  calculateDepth,
   calculateThreadsForNNUE,
   convertNotationToSquare,
   determinePromotionType,
+  getStockfishConfigFromUiLevel,
 } from "../utils/stockfish";
 import { toFEN } from "../utils/FEN";
 
@@ -42,11 +42,11 @@ export const useStockfishHandler = (
 
   const configureEngine = useCallback(
     (skillLevel: number) => {
+      const { skill, depth } = getStockfishConfigFromUiLevel(skillLevel);
+      const effectiveDepth = isPlaying ? depth : defaultDepth;
       const threads = calculateThreadsForNNUE();
-      const depth = isPlaying ? calculateDepth(skillLevel * 2) : defaultDepth;
-      console.log(depth);
-      setDepth(depth);
-      sendCommand(`setoption name Skill Level value ${skillLevel}`);
+      setDepth(effectiveDepth);
+      sendCommand(`setoption name Skill Level value ${skill}`);
       sendCommand(`setoption name Threads value ${threads}`);
       if (version === "sf-16") {
         sendCommand("setoption name Use NNUE value true"); // might not be needed?
@@ -222,7 +222,8 @@ export const useStockfishHandler = (
 
   const isRunning = () => !!workerRef.current;
 
-  // useEffect because if version changes, it needs to kill and restart with correct nnue file
+  /* USE EFFECTS FOR FETCHING MOVE, INTERRUPTING ENGINE, AND LOADING DIFFERENT VERSION */
+
   useEffect(() => {
     if (!workerRef.current) return;
     terminate();
@@ -233,7 +234,6 @@ export const useStockfishHandler = (
     startWorker(version);
   }, [version, startWorker, terminate]);
 
-  // useEffect because need to find new move based on deps changing
   useEffect(() => {
     if (shouldFindMove && engineReady && engineConfigured) {
       const {
@@ -256,13 +256,12 @@ export const useStockfishHandler = (
       );
 
       setEngineReady(false);
-      setShouldFindMove(false); // should some of these state setting/reactions be calls to functions instead?
+      setShouldFindMove(false);
       sendCommand(`position fen ${fen}`);
       sendCommand(`go depth ${depth}`);
     }
   }, [shouldFindMove, engineReady, engineConfigured, depth, isBoardFlipped]);
 
-  // useEffect because of interaction with worker
   useEffect(() => {
     if (shouldStopThinking) {
       sendCommand("stop");
@@ -272,7 +271,9 @@ export const useStockfishHandler = (
     }
   }, [shouldStopThinking]);
 
-  /* USEREF UPDATE EFFECTS */
+  /* USE EFFECTS FOR FETCHING MOVE, INTERRUPTING ENGINE, AND LOADING DIFFERENT VERSION */
+
+  /* USEEFFECTS FOR USEREF UPDATEs */
 
   useEffect(() => {
     gmRef.current = gameManager;
@@ -286,7 +287,7 @@ export const useStockfishHandler = (
     isBoardFlippedRef.current = isBoardFlipped;
   }, [isBoardFlipped]);
 
-  /* USEREF UPDATE EFFECTS */
+  /* USEEFFECTS FOR USEREF UPDATES */
 
   return {
     startWorker,

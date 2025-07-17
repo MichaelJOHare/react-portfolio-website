@@ -8,8 +8,18 @@ import {
 } from "../types";
 import { createSquare, getSquareFromNotation } from "./square";
 
-export const calculateDepth = (skillLevel: number): number =>
-  skillLevel < 15 ? Math.ceil((skillLevel + 1) / 5) : 24;
+export const mapUiLevelToInternal = (uiLevel: number) => {
+  const clamped = Math.max(1, Math.min(8, uiLevel));
+  return Math.round((clamped - 1) * (29 / 7));
+};
+
+export const getStockfishConfigFromUiLevel = (uiLevel: number) => {
+  const internalLevel = mapUiLevelToInternal(uiLevel);
+  const skill = Math.min(internalLevel, 20);
+  const depth = internalLevel < 15 ? Math.ceil((internalLevel + 1) / 5) : 24;
+
+  return { skill, depth };
+};
 
 export const isCastlingMove = (
   movingPiece: Piece,

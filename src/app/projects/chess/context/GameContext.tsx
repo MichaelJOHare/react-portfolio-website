@@ -91,7 +91,7 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
   useEffect(() => {
     if (stockfishEnabled || isPlayingVsComputer) {
       startWorker(version);
-    } // might need to silence linter?
+    }
   }, [stockfishEnabled, version, isPlayingVsComputer, startWorker]);
 
   useEffect(() => {
