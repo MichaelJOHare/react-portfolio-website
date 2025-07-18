@@ -30,8 +30,9 @@ export const ThemeSwitch = () => {
     springConfig: { mass: 4, tension: 250, friction: 35 },
   };
 
+  const isDark = mounted && (theme === "dark" || resolvedTheme === "dark");
   const { r, transform, cx, cy, opacity } =
-    properties[theme === "dark" ? "dark" : "light"];
+    properties[isDark ? "dark" : "light"];
 
   const svgContainerProps = useSpring({
     transform,
