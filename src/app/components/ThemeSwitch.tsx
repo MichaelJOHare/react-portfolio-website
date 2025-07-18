@@ -52,8 +52,12 @@ export const ThemeSwitch = () => {
   }
 
   return (
-    <div>
-      <button aria-label="Toggle Dark Mode" onClick={toggleTheme}>
+    <div className="flex h-full w-19 justify-center">
+      <button
+        className="flex justify-center"
+        aria-label="Toggle Dark Mode"
+        onClick={toggleTheme}
+      >
         <animated.svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"

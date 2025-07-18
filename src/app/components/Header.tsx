@@ -8,15 +8,15 @@ import { MobileNav } from "./MobileNav";
 
 export const Header = () => {
   return (
-    <header className="flex items-center justify-between py-5 px-5">
+    <header className="flex items-center justify-between py-5 pl-5">
       <div>
         <Link href="/" aria-label={siteMetadata.headerTitle}>
           <div className="flex items-center justify-between">
-            <div className="mr-3 mt-1">
+            <div className="pr-3 pt-1">
               <Logo />
             </div>
             {typeof siteMetadata.headerTitle === "string" ? (
-              <div className="hidden mb-2 h-6 text-2xl font-semibold sm:block">
+              <div className="hidden h-10 text-2xl font-semibold sm:block">
                 {siteMetadata.headerTitle}
               </div>
             ) : (
@@ -25,19 +25,19 @@ export const Header = () => {
           </div>
         </Link>
       </div>
-      <div className="flex items-center pr-2">
+      <div className="h-10 flex">
         {headerNavLinks.map((link) => (
           <Link
             key={link.title}
             href={link.href}
-            className="px-4 hidden font-bold sm:block"
+            className="h-full w-24 first:w-22 border-r hidden font-bold sm:flex justify-center items-center"
           >
             {link.title}
           </Link>
         ))}
-        <div className="group relative px-4">
-          <div>
-            <button className="flex cursor-pointer">
+        <div className="h-full w-19 flex border-r items-center">
+          <div className="w-full">
+            <button className="flex w-full cursor-pointer justify-center">
               <Link
                 href={"/assets/resume/Michael_O'Hare_Resume.pdf"}
                 aria-label={`Link to download Résumé`}
@@ -49,13 +49,13 @@ export const Header = () => {
           </div>
           <span
             role="tooltip"
-            className="pointer-events-none absolute px-2 py-2 -top-7 -left-4 w-max opacity-0 transition-opacity group-hover:opacity-100 
+            className="pointer-events-none absolute pr-2 py-2 -top-7 -left-4 w-max opacity-0 transition-opacity group-hover:opacity-100 
             text-sm font-medium duration-300 bg-zinc-700 text-neutral-100 rounded-lg shadow-sm dark:bg-neutral-300 dark:text-neutral-900"
           >
             Résumé
           </span>
         </div>
-        <div className="pl-2">
+        <div className="border-r sm:border-none">
           <ThemeSwitch />
         </div>
         <MobileNav />

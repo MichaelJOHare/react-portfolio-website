@@ -19,7 +19,7 @@ export const MobileNav = () => {
   };
 
   return (
-    <div className="pl-6 pt-1">
+    <div className="w-24 flex justify-center sm:hidden">
       <button
         aria-label="Toggle Menu"
         onClick={onToggleNav}
