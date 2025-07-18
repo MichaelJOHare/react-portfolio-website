@@ -11,7 +11,7 @@ export default function Home() {
           </h1>
         </div>
         <div className="container py-12 max-w-screen">
-          <div className="-m-4 flex flex-wrap justify-center">
+          <div className="flex flex-wrap justify-center">
             <AboutSection />
           </div>
         </div>

@@ -68,5 +68,9 @@ export const getPieceUnicode = (type: PieceType) => {
       return "♝";
     case PieceType.KNIGHT:
       return "♞";
+    case PieceType.PAWN:
+      return "♟";
+    default:
+      return "";
   }
 };

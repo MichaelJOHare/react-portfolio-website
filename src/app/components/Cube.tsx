@@ -52,7 +52,7 @@ export const Cube = () => {
 
   return (
     <div
-      className="flex justify-center"
+      className="flex justify-center pt-4"
       ref={cubeRef}
       style={{ width: "100%", height: "70vmin" }}
     />
