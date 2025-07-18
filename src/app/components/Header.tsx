@@ -35,24 +35,27 @@ export const Header = () => {
             {link.title}
           </Link>
         ))}
-        <div className="group relative">
-          <Link
-            href={"./assets/resume/Michael_O'Hare_Resume.pdf"}
-            aria-label={`Link to download Résumé`}
-            download="Michael_O'Hare_Resume.pdf"
-          >
-            <div className="flex px-4">
-              <PDF className="w-8 h-8 cursor-pointer" />
-            </div>
-          </Link>
+        <div className="group relative px-4">
+          <div>
+            <button className="flex cursor-pointer">
+              <Link
+                href={"/assets/resume/Michael_O'Hare_Resume.pdf"}
+                aria-label={`Link to download Résumé`}
+                download="Michael_O'Hare_Resume.pdf"
+              >
+                <PDF className="size-6" />
+              </Link>
+            </button>
+          </div>
           <span
             role="tooltip"
-            className="pointer-events-none absolute px-2 py-2 -top-7 -left-4 w-max opacity-0 transition-opacity group-hover:opacity-100 text-sm font-medium duration-300 bg-zinc-700 text-neutral-100 rounded-lg shadow-sm dark:bg-neutral-300 dark:text-neutral-900"
+            className="pointer-events-none absolute px-2 py-2 -top-7 -left-4 w-max opacity-0 transition-opacity group-hover:opacity-100 
+            text-sm font-medium duration-300 bg-zinc-700 text-neutral-100 rounded-lg shadow-sm dark:bg-neutral-300 dark:text-neutral-900"
           >
             Résumé
           </span>
         </div>
-        <div className="size-8 pl-2">
+        <div className="pl-2">
           <ThemeSwitch />
         </div>
         <MobileNav />

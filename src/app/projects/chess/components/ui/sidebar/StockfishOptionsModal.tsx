@@ -165,7 +165,7 @@ export const StockfishOptionsModal = ({
                 <button
                   type="button"
                   className={`rounded-lg hover:shadow-md ${
-                    colorChoice === 3
+                    colorChoice === 1
                       ? "bg-emerald-500 dark:bg-emerald-400"
                       : "bg-neutral-500 dark:bg-teal-700 hover:bg-neutral-600 dark:hover:bg-teal-800 hover:shadow-neutral-600 dark:hover:shadow-slate-900"
                   }`}
@@ -178,7 +178,13 @@ export const StockfishOptionsModal = ({
             <div className="pt-2">
               <button
                 type="button"
-                className="h-14 w-full text-3xl font-medium pb-1 text-neutral-100 hover:shadow-sm dark:hover:shadow-md bg-zinc-700 dark:bg-teal-700 hover:bg-zinc-800 dark:hover:bg-teal-800 hover:shadow-zinc-800 dark:hover:shadow-slate-900 rounded-lg"
+                className={`h-14 w-full text-3xl font-medium pb-1 text-neutral-100 hover:shadow-sm dark:hover:shadow-md bg-zinc-700 dark:bg-teal-700 
+                  ${
+                    colorChoice !== -1 && strengthLevel !== -1
+                      ? "hover:bg-emerald-500 dark:hover:bg-emerald-400"
+                      : "hover:bg-zinc-800 dark:hover:bg-teal-800"
+                  } 
+                  hover:shadow-zinc-800 dark:hover:shadow-slate-900 rounded-lg`}
                 onClick={handlePlayToggle}
               >
                 {playClicked ? "Stop" : "Play"}

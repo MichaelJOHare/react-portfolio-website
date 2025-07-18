@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import debounce from "lodash.debounce";
 import { GameManager, Highlighter, PlayerColor } from "../types";
 import {
   calculateThreadsForNNUE,
@@ -39,6 +40,17 @@ export const useStockfishHandler = (
   const lastArrowUpdateRef = useRef(0);
   const isPlaying = colorChoice !== -1 && strengthLevel !== -1;
   const defaultDepth = 24;
+  const debouncedSetEvalCentipawn = useMemo(
+    () => debounce((val: number) => setEvalCentipawn(val), 100),
+    [setEvalCentipawn]
+  );
+  const debouncedAddStockfishArrow = useMemo(
+    () =>
+      debounce((from: string, to: string) => {
+        highlighterRef.current?.addStockfishBestMoveArrow({ from, to });
+      }, 50),
+    []
+  );
 
   const configureEngine = useCallback(
     (skillLevel: number) => {
@@ -53,7 +65,6 @@ export const useStockfishHandler = (
       }
       sendCommand("setoption name UCI_ShowWDL value true");
       sendCommand("ucinewgame");
-      console.log("stockfish options configured");
 
       sendCommand("isready");
     },
@@ -74,104 +85,121 @@ export const useStockfishHandler = (
     setEngineConfigured(false);
   }, []);
 
-  const handleEngineMessage = useCallback(
-    (event: MessageEvent) => {
-      const line = typeof event === "object" ? event.data : event;
-      console.log(line);
-      if (INFORMS_DEPTH.test(line)) {
-        const currentDepth = parseInt(line.match(INFORMS_DEPTH)[1], 10);
-        const currentTime = Date.now();
-        const percent = (currentDepth / defaultDepth) * 100;
-        setDepthPercentage(percent);
-        if (
-          currentDepth === 1 ||
-          (currentDepth - lastDepthUpdateRef.current >= 3 &&
-            currentTime - lastArrowUpdateRef.current >= 3000)
-        ) {
-          //                                                              debounce this and maybe move into seprate function
-          const moveData = line.match(INFORMS_CURRENT_MOVE);
+  const handleDepthMessage = useCallback(
+    (line: string) => {
+      const currentDepth = parseInt(line.match(INFORMS_DEPTH)![1], 10);
+      const currentTime = Date.now();
+      const percent = (currentDepth / defaultDepth) * 100;
+      setDepthPercentage(percent);
+
+      if (
+        currentDepth === 1 ||
+        (currentDepth - lastDepthUpdateRef.current >= 3 &&
+          currentTime - lastArrowUpdateRef.current >= 3000)
+      ) {
+        const moveData = line.match(INFORMS_CURRENT_MOVE);
+        if (moveData) {
           const from = moveData[1].substring(0, 2);
           const to = moveData[1].substring(2, 4);
           lastDepthUpdateRef.current = currentDepth;
           lastArrowUpdateRef.current = currentTime;
-          if (!isPlaying)
-            highlighterRef.current.addStockfishBestMoveArrow({ from, to });
-        }
-      }
-      if (FOUND_BEST_MOVE.test(line)) {
-        const [, from, to, promotion] = line.match(FOUND_BEST_MOVE);
-        if (isPlaying) {
-          const legalMoves = gmRef.current.getLegalMoves();
-          const promotionType = determinePromotionType(promotion);
-          const players = gmRef.current.players;
-          const currentPlayerIndex = gmRef.current.currentPlayerIndex;
-          const fromSq = convertNotationToSquare(
-            from,
-            isBoardFlippedRef.current
-          );
-          const toSq = convertNotationToSquare(to, isBoardFlippedRef.current);
-          const isEngineTurn =
-            (players[currentPlayerIndex].color === PlayerColor.WHITE &&
-              colorChoice === 1) ||
-            (players[currentPlayerIndex].color === PlayerColor.BLACK &&
-              colorChoice === 0);
 
-          if (fromSq && toSq && isEngineTurn) {
-            // intentional delay to make computer move feel more natural
-            const delay = Math.random() * (1400 - 600) + 600;
-            console.log(delay);
-            setTimeout(() => {
-              gmRef.current.executeMove(
-                fromSq.row,
-                fromSq.col,
-                toSq.row,
-                toSq.col,
-                legalMoves,
-                promotionType
-              );
-              highlighterRef.current.addPreviousMoveSquares(fromSq, toSq);
-            }, delay);
-          }
-        } else {
-          highlighterRef.current.addStockfishBestMoveArrow({ from, to });
-        }
-        setEngineReady(true);
-      }
-      if (IS_SYSTEM_MESSAGE.test(line)) {
-        return;
-      }
-      if (INFORMS_WDL.test(line) || INFORMS_MATE.test(line)) {
-        if (INFORMS_MATE.test(line)) {
-          setEvalCentipawn(100);
-          return;
-        }
-
-        if (INFORMS_WDL.test(line)) {
-          const match = line.match(INFORMS_WDL);
-          if (match) {
-            const win = parseInt(match[1], 10);
-            const draw = parseInt(match[2], 10);
-            const loss = parseInt(match[3], 10);
-            const total = win + draw + loss;
-
-            if (total > 0) {
-              const { players, currentPlayerIndex } = gmRef.current;
-              let winProb = win / total + 0.5 * (draw / total);
-
-              const currentPlayerColor = players[currentPlayerIndex].color;
-              if (currentPlayerColor === PlayerColor.BLACK) {
-                winProb = 1 - winProb;
-              }
-
-              const evalProgress = winProb * 100;
-              setEvalCentipawn(evalProgress);
-            }
-            return;
-          }
+          if (!isPlaying) debouncedAddStockfishArrow(from, to);
         }
       }
     },
-    [colorChoice, isPlaying]
+    [isPlaying, debouncedAddStockfishArrow]
+  );
+
+  const handleBestMove = useCallback(
+    (line: string) => {
+      const [, from, to, promotion] = line.match(FOUND_BEST_MOVE)!;
+      const promotionType = determinePromotionType(promotion);
+
+      if (isPlaying) {
+        const legalMoves = gmRef.current.getLegalMoves();
+        const players = gmRef.current.players;
+        const currentPlayerIndex = gmRef.current.currentPlayerIndex;
+
+        const fromSq = convertNotationToSquare(from, isBoardFlippedRef.current);
+        const toSq = convertNotationToSquare(to, isBoardFlippedRef.current);
+
+        const isEngineTurn =
+          (players[currentPlayerIndex].color === PlayerColor.WHITE &&
+            colorChoice === 1) ||
+          (players[currentPlayerIndex].color === PlayerColor.BLACK &&
+            colorChoice === 0);
+
+        if (fromSq && toSq && isEngineTurn) {
+          const delay = Math.random() * (1400 - 600) + 600;
+          setTimeout(() => {
+            gmRef.current.executeMove(
+              fromSq.row,
+              fromSq.col,
+              toSq.row,
+              toSq.col,
+              legalMoves,
+              promotionType
+            );
+            highlighterRef.current.addPreviousMoveSquares(fromSq, toSq);
+          }, delay);
+        }
+      } else {
+        debouncedAddStockfishArrow(from, to);
+      }
+
+      setEngineReady(true);
+    },
+    [colorChoice, isPlaying, debouncedAddStockfishArrow]
+  );
+
+  const handleWDLMessage = useCallback(
+    (line: string) => {
+      if (INFORMS_MATE.test(line)) {
+        setEvalCentipawn(100);
+        return;
+      }
+
+      const match = line.match(INFORMS_WDL);
+      if (match) {
+        const win = parseInt(match[1], 10);
+        const draw = parseInt(match[2], 10);
+        const loss = parseInt(match[3], 10);
+        const total = win + draw + loss;
+
+        if (total > 0) {
+          const { players, currentPlayerIndex } = gmRef.current;
+          let winProb = win / total + 0.5 * (draw / total);
+          if (players[currentPlayerIndex].color === PlayerColor.BLACK) {
+            winProb = 1 - winProb;
+          }
+          debouncedSetEvalCentipawn(winProb * 100);
+        }
+      }
+    },
+    [debouncedSetEvalCentipawn]
+  );
+
+  const handleEngineMessage = useCallback(
+    (event: MessageEvent) => {
+      const line = typeof event === "object" ? event.data : event;
+
+      if (INFORMS_DEPTH.test(line)) {
+        handleDepthMessage(line);
+      }
+
+      if (FOUND_BEST_MOVE.test(line)) {
+        handleBestMove(line);
+      }
+
+      if (!IS_SYSTEM_MESSAGE.test(line)) {
+        if (INFORMS_WDL.test(line) || INFORMS_MATE.test(line)) {
+          handleWDLMessage(line);
+          return;
+        }
+      }
+    },
+    [handleBestMove, handleDepthMessage, handleWDLMessage]
   );
 
   const startWorker = useCallback(
@@ -192,10 +220,8 @@ export const useStockfishHandler = (
           sendCommand("uci");
           sendCommand("isready");
         } else if (msg.data === "uciok") {
-          console.log("uciok");
           setEngineReady(true);
         } else if (msg.data === "readyok") {
-          console.log("readyok");
           if (!hasConfiguredEngine.current) {
             hasConfiguredEngine.current = true;
             configureEngine(strengthLevel);
