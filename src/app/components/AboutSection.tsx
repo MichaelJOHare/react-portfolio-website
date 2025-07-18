@@ -8,13 +8,19 @@ export const AboutSection = () => {
   return (
     <div>
       <section className="overflow-hidden">
-        <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
-          <div className="grid items-center grid-cols-1 md:grid-cols-2">
-            <div className="pb-2 lg:pb-0 lg:px-4">
-              <h2 className="text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl lg:max-w-lg lg:text-5xl">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 items-center md:grid-cols-2">
+            <div className="pb-2 lg:px-4 lg:pb-0">
+              <h2
+                className="text-3xl leading-tight font-bold text-black
+                  sm:text-4xl lg:max-w-lg lg:text-5xl dark:text-white"
+              >
                 {"Hi I am Michael O'Hare"}
               </h2>
-              <p className="mt-3 text-xl leading-relaxed text-black dark:text-gray-300 md:mt-8">
+              <p
+                className="mt-3 text-xl leading-relaxed text-black md:mt-8
+                  dark:text-gray-300"
+              >
                 {
                   "Welcome to my website, it's still a work in progress so new\
                 things will keep on being added. I'm Michael or Mike, whichever\
@@ -29,7 +35,7 @@ export const AboutSection = () => {
               <Image
                 src={PicOfMe}
                 alt="picture of me"
-                className="relative w-full xl:max-w-lg xl:mx-auto"
+                className="relative w-full xl:mx-auto xl:max-w-lg"
                 width={565}
                 height={665}
                 placeholder="blur"
@@ -38,24 +44,31 @@ export const AboutSection = () => {
           </div>
         </div>
       </section>
-      <section className="pt-10 overflow-hidden sm:pt-16 2xl:pt-16">
-        <div className=" mx-auto sm:px-6 lg:px-8 max-w-7xl">
-          <div className="grid items-center grid-cols-1 md:grid-cols-2">
+      <section className="overflow-hidden pt-10 sm:pt-16 2xl:pt-16">
+        <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 items-center md:grid-cols-2">
             <div className="relative">
               <Image
                 src={TheFellas}
                 alt="backpacking trip"
-                className="relative px-4 w-full xl:max-w-lg xl:mx-auto 2xl:origin-bottom 2xl:scale-110"
+                className="relative w-full px-4 xl:mx-auto xl:max-w-lg
+                  2xl:origin-bottom 2xl:scale-110"
                 width={565}
                 height={665}
                 placeholder="blur"
               ></Image>
             </div>
             <div className="order-first px-4 lg:order-last">
-              <h2 className="text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl lg:text-5xl">
+              <h2
+                className="text-3xl leading-tight font-bold text-black
+                  sm:text-4xl lg:text-5xl dark:text-white"
+              >
                 {"What have I been up to?"}
               </h2>
-              <p className="mt-3 text-xl leading-relaxed text-black dark:text-gray-300 md:mt-8">
+              <p
+                className="mt-3 text-xl leading-relaxed text-black md:mt-8
+                  dark:text-gray-300"
+              >
                 {
                   " I like learning new coding languages by developing something to\
                 do with chess. If you can't tell by my projects page (upper\
@@ -70,14 +83,20 @@ export const AboutSection = () => {
           </div>
         </div>
       </section>
-      <section className="pt-10 overflow-hidden sm:pt-16 2xl:pt-16">
-        <div className="mx-auto sm:px-6 lg:px-8 max-w-7xl">
-          <div className="grid items-center grid-cols-1 md:grid-cols-2">
+      <section className="overflow-hidden pt-10 sm:pt-16 2xl:pt-16">
+        <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 items-center md:grid-cols-2">
             <div className="px-4 pb-2 lg:pb-0">
-              <h2 className="text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl lg:text-5xl">
+              <h2
+                className="text-3xl leading-tight font-bold text-black
+                  sm:text-4xl lg:text-5xl dark:text-white"
+              >
                 {"Where I'm at and where I'm going"}
               </h2>
-              <div className="mt-3 text-xl leading-relaxed text-black dark:text-gray-300 md:mt-8">
+              <div
+                className="mt-3 text-xl leading-relaxed text-black md:mt-8
+                  dark:text-gray-300"
+              >
                 <p>
                   {
                     "I recently started a new job working in support for OpenVMS\
@@ -101,7 +120,8 @@ export const AboutSection = () => {
               <Image
                 src={Backpacking}
                 alt="Picture of backpacking"
-                className="relative px-4 w-full lg:max-w-lg mx-auto lg:origin-bottom lg:scale-110"
+                className="relative mx-auto w-full px-4 lg:max-w-lg
+                  lg:origin-bottom lg:scale-110"
                 width={565}
                 height={665}
                 placeholder="blur"

@@ -17,20 +17,24 @@ export const Card = ({
   playable,
 }: CardProps) => (
   <div className="h-[32rem] max-w-[34rem] p-4 md:w-1/2">
-    <div className="h-full overflow-hidden rounded-md border-2 border-gray-400 dark:border-gray-700 hover:bg-slate-100 dark:hover:bg-zinc-800 flex flex-col">
+    <div
+      className="flex h-full flex-col overflow-hidden rounded-md border-2
+        border-gray-400 hover:bg-slate-100 dark:border-gray-700
+        dark:hover:bg-zinc-800"
+    >
       <Link href={href} aria-label={`Link to ${title}`}>
         <Image
           alt={title}
           src={imgSrc}
-          className="w-lg h-56 object-cover object-[center_20%]"
+          className="h-56 w-lg object-cover object-[center_20%]"
           width={544}
           height={306}
           priority={true}
         />
       </Link>
-      <div className="p-6 flex flex-col flex-1 justify-between">
+      <div className="flex flex-1 flex-col justify-between p-6">
         <div>
-          <h2 className="mb-3 text-2xl font-bold leading-8 tracking-tight">
+          <h2 className="mb-3 text-2xl leading-8 font-bold tracking-tight">
             <Link href={href} aria-label={`Link to ${title}`}>
               {title}
             </Link>
@@ -42,7 +46,8 @@ export const Card = ({
         <div className="mt-auto">
           <Link
             href={href}
-            className="text-base font-medium leading-6 text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
+            className="text-primary-500 hover:text-primary-600
+              dark:hover:text-primary-400 text-base leading-6 font-medium"
             aria-label={`Link to ${title}`}
           >
             {playable ? "Play now" : "Learn more"} &rarr;

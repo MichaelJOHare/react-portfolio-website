@@ -33,12 +33,12 @@ export const knightMovementStrategy: MovementStrategy = (board, piece) => {
             piece,
             piece.currentSquare,
             targetSquare,
-            capturedPiece
-          )
+            capturedPiece,
+          ),
         );
       } else if (!targetPiece) {
         legalMoves.push(
-          createStandardMove(piece, piece.currentSquare, targetSquare)
+          createStandardMove(piece, piece.currentSquare, targetSquare),
         );
       }
     }

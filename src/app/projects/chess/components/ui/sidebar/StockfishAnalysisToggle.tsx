@@ -19,24 +19,37 @@ export const StockfishAnalysisToggle = () => {
 
   return (
     <div className="group relative">
-      <label className="group w-56 h-13 bg-neutral-600 relative rounded-full select-none cursor-pointer inline-flex items-center">
+      <label
+        className="group relative inline-flex h-13 w-56 cursor-pointer
+          items-center rounded-full bg-neutral-600 select-none"
+      >
         <input
-          className="sr-only peer"
+          className="peer sr-only"
           type="checkbox"
           value=""
           checked={stockfishEnabled}
           onChange={(e) => setStockfishEnabled(e.target.checked)}
         />
         <div
-          className="w-30 h-full bg-neutral-500 rounded-full group-hover:shadow-md shadow-neutral-700 dark:shadow-slate-900 
-        peer-checked:left-[6.5rem] peer-checked:bg-emerald-700 dark:peer-checked:bg-emerald-600 absolute left-0 transition-all duration-300"
+          className="absolute left-0 h-full w-30 rounded-full bg-neutral-500
+            shadow-neutral-700 transition-all duration-300 group-hover:shadow-md
+            peer-checked:left-[6.5rem] peer-checked:bg-emerald-700
+            dark:shadow-slate-900 dark:peer-checked:bg-emerald-600"
         ></div>
-        <span className="text-white transition relative w-30 h-full flex items-center justify-center font-medium text-xl">
+        <span
+          className="relative flex h-full w-30 items-center justify-center
+            text-xl font-medium text-white transition"
+        >
           Off
         </span>
-        <span className="text-neutral-100 transition relative w-30 h-full flex items-center justify-center font-medium text-xl">
+        <span
+          className="relative flex h-full w-30 items-center justify-center
+            text-xl font-medium text-neutral-100 transition"
+        >
           {showIcon ? (
-            <StockfishOptionsIcon className="ml-6 w-10 h-10 text-orange-300 drop-shadow-sfOn" />
+            <StockfishOptionsIcon
+              className="drop-shadow-sfOn ml-6 h-10 w-10 text-orange-300"
+            />
           ) : (
             "On"
           )}

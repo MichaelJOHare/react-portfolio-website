@@ -21,7 +21,9 @@ export const SidebarButton = ({ icon, label, onClick }: GameLogButtonProps) => {
     <div className="group relative">
       <button
         type="button"
-        className="p-2 text-gray-600 rounded-sm hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-600"
+        className="rounded-sm p-2 text-gray-600 hover:bg-gray-100
+          hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-600
+          dark:hover:text-white"
         onClick={onClick}
         aria-label={label}
       >
@@ -29,7 +31,10 @@ export const SidebarButton = ({ icon, label, onClick }: GameLogButtonProps) => {
       </button>
       <span
         role="tooltip"
-        className="pointer-events-none absolute px-2 py-2 -top-10 -left-6 w-max opacity-0 transition-opacity group-hover:opacity-100 text-sm font-medium text-neutral-100 bg-zinc-700 duration-300 rounded-lg shadow-xs dark:bg-neutral-300 dark:text-neutral-900"
+        className="pointer-events-none absolute -top-10 -left-6 w-max rounded-lg
+          bg-zinc-700 px-2 py-2 text-sm font-medium text-neutral-100 opacity-0
+          shadow-xs transition-opacity duration-300 group-hover:opacity-100
+          dark:bg-neutral-300 dark:text-neutral-900"
       >
         {label}
       </span>

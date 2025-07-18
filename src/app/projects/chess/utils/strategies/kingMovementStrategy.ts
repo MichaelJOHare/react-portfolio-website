@@ -9,7 +9,7 @@ import {
 export const kingMovementStrategy: MovementStrategy = (
   board,
   piece,
-  isBoardFlipped
+  isBoardFlipped,
 ) => {
   const legalMoves: Move[] = [];
   const row = piece.currentSquare.row;
@@ -29,7 +29,7 @@ export const kingMovementStrategy: MovementStrategy = (
   const addCastlingMoves = (
     board: Square[][],
     king: Piece,
-    legalMoves: Move[]
+    legalMoves: Move[],
   ) => {
     const rookPositions = isBoardFlipped
       ? { kingSideRookCol: 0, queenSideRookCol: 7 }
@@ -37,12 +37,12 @@ export const kingMovementStrategy: MovementStrategy = (
     const kingSideRook = getPieceAt(
       board,
       king.currentSquare.row,
-      rookPositions.kingSideRookCol
+      rookPositions.kingSideRookCol,
     );
     const queenSideRook = getPieceAt(
       board,
       king.currentSquare.row,
-      rookPositions.queenSideRookCol
+      rookPositions.queenSideRookCol,
     );
 
     const direction = isBoardFlipped ? -1 : 1;
@@ -55,15 +55,15 @@ export const kingMovementStrategy: MovementStrategy = (
           createSquare(
             king.currentSquare.row,
             king.currentSquare.col + 2 * direction,
-            king
+            king,
           ),
           kingSideRook.currentSquare,
           createSquare(
             kingSideRook.currentSquare.row,
             kingSideRook.currentSquare.col - 2 * direction,
-            kingSideRook
-          )
-        )
+            kingSideRook,
+          ),
+        ),
       );
     }
 
@@ -76,15 +76,15 @@ export const kingMovementStrategy: MovementStrategy = (
           createSquare(
             king.currentSquare.row,
             king.currentSquare.col - 2 * direction,
-            king
+            king,
           ),
           queenSideRook.currentSquare,
           createSquare(
             queenSideRook.currentSquare.row,
             queenSideRook.currentSquare.col + 3 * direction,
-            queenSideRook
-          )
-        )
+            queenSideRook,
+          ),
+        ),
       );
     }
   };
@@ -106,12 +106,12 @@ export const kingMovementStrategy: MovementStrategy = (
             piece,
             piece.currentSquare,
             targetSquare,
-            capturedPiece
-          )
+            capturedPiece,
+          ),
         );
       } else if (!targetPiece) {
         legalMoves.push(
-          createStandardMove(piece, piece.currentSquare, targetSquare)
+          createStandardMove(piece, piece.currentSquare, targetSquare),
         );
       }
     }

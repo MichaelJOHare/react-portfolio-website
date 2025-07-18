@@ -22,7 +22,7 @@ export const useStockfishHandler = (
   version: "sf-16" | "sf-17",
   isBoardFlipped: boolean,
   colorChoice: number,
-  strengthLevel: number
+  strengthLevel: number,
 ) => {
   const workerRef = useRef<Worker | null>(null);
   const gmRef = useRef(gameManager);
@@ -42,14 +42,14 @@ export const useStockfishHandler = (
   const defaultDepth = 24;
   const debouncedSetEvalCentipawn = useMemo(
     () => debounce((val: number) => setEvalCentipawn(val), 100),
-    [setEvalCentipawn]
+    [setEvalCentipawn],
   );
   const debouncedAddStockfishArrow = useMemo(
     () =>
       debounce((from: string, to: string) => {
         highlighterRef.current?.addStockfishBestMoveArrow({ from, to });
       }, 50),
-    []
+    [],
   );
 
   const configureEngine = useCallback(
@@ -68,7 +68,7 @@ export const useStockfishHandler = (
 
       sendCommand("isready");
     },
-    [isPlaying, version]
+    [isPlaying, version],
   );
 
   const resetEngine = useCallback(() => {
@@ -108,7 +108,7 @@ export const useStockfishHandler = (
         }
       }
     },
-    [isPlaying, debouncedAddStockfishArrow]
+    [isPlaying, debouncedAddStockfishArrow],
   );
 
   const handleBestMove = useCallback(
@@ -139,7 +139,7 @@ export const useStockfishHandler = (
               toSq.row,
               toSq.col,
               legalMoves,
-              promotionType
+              promotionType,
             );
             highlighterRef.current.addPreviousMoveSquares(fromSq, toSq);
           }, delay);
@@ -150,7 +150,7 @@ export const useStockfishHandler = (
 
       setEngineReady(true);
     },
-    [colorChoice, isPlaying, debouncedAddStockfishArrow]
+    [colorChoice, isPlaying, debouncedAddStockfishArrow],
   );
 
   const handleWDLMessage = useCallback(
@@ -177,7 +177,7 @@ export const useStockfishHandler = (
         }
       }
     },
-    [debouncedSetEvalCentipawn]
+    [debouncedSetEvalCentipawn],
   );
 
   const handleEngineMessage = useCallback(
@@ -199,7 +199,7 @@ export const useStockfishHandler = (
         }
       }
     },
-    [handleBestMove, handleDepthMessage, handleWDLMessage]
+    [handleBestMove, handleDepthMessage, handleWDLMessage],
   );
 
   const startWorker = useCallback(
@@ -239,7 +239,7 @@ export const useStockfishHandler = (
         data: { version: scriptUrl },
       });
     },
-    [strengthLevel, configureEngine, handleEngineMessage, terminate]
+    [strengthLevel, configureEngine, handleEngineMessage, terminate],
   );
 
   const sendCommand = (cmd: string) => {
@@ -278,7 +278,7 @@ export const useStockfishHandler = (
         movesHistory,
         halfMoveClock,
         fullMoveNumber,
-        isBoardFlipped
+        isBoardFlipped,
       );
 
       setEngineReady(false);

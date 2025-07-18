@@ -32,8 +32,8 @@ export const bishopMovementStrategy: MovementStrategy = (board, piece) => {
           piece,
           piece.currentSquare,
           targetSquare,
-          capturedPiece
-        )
+          capturedPiece,
+        ),
       );
       if (capturedPiece) {
         break;

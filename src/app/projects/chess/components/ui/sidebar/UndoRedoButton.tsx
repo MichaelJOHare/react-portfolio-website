@@ -63,12 +63,12 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
         const fromSq = getEffectiveSquare(
           move.from,
           wasBoardFlipped,
-          isBoardFlipped
+          isBoardFlipped,
         );
         const toSq = getEffectiveSquare(
           move.to,
           wasBoardFlipped,
-          isBoardFlipped
+          isBoardFlipped,
         );
         return { startSquare: fromSq, endSquare: toSq };
       });
@@ -86,9 +86,14 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
         onClick={() => {
           handleUndoMove();
         }}
-        className="w-full text-white bg-zinc-700 hover:bg-zinc-900 focus:ring-4 focus:outline-hidden focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-1.5 dark:bg-zinc-900 dark:hover:bg-zinc-600 dark:focus:ring-blue-800"
+        className="me-1.5 inline-flex w-full items-center rounded-lg bg-zinc-700
+          p-2.5 text-center text-sm font-medium text-white hover:bg-zinc-900
+          focus:ring-4 focus:ring-blue-300 focus:outline-hidden dark:bg-zinc-900
+          dark:hover:bg-zinc-600 dark:focus:ring-blue-800"
       >
-        <RightArrowIcon className="size-full transform rotate-180 text-neutral-200" />
+        <RightArrowIcon
+          className="size-full rotate-180 transform text-neutral-200"
+        />
         <span className="sr-only">Previous Move</span>
       </button>
     );
@@ -99,7 +104,10 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
         onClick={() => {
           handleRedoMove();
         }}
-        className="w-full text-white bg-zinc-700 hover:bg-zinc-900  focus:ring-4 focus:outline-hidden focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center ms-1.5 dark:bg-zinc-900 dark:hover:bg-zinc-600 dark:focus:ring-blue-800"
+        className="ms-1.5 inline-flex w-full items-center rounded-lg bg-zinc-700
+          p-2.5 text-center text-sm font-medium text-white hover:bg-zinc-900
+          focus:ring-4 focus:ring-blue-300 focus:outline-hidden dark:bg-zinc-900
+          dark:hover:bg-zinc-600 dark:focus:ring-blue-800"
       >
         <RightArrowIcon className="size-full text-neutral-200" />
         <span className="sr-only">Previous Move</span>

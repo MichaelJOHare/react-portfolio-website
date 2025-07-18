@@ -110,11 +110,11 @@ export const useHighlighter = () => {
       ...prev,
       circlesDrawnOnSquares: prev.circlesDrawnOnSquares.some(
         (circle) =>
-          circle.cx === circleCoords.cx && circle.cy === circleCoords.cy
+          circle.cx === circleCoords.cx && circle.cy === circleCoords.cy,
       )
         ? prev.circlesDrawnOnSquares.filter(
             (circle) =>
-              !(circle.cx === circleCoords.cx && circle.cy === circleCoords.cy)
+              !(circle.cx === circleCoords.cx && circle.cy === circleCoords.cy),
           )
         : [...prev.circlesDrawnOnSquares, circleCoords],
     }));
@@ -128,7 +128,7 @@ export const useHighlighter = () => {
           arrow.x1 === arrowCoords.x1 &&
           arrow.y1 === arrowCoords.y1 &&
           arrow.x2 === arrowCoords.x2 &&
-          arrow.y2 === arrowCoords.y2
+          arrow.y2 === arrowCoords.y2,
       )
         ? prev.arrowsDrawnOnSquares.filter(
             (arrow) =>
@@ -137,7 +137,7 @@ export const useHighlighter = () => {
                 arrow.y1 === arrowCoords.y1 &&
                 arrow.x2 === arrowCoords.x2 &&
                 arrow.y2 === arrowCoords.y2
-              )
+              ),
           )
         : [...prev.arrowsDrawnOnSquares, arrowCoords],
     }));

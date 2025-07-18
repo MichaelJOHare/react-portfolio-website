@@ -22,11 +22,11 @@ export const CapturedPieces = ({ color }: CapturedPiecesProps) => {
   const ownCaptured = capturedPieces.filter((p) => p.color === color);
   const gainedPoints = ownCaptured.reduce(
     (sum, p) => sum + (material[p.type] || 0),
-    0
+    0,
   );
   const lostPoints = opponentCaptured.reduce(
     (sum, p) => sum + (material[p.type] || 0),
-    0
+    0,
   );
   const materialAdvantage = gainedPoints - lostPoints;
 
@@ -34,7 +34,7 @@ export const CapturedPieces = ({ color }: CapturedPiecesProps) => {
     <div className="h-7 w-full">
       {ownCaptured.map((piece, index) => (
         <span
-          className="text-lg text-neutral-600 dark:text-neutral-200 font-mono"
+          className="font-mono text-lg text-neutral-600 dark:text-neutral-200"
           key={index}
         >
           {getPieceUnicode(piece.type)}

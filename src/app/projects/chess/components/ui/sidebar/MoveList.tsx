@@ -55,7 +55,7 @@ export const MoveList = () => {
   return (
     // add disambiguate capture/promotion/etc.
     <div className="w-full">
-      <ul className="flex flex-col w-full divide-y divide-neutral-400">
+      <ul className="flex w-full flex-col divide-y divide-neutral-400">
         {moveRows.map(([whiteRecord, blackRecord], rowIndex) => {
           const whiteMove = whiteRecord?.move;
           const whiteWasFlipped = whiteRecord?.wasBoardFlipped;
@@ -66,7 +66,7 @@ export const MoveList = () => {
           const whiteTo = getEffectiveSquare(
             whiteMove.to,
             whiteWasFlipped,
-            isBoardFlipped
+            isBoardFlipped,
           );
           const blackTo = blackMove
             ? getEffectiveSquare(blackMove.to, blackWasFlipped, isBoardFlipped)
@@ -75,32 +75,37 @@ export const MoveList = () => {
           return (
             <li
               key={rowIndex}
-              className="grid grid-cols-[auto_1fr_1fr] items-center py-1 px-2"
+              className="grid grid-cols-[auto_1fr_1fr] items-center px-2 py-1"
             >
-              <span className="font-bold text-xl pr-2">{rowIndex + 1}.</span>
+              <span className="pr-2 text-xl font-bold">{rowIndex + 1}.</span>
 
               {/* white move */}
               <button
                 type="button"
-                className={`flex items-center gap-1 hover:bg-zinc-300 dark:hover:bg-slate-400 rounded px-2 py-1 ${
+                className={`flex items-center gap-1 rounded px-2 py-1
+                hover:bg-zinc-300 dark:hover:bg-slate-400 ${
                   rowIndex * 2 === movesHistory.length - 1
-                    ? "border border-stone-700 dark:border-stone-200 bg-zinc-200 dark:bg-slate-600"
+                    ? `border border-stone-700 bg-zinc-200 dark:border-stone-200
+                      dark:bg-slate-600`
                     : ""
                 }`}
                 onClick={() => onMoveClick(rowIndex * 2)}
               >
                 {whiteMove?.piece?.type !== PieceType.PAWN && (
                   <span
-                    className={`text-3xl mb-1 ${
+                    className={`mb-1 text-3xl ${
                       whiteMove.piece.color === PlayerColor.BLACK
                         ? "drop-shadow-bPiece dark:text-neutral-900"
-                        : "text-neutral-100 drop-shadow-wPiece"
+                        : "drop-shadow-wPiece text-neutral-100"
                     }`}
                   >
                     {getPieceUnicode(whiteMove.piece.type)}
                   </span>
                 )}
-                <span className="text-2xl text-gray-800 dark:text-gray-200 min-w-[2.5rem] text-center">
+                <span
+                  className="min-w-[2.5rem] text-center text-2xl text-gray-800
+                    dark:text-gray-200"
+                >
                   {squareToString(whiteTo)}
                 </span>
               </button>
@@ -109,26 +114,31 @@ export const MoveList = () => {
               {blackMove ? (
                 <button
                   type="button"
-                  className={`flex items-center gap-1 hover:bg-zinc-300 dark:hover:bg-slate-400 rounded px-2 py-1 ${
-                    rowIndex * 2 + 1 === movesHistory.length - 1
-                      ? "border border-stone-700 dark:border-stone-200 bg-zinc-200 dark:bg-slate-600"
-                      : ""
-                  }`}
+                  className={`flex items-center gap-1 rounded px-2 py-1
+                    hover:bg-zinc-300 dark:hover:bg-slate-400 ${
+                      rowIndex * 2 + 1 === movesHistory.length - 1
+                        ? `border border-stone-700 bg-zinc-200
+                          dark:border-stone-200 dark:bg-slate-600`
+                        : ""
+                    }`}
                   onClick={() => onMoveClick(rowIndex * 2 + 1)}
                 >
                   {blackMove?.piece?.type !== PieceType.PAWN && (
                     <span
-                      className={`text-3xl mb-1 ${
+                      className={`mb-1 text-3xl ${
                         blackMove.piece.color === PlayerColor.BLACK
                           ? "drop-shadow-bPiece dark:text-neutral-900"
-                          : "text-neutral-100 drop-shadow-wPiece"
-                      }`}
+                          : "drop-shadow-wPiece text-neutral-100"
+                        }`}
                     >
                       {getPieceUnicode(blackMove.piece.type)}
                     </span>
                   )}
                   {blackTo && (
-                    <span className="text-2xl text-gray-800 dark:text-gray-200 min-w-[2.5rem] text-center">
+                    <span
+                      className="min-w-[2.5rem] text-center text-2xl
+                        text-gray-800 dark:text-gray-200"
+                    >
                       {squareToString(blackTo)}
                     </span>
                   )}

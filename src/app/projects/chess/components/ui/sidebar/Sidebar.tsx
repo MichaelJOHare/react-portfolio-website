@@ -40,11 +40,18 @@ export const Sidebar = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center">
-      <div className="h-full w-full relative">
-        <div className="h-full w-full flex flex-col border border-gray-200 rounded-lg bg-neutral-300 dark:bg-gray-700 dark:border-gray-600">
-          <div className="flex items-center justify-center px-3 py-2 border-b border-gray-400 dark:border-gray-600">
-            <div className="w-full max-w-lg flex justify-between items-center">
+    <div className="flex h-full w-full flex-col items-center justify-center">
+      <div className="relative h-full w-full">
+        <div
+          className="flex h-full w-full flex-col rounded-lg border
+            border-gray-200 bg-neutral-300 dark:border-gray-600
+            dark:bg-gray-700"
+        >
+          <div
+            className="flex items-center justify-center border-b border-gray-400
+              px-3 py-2 dark:border-gray-600"
+          >
+            <div className="flex w-full max-w-lg items-center justify-between">
               <SidebarButton
                 icon="flipBoard"
                 label="Flip Board"
@@ -71,7 +78,10 @@ export const Sidebar = () => {
               />
             </div>
           </div>
-          <div className="h-full flex flex-col px-4 py-2 min-h-64 bg-neutral-100 rounded-b-lg dark:bg-gray-800">
+          <div
+            className="flex h-full min-h-64 flex-col rounded-b-lg bg-neutral-100
+              px-4 py-2 dark:bg-gray-800"
+          >
             <div
               className="h-full max-h-[50vmin] overflow-y-auto"
               style={{ scrollbarGutter: "stable" }}
@@ -81,7 +91,7 @@ export const Sidebar = () => {
           </div>
           {showFenTextArea && (
             <textarea
-              className="mt-2 p-2 border border-gray-300 rounded-sm"
+              className="mt-2 rounded-sm border border-gray-300 p-2"
               rows={5}
               defaultValue={toFEN(
                 board,
@@ -90,7 +100,7 @@ export const Sidebar = () => {
                 movesHistory,
                 halfMoveClock,
                 fullMoveNumber,
-                isBoardFlipped
+                isBoardFlipped,
               )}
               onChange={updateStateOnFenChange}
               /* add on user change -> update board/state */

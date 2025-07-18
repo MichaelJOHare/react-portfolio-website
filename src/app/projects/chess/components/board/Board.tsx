@@ -28,7 +28,7 @@ export const Board = () => {
   } = highlighter;
   const stockfishArrow = getStockfishArrow(
     highlightedSquares.stockfishBestMove,
-    isBoardFlipped
+    isBoardFlipped,
   );
 
   const onDragStart = (event: DragStartEvent) => {
@@ -59,7 +59,7 @@ export const Board = () => {
 
   const isSquareToHide = (square: Square) => {
     return promotionHandler.squaresToHide.find(
-      (s) => s.row === square.row && s.col === square.col
+      (s) => s.row === square.row && s.col === square.col,
     );
   };
 
@@ -68,7 +68,9 @@ export const Board = () => {
       {/* try to make corner squares rounded, right side not rounded when sf enabled */}
       <div
         id="chessboard"
-        className="relative grid grid-cols-8 w-[90vmin] h-[90vmin] desktop-md:w-[70vmin] desktop-md:h-[70vmin] limitedHeight:w-[90vmin] limitedHeight:h-[90vmin] touch-none"
+        className="desktop-md:w-[70vmin] desktop-md:h-[70vmin]
+          limitedHeight:w-[90vmin] limitedHeight:h-[90vmin] relative grid
+          h-[90vmin] w-[90vmin] touch-none grid-cols-8"
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
@@ -79,7 +81,7 @@ export const Board = () => {
         }}
       >
         {promotionHandler.isShown && (
-          <div className="absolute top-0 left-0 inset-0 bg-black/20 z-20">
+          <div className="absolute inset-0 top-0 left-0 z-20 bg-black/20">
             <PromotionPanel />
           </div>
         )}
@@ -113,7 +115,7 @@ export const Board = () => {
                   />
                 )}
             </ChessSquare>
-          ))
+          )),
         )}
       </div>
     </DndContext>

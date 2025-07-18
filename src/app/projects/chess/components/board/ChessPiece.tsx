@@ -22,14 +22,14 @@ export const ChessPiece = ({ type, color, square }: ChessPieceProps) => {
     <>
       {isDragging && (
         <img
-          className="h-5/6 z-0 select-none opacity-50 pointer-events-none"
+          className="pointer-events-none z-0 h-5/6 opacity-50 select-none"
           src={`/assets/images/${color}-${type}.svg`}
           alt={`${type}-ghost`}
         />
       )}
       <img
-        className={`h-5/6 z-10 select-none absolute ${
-          isDragging ? "cursor-grabbing z-20" : "cursor-pointer"
+        className={`absolute z-10 h-5/6 select-none ${
+          isDragging ? "z-20 cursor-grabbing" : "cursor-pointer"
         }`}
         ref={setNodeRef}
         style={style}

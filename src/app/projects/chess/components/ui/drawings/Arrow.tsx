@@ -21,7 +21,7 @@ export const Arrow = ({ x1, y1, x2, y2, isStockfish }: ArrowProps) => {
 
   return (
     <svg
-      className={`absolute top-0 left-0 pointer-events-none ${
+      className={`pointer-events-none absolute top-0 left-0 ${
         isStockfish ? "z-30" : "z-31"
       }`}
       width="100%"

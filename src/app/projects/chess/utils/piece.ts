@@ -20,7 +20,7 @@ export const createPiece = (
   currentSquare: Square,
   movementStrategy: MovementStrategy,
   isAlive: boolean,
-  hasMoved?: boolean
+  hasMoved?: boolean,
 ): Piece => ({
   id: `${color}_${type}_${currentSquare.row}_${currentSquare.col}`,
   player,
@@ -33,7 +33,7 @@ export const createPiece = (
 });
 
 export const getMovementStrategyFromType = (
-  pieceType: PieceType
+  pieceType: PieceType,
 ): MovementStrategy | undefined => {
   let moveStrat: MovementStrategy | undefined;
   switch (pieceType) {

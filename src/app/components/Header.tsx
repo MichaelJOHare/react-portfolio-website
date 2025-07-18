@@ -12,7 +12,7 @@ export const Header = () => {
       <div>
         <Link href="/" aria-label={siteMetadata.headerTitle}>
           <div className="flex items-center justify-between">
-            <div className="pr-3 pt-1">
+            <div className="pt-1 pr-3">
               <Logo />
             </div>
             {typeof siteMetadata.headerTitle === "string" ? (
@@ -25,21 +25,32 @@ export const Header = () => {
           </div>
         </Link>
       </div>
-      <div className="h-10 flex">
+      <div className="flex h-10">
         {headerNavLinks.map((link) => (
           <Link
             key={link.title}
             href={link.href}
-            className="h-full w-24 first:w-22 border-r hidden font-bold sm:flex justify-center items-center"
+            className="hidden h-full w-24 items-center justify-center border-r
+              font-bold first:w-22 sm:flex"
           >
-            <div className="w-full h-full flex justify-center items-center rounded hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors">
+            <div
+              className="flex h-full w-full items-center justify-center rounded
+                transition-colors hover:bg-neutral-300
+                dark:hover:bg-neutral-600"
+            >
               {link.title}
             </div>
           </Link>
         ))}
-        <div className="w-19 border-r group relative">
-          <div className="w-full h-full rounded hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors">
-            <button className="flex h-full w-full cursor-pointer items-center justify-center">
+        <div className="group relative w-19 border-r">
+          <div
+            className="h-full w-full rounded transition-colors
+              hover:bg-neutral-300 dark:hover:bg-neutral-600"
+          >
+            <button
+              className="flex h-full w-full cursor-pointer items-center
+                justify-center"
+            >
               <a
                 href="/assets/resume/Michael_O'Hare_Resume.pdf"
                 aria-label="Link to download Résumé"
@@ -51,8 +62,11 @@ export const Header = () => {
           </div>
           <span
             role="tooltip"
-            className="pointer-events-none absolute pr-2 py-2 -top-7 -left-4 w-max opacity-0 transition-opacity group-hover:opacity-100 
-            text-sm font-medium duration-300 bg-zinc-700 text-neutral-100 rounded-lg shadow-sm dark:bg-neutral-300 dark:text-neutral-900"
+            className="pointer-events-none absolute -top-7 -left-4 w-max
+              rounded-lg bg-zinc-700 py-2 pr-2 text-sm font-medium
+              text-neutral-100 opacity-0 shadow-sm transition-opacity
+              duration-300 group-hover:opacity-100 dark:bg-neutral-300
+              dark:text-neutral-900"
           >
             Résumé
           </span>

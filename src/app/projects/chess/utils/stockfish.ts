@@ -24,7 +24,7 @@ export const getStockfishConfigFromUiLevel = (uiLevel: number) => {
 export const isCastlingMove = (
   movingPiece: Piece,
   fromRowCol: Square,
-  toRowCol: Square
+  toRowCol: Square,
 ) => {
   return (
     movingPiece.type === PieceType.KING &&
@@ -49,7 +49,7 @@ export const determinePromotionType = (char: string) => {
 
 export const getStockfishArrow = (
   move: ChessEngineMove | null,
-  isBoardFlipped: boolean
+  isBoardFlipped: boolean,
 ): ArrowProps =>
   move
     ? getArrowFromMove(isBoardFlipped ? mirrorEngineMove(move) : move)
@@ -94,7 +94,7 @@ const mirrorSquare = (square: string): string => {
   const rank = square[1];
 
   const mirroredFile = String.fromCharCode(
-    "h".charCodeAt(0) - (file.charCodeAt(0) - "a".charCodeAt(0))
+    "h".charCodeAt(0) - (file.charCodeAt(0) - "a".charCodeAt(0)),
   );
 
   const mirroredRank = (9 - parseInt(rank)).toString();
@@ -104,7 +104,7 @@ const mirrorSquare = (square: string): string => {
 
 export const convertNotationToSquare = (
   notation: string | undefined,
-  isBoardFlipped: boolean
+  isBoardFlipped: boolean,
 ) => {
   if (notation) {
     const col = notation.charCodeAt(0) - "a".charCodeAt(0);

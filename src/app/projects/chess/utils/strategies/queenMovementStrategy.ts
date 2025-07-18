@@ -36,8 +36,8 @@ export const queenMovementStrategy: MovementStrategy = (board, piece) => {
           piece,
           piece.currentSquare,
           targetSquare,
-          capturedPiece
-        )
+          capturedPiece,
+        ),
       );
       if (capturedPiece) {
         break;

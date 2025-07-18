@@ -58,7 +58,7 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
   const promotionHandler = usePromotionHandler(
     gameManager,
     highlighter,
-    isBoardFlipped
+    isBoardFlipped,
   );
   const stockfishHandler = useStockfishHandler(
     gameManager,
@@ -66,14 +66,14 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     version,
     isBoardFlipped,
     computerOpponentOptions.colorChoice,
-    computerOpponentOptions.strengthLevel
+    computerOpponentOptions.strengthLevel,
   );
   const { startWorker } = stockfishHandler;
   const pieceSelector = usePieceSelector(
     gameManager,
     highlighter,
     promotionHandler,
-    stockfishHandler
+    stockfishHandler,
   );
 
   const toggleFlipBoard = () => {

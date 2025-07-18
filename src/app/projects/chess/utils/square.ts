@@ -6,7 +6,7 @@ const legendNumber: string[] = ["8", "7", "6", "5", "4", "3", "2", "1"];
 export const createSquare = (
   row: number,
   col: number,
-  piece?: Piece
+  piece?: Piece,
 ): Square => ({
   row,
   col,

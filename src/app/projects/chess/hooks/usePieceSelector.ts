@@ -13,7 +13,7 @@ export const usePieceSelector = (
   gameManager: GameManager,
   highlighter: Highlighter,
   promotionHandler: PromotionHandler,
-  stockfishHandler: StockfishHandler
+  stockfishHandler: StockfishHandler,
 ) => {
   const { board, getLegalMoves, executeMove, players, currentPlayerIndex } =
     gameManager;
@@ -52,7 +52,7 @@ export const usePieceSelector = (
         move.from.row === start.row &&
         move.from.col === start.col &&
         move.to.row === end.row &&
-        move.to.col === end.col
+        move.to.col === end.col,
     );
 
     if (move?.isPromotion) {

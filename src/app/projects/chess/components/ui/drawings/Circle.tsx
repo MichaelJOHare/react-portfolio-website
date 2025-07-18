@@ -5,7 +5,7 @@ export const Circle = ({ cx, cy }: CircleProps) => {
 
   return (
     <svg
-      className="absolute top-0 left-0 z-30 pointer-events-none"
+      className="pointer-events-none absolute top-0 left-0 z-30"
       width="100%"
       height="100%"
       viewBox="0 0 100 100"

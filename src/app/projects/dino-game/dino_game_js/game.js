@@ -52,7 +52,7 @@ export function initializeGame(canvas) {
       playerHeightInGame,
       minJumpHeightInGame,
       maxJumpHeightInGame,
-      scaleRatio
+      scaleRatio,
     );
 
     ground = new Ground(
@@ -60,7 +60,7 @@ export function initializeGame(canvas) {
       groundWidthInGame,
       groundHeightInGame,
       GROUND_AND_CACTUS_SPEED,
-      scaleRatio
+      scaleRatio,
     );
 
     const cactiImages = CACTI_CONFIG.map((cactus) => {
@@ -77,7 +77,7 @@ export function initializeGame(canvas) {
       ctx,
       cactiImages,
       scaleRatio,
-      GROUND_AND_CACTUS_SPEED
+      GROUND_AND_CACTUS_SPEED,
     );
 
     score = new Score(ctx, scaleRatio);
@@ -97,12 +97,12 @@ export function initializeGame(canvas) {
   function getScaleRatio() {
     const screenHeight = Math.min(
       window.innerHeight,
-      document.documentElement.clientHeight
+      document.documentElement.clientHeight,
     );
 
     const screenWidth = Math.min(
       window.innerWidth,
-      document.documentElement.clientWidth
+      document.documentElement.clientWidth,
     );
 
     if (screenWidth / screenHeight < GAME_WIDTH / GAME_HEIGHT) {

@@ -26,7 +26,7 @@ export interface MovementStrategy {
     board: Square[][],
     piece: Piece,
     isBoardFlipped: boolean,
-    moveHistory: Move[]
+    moveHistory: Move[],
   ): Move[];
 }
 

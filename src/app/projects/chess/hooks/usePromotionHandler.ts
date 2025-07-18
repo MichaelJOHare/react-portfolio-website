@@ -25,7 +25,7 @@ type PromotionPanelState = {
 export const usePromotionHandler = (
   gameManager: GameManager,
   highlighter: Highlighter,
-  isBoardFlipped: boolean
+  isBoardFlipped: boolean,
 ) => {
   const { executeMove, getLegalMoves, board } = gameManager;
   const [promotionPanelState, setPromotionPanelState] =
@@ -43,7 +43,7 @@ export const usePromotionHandler = (
     const logicalTo = isBoardFlipped ? flipSquare(move.to) : move.to;
     const squaresToHide = getSquaresToHideDuringPromotion(
       move,
-      move.piece.color
+      move.piece.color,
     );
     setPromotionPanelState({
       isShown: true,
@@ -77,7 +77,7 @@ export const usePromotionHandler = (
       promotionSquare,
       type,
       true,
-      capturedPiece
+      capturedPiece,
     );
     executeMove(
       promotionMove.from.row,
@@ -85,7 +85,7 @@ export const usePromotionHandler = (
       promotionMove.to.row,
       promotionMove.to.col,
       playerMoves,
-      type
+      type,
     );
     clearPromotionDetails();
     highlighter.addPreviousMoveSquares(promotionMove.from, promotionMove.to);

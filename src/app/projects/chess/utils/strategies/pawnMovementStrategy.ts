@@ -19,7 +19,7 @@ export const pawnMovementStrategy: MovementStrategy = (
   board,
   piece,
   isBoardFlipped,
-  moveHistory
+  moveHistory,
 ) => {
   const legalMoves: Move[] = [];
   const { row, col } = piece.currentSquare;
@@ -32,24 +32,24 @@ export const pawnMovementStrategy: MovementStrategy = (
       ? 7
       : 0
     : piece.color === PlayerColor.WHITE
-    ? 0
-    : 7;
+      ? 0
+      : 7;
 
   const startingRow = isBoardFlipped
     ? piece.color === PlayerColor.WHITE
       ? 1
       : 6
     : piece.color === PlayerColor.WHITE
-    ? 6
-    : 1;
+      ? 6
+      : 1;
 
   const rowBeforePromotionRow = isBoardFlipped
     ? piece.color === PlayerColor.WHITE
       ? 6
       : 1
     : piece.color === PlayerColor.WHITE
-    ? 1
-    : 6;
+      ? 1
+      : 6;
 
   const addNormalMoves = (
     row: number,
@@ -58,7 +58,7 @@ export const pawnMovementStrategy: MovementStrategy = (
     backRank: number,
     piece: Piece,
     board: Square[][],
-    legalMoves: Move[]
+    legalMoves: Move[],
   ) => {
     const newRow = row + direction;
     if (newRow !== backRank && isEmpty(board, newRow, col)) {
@@ -66,8 +66,8 @@ export const pawnMovementStrategy: MovementStrategy = (
         createStandardMove(
           piece,
           createSquare(row, col),
-          createSquare(newRow, col, piece)
-        )
+          createSquare(newRow, col, piece),
+        ),
       );
     }
   };
@@ -79,7 +79,7 @@ export const pawnMovementStrategy: MovementStrategy = (
     startingRow: number,
     piece: Piece,
     board: Square[][],
-    legalMoves: Move[]
+    legalMoves: Move[],
   ) => {
     const newRow = row + 2 * direction;
     if (
@@ -91,8 +91,8 @@ export const pawnMovementStrategy: MovementStrategy = (
         createStandardMove(
           piece,
           createSquare(row, col),
-          createSquare(newRow, col, piece)
-        )
+          createSquare(newRow, col, piece),
+        ),
       );
     }
   };
@@ -104,7 +104,7 @@ export const pawnMovementStrategy: MovementStrategy = (
     backRank: number,
     piece: Piece,
     board: Square[][],
-    legalMoves: Move[]
+    legalMoves: Move[],
   ) => {
     [-1, 1].forEach((colOffset) => {
       const newRow = row + direction;
@@ -125,8 +125,8 @@ export const pawnMovementStrategy: MovementStrategy = (
               piece,
               createSquare(row, col, piece),
               targetSquare,
-              capturedPiece
-            )
+              capturedPiece,
+            ),
           );
         }
       }
@@ -139,7 +139,7 @@ export const pawnMovementStrategy: MovementStrategy = (
     piece: Piece,
     board: Square[][],
     moveHistory: Move[] | undefined,
-    legalMoves: Move[]
+    legalMoves: Move[],
   ) => {
     if (!moveHistory) {
       return;
@@ -149,16 +149,16 @@ export const pawnMovementStrategy: MovementStrategy = (
         ? 6
         : 1
       : piece.color === PlayerColor.WHITE
-      ? 1
-      : 6;
+        ? 1
+        : 6;
 
     const enPassantEndRow = isBoardFlipped
       ? piece.color === PlayerColor.WHITE
         ? 4
         : 3
       : piece.color === PlayerColor.WHITE
-      ? 3
-      : 4;
+        ? 3
+        : 4;
 
     const lastMove = moveHistory[moveHistory.length - 1];
 
@@ -183,7 +183,7 @@ export const pawnMovementStrategy: MovementStrategy = (
           currentSquare,
           targetSquare,
           capturedPiece.currentSquare,
-          capturedPiece
+          capturedPiece,
         );
         legalMoves.push(tempMove);
       }
@@ -195,7 +195,7 @@ export const pawnMovementStrategy: MovementStrategy = (
     col: number,
     piece: Piece,
     board: Square[][],
-    legalMoves: Move[]
+    legalMoves: Move[],
   ) => {
     const forwardSquare: Square = { row: row + direction, col };
 
@@ -211,7 +211,7 @@ export const pawnMovementStrategy: MovementStrategy = (
               { row, col, piece },
               forwardSquare,
               promotionType,
-              true
+              true,
             );
             legalMoves.push(promotionMove);
           }
@@ -236,7 +236,7 @@ export const pawnMovementStrategy: MovementStrategy = (
                 { row: forwardSquare.row, col: newCol, piece },
                 promotionType,
                 true,
-                capturedPiece
+                capturedPiece,
               );
               legalMoves.push(promotionMove);
             }

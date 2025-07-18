@@ -24,7 +24,7 @@ type PieceSetup = {
 
 export const defaultBoard = (): Square[][] => {
   return Array.from({ length: 8 }, (_, row) =>
-    Array.from({ length: 8 }, (_, col) => createSquare(row, col, undefined))
+    Array.from({ length: 8 }, (_, col) => createSquare(row, col, undefined)),
   );
 };
 
@@ -76,7 +76,7 @@ export const setupPieces = (isBoardFlipped: boolean): PieceSetup[] => [
 export const getPieceAt = (
   board: Square[][],
   row: number,
-  col: number
+  col: number,
 ): Piece | undefined => {
   return board[row][col].piece;
 };
@@ -84,14 +84,14 @@ export const getPieceAt = (
 export const isEmpty = (
   board: Square[][],
   row: number,
-  col: number
+  col: number,
 ): boolean => {
   return !board[row][col].piece;
 };
 
 export const isAttackedByOpponent = (
   opponentMoves: Move[],
-  targetSquare: Square
+  targetSquare: Square,
 ): boolean => {
   return opponentMoves.some((move) => {
     return (
@@ -109,7 +109,7 @@ export const isKingInCheck = (opponentMoves: Move[]) => {
 
 export const getSquaresToHideDuringPromotion = (
   move: Move,
-  color: PlayerColor
+  color: PlayerColor,
 ) => {
   const toSquare = move.to;
   const squaresToHide = [];

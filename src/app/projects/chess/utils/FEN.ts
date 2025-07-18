@@ -11,7 +11,7 @@ export const toFEN = (
   moveHistory: Move[],
   halfMoveClock: number,
   fullMoveNumber: number,
-  isBoardFlipped: boolean
+  isBoardFlipped: boolean,
 ): string => {
   let fen = "";
 
@@ -71,7 +71,7 @@ const generateCastlingAvailability = (board: Square[][]) => {
     majorPieceRow: number,
     queenSideRookColumn: number,
     kingSideRookColumn: number,
-    isWhite: boolean
+    isWhite: boolean,
   ) => {
     const king = board[majorPieceRow][4].piece;
     if (king && king.type === PieceType.KING && !king.hasMoved) {
@@ -84,8 +84,8 @@ const generateCastlingAvailability = (board: Square[][]) => {
               ? "K"
               : "Q"
             : position === kingSideRookColumn
-            ? "k"
-            : "q";
+              ? "k"
+              : "q";
         }
       }
     }

@@ -49,8 +49,8 @@ export const ChessSquare = ({ square, isValidMove, children }: SquareProps) => {
       return isValidMove
         ? "bg-green-500"
         : isDark
-        ? "bg-lightSquare"
-        : "bg-darkSquare";
+          ? "bg-lightSquare"
+          : "bg-darkSquare";
     }
 
     if (isKingInCheck && isKingHere) {
@@ -66,18 +66,23 @@ export const ChessSquare = ({ square, isValidMove, children }: SquareProps) => {
 
   return (
     <div
-      className={`relative flex justify-center items-center w-full h-full aspect-square ${getColor()}`}
+      className={`relative flex aspect-square h-full w-full items-center
+        justify-center ${getColor()}`}
       ref={setNodeRef}
       onClick={() => handleClick(square.row, square.col)}
     >
       {/* adds green circles and corners for legal moves when piece is dragged */}
       {isValidMove && !isOccupied && !isOver && (
-        <div className="absolute w-1/3 h-1/3 rounded-full bg-green-600"></div>
+        <div className="absolute h-1/3 w-1/3 rounded-full bg-green-600"></div>
       )}
       {isValidMove && isOccupied && !isOver && (
-        <div className="absolute w-full h-full flex justify-center items-center bg-green-600 overflow-hidden">
+        <div
+          className="absolute flex h-full w-full items-center justify-center
+            overflow-hidden bg-green-600"
+        >
           <div
-            className={`relative w-full h-full rounded-full ${getColor()} transform scale-115`}
+            className={`relative h-full w-full rounded-full ${getColor()}
+            scale-115 transform`}
           ></div>
         </div>
       )}
@@ -86,18 +91,16 @@ export const ChessSquare = ({ square, isValidMove, children }: SquareProps) => {
 
       {isLabeledColumn && (
         <div
-          className={`absolute top-0 right-0 pt-1 pr-1 text-xs desktop-md:text-sm ${
-            isDark ? "text-yellow-900" : "text-orange-200"
-          } select-none`}
+          className={`desktop-md:text-sm absolute top-0 right-0 pt-1 pr-1
+          text-xs ${isDark ? "text-yellow-900" : "text-orange-200"} select-none`}
         >
           {columnLabel}
         </div>
       )}
       {isLabeledRow && (
         <div
-          className={`absolute bottom-0 left-0 pl-1 text-xs desktop-md:text-sm ${
-            isDark ? "text-yellow-900" : "text-orange-200"
-          } select-none`}
+          className={`desktop-md:text-sm absolute bottom-0 left-0 pl-1 text-xs
+          ${isDark ? "text-yellow-900" : "text-orange-200"} select-none`}
         >
           {rowLabel}
         </div>

@@ -6,8 +6,11 @@ export default function Projects() {
   return (
     <>
       <div className="divide-y divide-gray-200 dark:divide-gray-700">
-        <div className="space-y-2 pb-8 pt-6 md:space-y-5">
-          <h1 className="text-center text-6xl sm:text-left sm:pl-22 font-extrabold text-gray-900 dark:text-gray-100">
+        <div className="space-y-2 pt-6 pb-8 md:space-y-5">
+          <h1
+            className="text-center text-6xl font-extrabold text-gray-900
+              sm:pl-22 sm:text-left dark:text-gray-100"
+          >
             Projects
           </h1>
         </div>

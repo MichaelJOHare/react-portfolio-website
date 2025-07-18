@@ -53,7 +53,10 @@ export const ThemeSwitch = () => {
   }
 
   return (
-    <div className="flex h-full w-19 justify-center rounded hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors">
+    <div
+      className="flex h-full w-19 justify-center rounded transition-colors
+        hover:bg-neutral-300 dark:hover:bg-neutral-600"
+    >
       <button
         className="flex h-full w-full justify-center"
         aria-label="Toggle Dark Mode"
@@ -68,7 +71,7 @@ export const ThemeSwitch = () => {
           strokeLinejoin="round"
           stroke="currentColor"
           onClick={toggleTheme}
-          className={"size-7 mt-1.5"}
+          className={"mt-1.5 size-7"}
           style={{
             ...svgContainerProps,
           }}

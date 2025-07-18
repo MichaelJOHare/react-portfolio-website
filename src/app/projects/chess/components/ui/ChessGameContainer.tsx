@@ -9,9 +9,15 @@ export const ChessGameContainer = () => {
   const { evalCentipawn } = stockfishHandler;
 
   return (
-    <div className="flex flex-col justify-center desktop-md:flex-row limitedHeight:flex-col">
-      <div className="flex justify-center items-center">
-        <div className="flex flex-col items-center w-[90vmin] desktop-md:w-[70vmin]">
+    <div
+      className="desktop-md:flex-row limitedHeight:flex-col flex flex-col
+        justify-center"
+    >
+      <div className="flex items-center justify-center">
+        <div
+          className="desktop-md:w-[70vmin] flex w-[90vmin] flex-col
+            items-center"
+        >
           <CapturedPieces
             color={isBoardFlipped ? PlayerColor.BLACK : PlayerColor.WHITE}
           />
@@ -21,15 +27,22 @@ export const ChessGameContainer = () => {
           />
         </div>
         <div
-          className={`h-[90vmin] w-5 overflow-hidden bg-neutral-800 border border-slate-800 dark:border-slate-100 border-spacing-0 mx-0.5 desktop-md:h-[70vmin] limitedHeight:h-[90vmin] ${
-            isBoardFlipped ? "" : "rotate-180"
-          } ${stockfishEnabled ? "visible" : "hidden"}`}
+          className={`desktop-md:h-[70vmin] limitedHeight:h-[90vmin] mx-0.5
+            h-[90vmin] w-5 border-spacing-0 overflow-hidden border
+            border-slate-800 bg-neutral-800 dark:border-slate-100 ${
+              isBoardFlipped ? "" : "rotate-180"
+            }
+            ${stockfishEnabled ? "visible" : "hidden"}`}
         >
           <div
-            className="w-full bg-neutral-600 overflow-hidden"
+            className="w-full overflow-hidden bg-neutral-600"
             style={{ height: `${evalCentipawn}%` }}
           >
-            <div className="flex w-full flex-col justify-center h-full bg-slate-100 dark:bg-slate-200 transition-width duration-500 ease-in-out leading-none"></div>
+            <div
+              className="transition-width flex h-full w-full flex-col
+                justify-center bg-slate-100 leading-none duration-500
+                ease-in-out dark:bg-slate-200"
+            ></div>
           </div>
         </div>
       </div>

@@ -13,7 +13,7 @@ export const Cube = () => {
         75,
         window.innerWidth / window.innerHeight,
         0.1,
-        1000
+        1000,
       );
 
       const animate = () => {
@@ -30,7 +30,7 @@ export const Cube = () => {
 
       cube = new THREE.Mesh(
         new THREE.BoxGeometry(1, 1, 1),
-        new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+        new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
       );
 
       const scene = new THREE.Scene();

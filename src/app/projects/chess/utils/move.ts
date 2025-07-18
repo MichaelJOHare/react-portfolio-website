@@ -25,7 +25,7 @@ export const createStandardMove = (
   piece: Piece,
   from: Square,
   to: Square,
-  capturedPiece?: Piece
+  capturedPiece?: Piece,
 ): Move => ({
   type: MoveType.STNDRD,
   from,
@@ -40,7 +40,7 @@ export const createCastlingMove = (
   kingFrom: Square,
   kingTo: Square,
   rookFrom: Square,
-  rookTo: Square
+  rookTo: Square,
 ): CastlingMove => ({
   type: MoveType.CASTLE,
   from: kingFrom,
@@ -59,7 +59,7 @@ export const createEnPassantMove = (
   from: Square,
   to: Square,
   capturedPieceSquare: Square,
-  capturedPiece: Piece
+  capturedPiece: Piece,
 ): EnPassantMove => ({
   type: MoveType.EP,
   piece: piece,
@@ -75,7 +75,7 @@ export const createPromotionMove = (
   to: Square,
   promotionType: PieceType,
   isPromotion?: boolean,
-  capturedPiece?: Piece
+  capturedPiece?: Piece,
 ): PromotionMove => ({
   type: MoveType.PROMO,
   piece: piece,
@@ -97,7 +97,7 @@ export const createPromotionMove = (
 export const executeStandardMove = (
   move: Move,
   board: Square[][],
-  capturedPiece: Piece | undefined
+  capturedPiece: Piece | undefined,
 ): Piece[] => {
   const piecesToUpdate: Piece[] = [];
   const updatedPiece = {
@@ -120,7 +120,7 @@ export const executeStandardMove = (
 export const executeEnPassantMove = (
   move: Move,
   board: Square[][],
-  epCapturedPiece: Piece | undefined
+  epCapturedPiece: Piece | undefined,
 ): Piece[] => {
   const piecesToUpdate: Piece[] = [];
   const enPassantMove = move as EnPassantMove;
@@ -165,7 +165,7 @@ export const executeCastlingMove = (move: Move, board: Square[][]): Piece[] => {
 export const executePromoMove = (
   move: Move,
   board: Square[][],
-  capturedPiecePromo: Piece | undefined
+  capturedPiecePromo: Piece | undefined,
 ): Piece[] => {
   const piecesToUpdate: Piece[] = [];
   const promotionMove = move as PromotionMove;
@@ -201,13 +201,13 @@ export const undoStandardMove = (
   board: Square[][],
   capturedPiece: Piece | undefined,
   wasBoardFlipped: boolean,
-  isBoardFlipped: boolean
+  isBoardFlipped: boolean,
 ): Piece[] => {
   const piecesToUpdate: Piece[] = [];
   const fromSquare = getEffectiveSquare(
     move.from,
     wasBoardFlipped,
-    isBoardFlipped
+    isBoardFlipped,
   );
   const toSquare = getEffectiveSquare(move.to, wasBoardFlipped, isBoardFlipped);
 
@@ -235,24 +235,24 @@ export const undoEnPassantMove = (
   board: Square[][],
   epCapturedPiece: Piece | undefined,
   wasBoardFlipped: boolean,
-  isBoardFlipped: boolean
+  isBoardFlipped: boolean,
 ): Piece[] => {
   const enPassantMove = move as EnPassantMove;
   const piecesToUpdate: Piece[] = [];
   const epMoveFrom = getEffectiveSquare(
     enPassantMove.from,
     wasBoardFlipped,
-    isBoardFlipped
+    isBoardFlipped,
   );
   const epMoveTo = getEffectiveSquare(
     enPassantMove.to,
     wasBoardFlipped,
-    isBoardFlipped
+    isBoardFlipped,
   );
   const epCaptureSquare = getEffectiveSquare(
     enPassantMove.capturedPieceSquare,
     wasBoardFlipped,
-    isBoardFlipped
+    isBoardFlipped,
   );
 
   const updatedPawn = {
@@ -277,28 +277,28 @@ export const undoCastlingMove = (
   move: Move,
   board: Square[][],
   wasBoardFlipped: boolean,
-  isBoardFlipped: boolean
+  isBoardFlipped: boolean,
 ): Piece[] => {
   const castlingMove = move as CastlingMove;
   const kingFromSq = getEffectiveSquare(
     castlingMove.from,
     wasBoardFlipped,
-    isBoardFlipped
+    isBoardFlipped,
   );
   const kingToSq = getEffectiveSquare(
     castlingMove.to,
     wasBoardFlipped,
-    isBoardFlipped
+    isBoardFlipped,
   );
   const rookFromSq = getEffectiveSquare(
     castlingMove.rookFrom,
     wasBoardFlipped,
-    isBoardFlipped
+    isBoardFlipped,
   );
   const rookToSq = getEffectiveSquare(
     castlingMove.rookTo,
     wasBoardFlipped,
-    isBoardFlipped
+    isBoardFlipped,
   );
 
   const updatedKing = {
@@ -326,19 +326,19 @@ export const undoPromoMove = (
   board: Square[][],
   capturedPiecePromo: Piece | undefined,
   wasBoardFlipped: boolean,
-  isBoardFlipped: boolean
+  isBoardFlipped: boolean,
 ): Piece[] => {
   const promotionMove = move as PromotionMove;
   const piecesToUpdate: Piece[] = [];
   const toSquare = getEffectiveSquare(
     promotionMove.to,
     isBoardFlipped,
-    wasBoardFlipped
+    wasBoardFlipped,
   );
   const fromSquare = getEffectiveSquare(
     promotionMove.from,
     wasBoardFlipped,
-    isBoardFlipped
+    isBoardFlipped,
   );
 
   const unPromotedPawn = {
@@ -372,7 +372,7 @@ export const undoPromoMove = (
 export const isValidCastlingMove = (
   move: CastlingMove,
   opponentMoves: Move[],
-  board: Square[][]
+  board: Square[][],
 ) => {
   const king = move.piece;
   const kingSquare = king.currentSquare;
@@ -419,7 +419,7 @@ export const isValidCastlingMove = (
 export const getEffectiveSquare = (
   square: Square,
   wasBoardFlipped: boolean,
-  isBoardFlipped: boolean
+  isBoardFlipped: boolean,
 ): Square => {
   return (wasBoardFlipped && !isBoardFlipped) ||
     (!wasBoardFlipped && isBoardFlipped)
