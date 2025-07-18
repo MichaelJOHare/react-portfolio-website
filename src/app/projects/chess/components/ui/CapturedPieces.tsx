@@ -34,7 +34,7 @@ export const CapturedPieces = ({ color }: CapturedPiecesProps) => {
     <div className="h-7 w-full">
       {ownCaptured.map((piece, index) => (
         <span
-          className="text-lg text-neutral-600 dark:text-neutral-200 font-serif"
+          className="text-lg text-neutral-600 dark:text-neutral-200 font-mono"
           key={index}
         >
           {getPieceUnicode(piece.type)}

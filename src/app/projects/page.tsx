@@ -7,7 +7,7 @@ export default function Projects() {
     <>
       <div className="divide-y divide-gray-200 dark:divide-gray-700">
         <div className="space-y-2 pb-8 pt-6 md:space-y-5">
-          <h1 className="text-6xl pl-22 font-extrabold text-gray-900 dark:text-gray-100">
+          <h1 className="text-center text-6xl sm:text-left sm:pl-22 font-extrabold text-gray-900 dark:text-gray-100">
             Projects
           </h1>
         </div>
