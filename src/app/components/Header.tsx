@@ -32,12 +32,14 @@ export const Header = () => {
             href={link.href}
             className="h-full w-24 first:w-22 border-r hidden font-bold sm:flex justify-center items-center"
           >
-            {link.title}
+            <div className="w-full h-full flex justify-center items-center rounded hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors">
+              {link.title}
+            </div>
           </Link>
         ))}
-        <div className="h-full w-19 flex border-r items-center">
-          <div className="w-full">
-            <button className="flex w-full cursor-pointer justify-center">
+        <div className="w-19 border-r">
+          <div className="w-full h-full rounded hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors">
+            <button className="flex h-full w-full cursor-pointer items-center justify-center">
               <Link
                 href={"/assets/resume/Michael_O'Hare_Resume.pdf"}
                 aria-label={`Link to download Résumé`}
