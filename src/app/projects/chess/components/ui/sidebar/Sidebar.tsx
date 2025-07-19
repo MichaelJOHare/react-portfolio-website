@@ -9,6 +9,7 @@ export const Sidebar = () => {
   const {
     gameManager,
     highlighter,
+    promotionHandler,
     onResetGame,
     isBoardFlipped,
     toggleFlipBoard,
@@ -23,6 +24,7 @@ export const Sidebar = () => {
     flipPiecesOnBoard,
   } = gameManager;
   const { flipAllHighlights } = highlighter;
+  const { flipPromotionDetails } = promotionHandler;
   const [showFenTextArea, setShowFenTextArea] = useState(false);
   const [showStockfishOptions, setShowStockfishOptions] = useState(false);
   const movesHistory = moveHistory.map((record) => record.move);
@@ -37,6 +39,7 @@ export const Sidebar = () => {
     toggleFlipBoard();
     flipPiecesOnBoard();
     flipAllHighlights();
+    flipPromotionDetails();
   };
 
   return (

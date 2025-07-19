@@ -94,6 +94,7 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     }
   }, [stockfishEnabled, version, isPlayingVsComputer, startWorker]);
 
+  // can probably just put this in the play button instead
   useEffect(() => {
     if (isPlayingVsComputer) {
       setStockfishEnabled(false);

@@ -16,7 +16,7 @@ export const Card = ({
   href,
   playable,
 }: CardProps) => (
-  <div className="h-[32rem] max-w-[34rem] p-4 md:w-1/2">
+  <div className="h-128 max-w-136 p-4 md:w-1/2">
     <div
       className="flex h-full flex-col overflow-hidden rounded-md border-2
         border-gray-400 hover:bg-slate-100 dark:border-gray-700

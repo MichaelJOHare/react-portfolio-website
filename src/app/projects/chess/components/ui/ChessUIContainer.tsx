@@ -19,7 +19,7 @@ export const ChessUIContainer = () => {
         <div
           className="desktop-md:pt-2 desktop-md:pb-0 desktop-md:h-[10vmin]
             desktop-md:order-last limitedHeight:pt-0 limitedHeight:pb-2
-            limitedHeight:h-[20vmin] limitedHeight:order-none flex h-[15vmin]
+            limitedHeight:h-[20vmin] limitedHeight:order-0 flex h-[15vmin]
             w-full justify-between pb-2"
         >
           <UndoRedoButton direction={"left"} />

@@ -1,21 +1,22 @@
 import { useDroppable } from "@dnd-kit/core";
-import React from "react";
+import React, { useMemo } from "react";
 import { Square } from "../../types";
 import { useGame } from "../../context/GameContext";
+import { flipSquare } from "../../utils";
 
 type SquareProps = {
   square: Square;
-  isValidMove: boolean;
   children: React.ReactNode;
 };
 
-export const ChessSquare = ({ square, isValidMove, children }: SquareProps) => {
+const ChessSquareComponent = ({ square, children }: SquareProps) => {
   const { isOver, setNodeRef } = useDroppable({
     id: `${square.row}-${square.col}`,
   });
   const { gameManager, highlighter, pieceSelector, isBoardFlipped } = useGame();
   const { isKingInCheck, kingSquare } = gameManager;
   const { highlightedSquares } = highlighter;
+  const { validMoves } = pieceSelector;
   const { handleClick, selectedPieceSquare, dragStartSquare } = pieceSelector;
   const isDark = (square.row + square.col) % 2 === 0;
   const isOccupied = !!children;
@@ -25,6 +26,11 @@ export const ChessSquare = ({ square, isValidMove, children }: SquareProps) => {
   const rowLabel = isBoardFlipped
     ? String.fromCharCode(104 - square.col)
     : String.fromCharCode(97 + square.col);
+
+  const validMoveSet = useMemo(() => {
+    return new Set(validMoves.map((m) => `${m.row}-${m.col}`));
+  }, [validMoves]);
+  const isValidMove = validMoveSet.has(`${square.row}-${square.col}`);
 
   const getColor = () => {
     const isSameSquare = (a?: Square, b?: Square) =>
@@ -39,7 +45,10 @@ export const ChessSquare = ({ square, isValidMove, children }: SquareProps) => {
       isOver && dragStartSquare && !isSameSquare(square, dragStartSquare);
 
     const isSelected = isSameSquare(selectedPieceSquare, square);
-    const isKingHere = isSameSquare(kingSquare, square);
+    const displayedKingSquare = isBoardFlipped
+      ? kingSquare && flipSquare(kingSquare)
+      : kingSquare;
+    const isKingHere = isSameSquare(displayedKingSquare, square);
 
     if (isPreviousMoveSquare && !(isOver && isValidMove)) {
       return isDark ? "bg-previousMoveLight" : "bg-previousMoveDark";
@@ -64,10 +73,11 @@ export const ChessSquare = ({ square, isValidMove, children }: SquareProps) => {
     return isDark ? "bg-lightSquare" : "bg-darkSquare";
   };
 
+  const colorClass = getColor();
   return (
     <div
       className={`relative flex aspect-square h-full w-full items-center
-        justify-center ${getColor()}`}
+        justify-center ${colorClass}`}
       ref={setNodeRef}
       onClick={() => handleClick(square.row, square.col)}
     >
@@ -108,3 +118,5 @@ export const ChessSquare = ({ square, isValidMove, children }: SquareProps) => {
     </div>
   );
 };
+
+export const ChessSquare = React.memo(ChessSquareComponent);

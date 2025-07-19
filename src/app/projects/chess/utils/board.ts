@@ -110,16 +110,18 @@ export const isKingInCheck = (opponentMoves: Move[]) => {
 export const getSquaresToHideDuringPromotion = (
   move: Move,
   color: PlayerColor,
+  isBoardFlipped: boolean,
 ) => {
-  const toSquare = move.to;
   const squaresToHide = [];
-  const increment = color === PlayerColor.WHITE ? 1 : -1;
+  const increment = (color === PlayerColor.WHITE) === isBoardFlipped ? -1 : 1;
+
   for (let i = 0; i < 4; i++) {
     squaresToHide.push({
-      row: toSquare.row + i * increment,
-      col: toSquare.col,
+      row: move.to.row + i * increment,
+      col: move.to.col,
     });
   }
+
   squaresToHide.push({ row: move.from.row, col: move.from.col });
   return squaresToHide;
 };

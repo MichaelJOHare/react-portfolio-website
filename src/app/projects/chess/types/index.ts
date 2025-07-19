@@ -71,6 +71,8 @@ export enum MoveType {
 export type MoveHistory = {
   move: Move;
   wasBoardFlipped: boolean;
+  causedCheck: boolean;
+  causedCheckMate: boolean;
 };
 
 export interface Move {

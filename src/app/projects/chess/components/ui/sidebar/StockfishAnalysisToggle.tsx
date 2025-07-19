@@ -33,7 +33,7 @@ export const StockfishAnalysisToggle = () => {
         <div
           className="absolute left-0 h-full w-30 rounded-full bg-neutral-500
             shadow-neutral-700 transition-all duration-300 group-hover:shadow-md
-            peer-checked:left-[6.5rem] peer-checked:bg-emerald-700
+            peer-checked:left-26 peer-checked:bg-emerald-700
             dark:shadow-slate-900 dark:peer-checked:bg-emerald-600"
         ></div>
         <span

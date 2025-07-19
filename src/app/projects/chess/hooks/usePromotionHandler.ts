@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { flipSquare, getSquaresToHideDuringPromotion } from "../utils";
 import {
   GameManager,
   Highlighter,
@@ -8,11 +9,6 @@ import {
   PlayerColor,
   Square,
 } from "../types";
-import {
-  createPromotionMove,
-  flipSquare,
-  getSquaresToHideDuringPromotion,
-} from "../utils";
 
 type PromotionPanelState = {
   isShown: boolean;
@@ -27,7 +23,7 @@ export const usePromotionHandler = (
   highlighter: Highlighter,
   isBoardFlipped: boolean,
 ) => {
-  const { executeMove, getLegalMoves, board } = gameManager;
+  const { executeMove, getLegalMoves } = gameManager;
   const [promotionPanelState, setPromotionPanelState] =
     useState<PromotionPanelState>({
       isShown: false,
@@ -38,19 +34,61 @@ export const usePromotionHandler = (
     });
 
   const setPromotionDetails = (move: Move) => {
-    console.log("calling");
     // add highlighter.clearPreviousMoveSquares() maybe?  but don't want to clear array, just hide temporarily so undo/redo works with highlighter
-    const logicalTo = isBoardFlipped ? flipSquare(move.to) : move.to;
     const squaresToHide = getSquaresToHideDuringPromotion(
       move,
       move.piece.color,
+      isBoardFlipped,
     );
     setPromotionPanelState({
       isShown: true,
-      promotionSquare: logicalTo,
+      promotionSquare: move.to,
       promotingPawn: move.piece,
       promotingColor: move.piece.color,
       squaresToHide: squaresToHide,
+    });
+  };
+
+  const onPromotionSelect = (type: PieceType) => {
+    const { promotionSquare, promotingPawn } = promotionPanelState;
+    if (!promotionSquare || !promotingPawn) return;
+
+    const playerMoves = getLegalMoves();
+
+    const from = promotingPawn.currentSquare;
+    const to = promotionSquare;
+
+    executeMove(from.row, from.col, to.row, to.col, playerMoves, type);
+
+    clearPromotionDetails();
+    highlighter.addPreviousMoveSquares(from, to);
+  };
+
+  const flipPromotionDetails = () => {
+    setPromotionPanelState((prev) => {
+      if (
+        !prev ||
+        !prev.promotingPawn?.currentSquare ||
+        !prev.promotionSquare
+      ) {
+        return prev;
+      }
+
+      const flippedPawnSquare = flipSquare(prev.promotingPawn.currentSquare);
+      const flippedPromotionSquare = flipSquare(prev.promotionSquare);
+      const flippedSquaresToHide = prev.squaresToHide.map((sq) =>
+        flipSquare(sq),
+      );
+
+      return {
+        ...prev,
+        promotingPawn: {
+          ...prev.promotingPawn,
+          currentSquare: flippedPawnSquare,
+        },
+        promotionSquare: flippedPromotionSquare,
+        squaresToHide: flippedSquaresToHide,
+      };
     });
   };
 
@@ -64,37 +102,11 @@ export const usePromotionHandler = (
     });
   };
 
-  const onPromotionSelect = (type: PieceType) => {
-    const promotionSquare = promotionPanelState.promotionSquare;
-    const promotingPawn = promotionPanelState.promotingPawn;
-    if (!promotionSquare || !promotingPawn) return;
-
-    const capturedPiece = board[promotionSquare.row][promotionSquare.col].piece;
-    const playerMoves = getLegalMoves();
-    const promotionMove = createPromotionMove(
-      promotingPawn,
-      promotingPawn.currentSquare,
-      promotionSquare,
-      type,
-      true,
-      capturedPiece,
-    );
-    executeMove(
-      promotionMove.from.row,
-      promotionMove.from.col,
-      promotionMove.to.row,
-      promotionMove.to.col,
-      playerMoves,
-      type,
-    );
-    clearPromotionDetails();
-    highlighter.addPreviousMoveSquares(promotionMove.from, promotionMove.to);
-  };
-
   return {
     ...promotionPanelState,
     onPromotionSelect,
     setPromotionDetails,
+    flipPromotionDetails,
     clearPromotionDetails,
   };
 };

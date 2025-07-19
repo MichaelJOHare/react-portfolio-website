@@ -18,7 +18,7 @@ export const Board = () => {
     stockfishEnabled,
   } = useGame();
   const { board } = gameManager;
-  const { validMoves, handleDragStart, handleDragEnd } = pieceSelector;
+  const { handleDragStart, handleDragEnd } = pieceSelector;
   const {
     tempDrawings,
     highlightedSquares,
@@ -45,9 +45,6 @@ export const Board = () => {
 
     handleDragEnd(start, end);
   };
-
-  const isMoveValid = (row: number, col: number) =>
-    validMoves.some((move) => move.row === row && move.col === col);
 
   const shouldShowStockfishArrow = () =>
     highlightedSquares.stockfishBestMove && stockfishEnabled;
@@ -103,7 +100,6 @@ export const Board = () => {
             <ChessSquare
               key={`${rowIndex}-${colIndex}`}
               square={{ row: rowIndex, col: colIndex }}
-              isValidMove={isMoveValid(rowIndex, colIndex)}
             >
               {square.piece &&
                 square.piece.isAlive &&
