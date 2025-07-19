@@ -26,10 +26,10 @@ export const ChessGameContainer = () => {
           } ${stockfishEnabled ? "visible" : "hidden"}`}
         >
           <div
-            className="w-full overflow-hidden bg-neutral-600"
+            className="w-full overflow-hidden bg-neutral-600 transition-all duration-300 ease-in-out"
             style={{ height: `${evalCentipawn}%` }}
           >
-            <div className="transition-width flex h-full w-full flex-col justify-center bg-slate-100 leading-none duration-500 ease-in-out dark:bg-slate-200"></div>
+            <div className="flex h-full w-full flex-col justify-center bg-slate-100 leading-none transition-all duration-300 ease-in-out dark:bg-slate-200"></div>
           </div>
         </div>
       </div>

@@ -278,16 +278,14 @@ export const useGameManager = (isBoardFlipped: boolean) => {
   const replayMoves = (count: number, isUndo: boolean) => {
     if (count <= 0) return;
 
-    let {
+    const {
       board,
       moveHistory,
       undoneMoveHistory,
       capturedPieces,
       piecesByPlayer,
-      currentPlayerIndex,
-      halfMoveClock,
-      fullMoveNumber,
     } = gameState;
+    let { currentPlayerIndex, halfMoveClock, fullMoveNumber } = gameState;
 
     const boardCopy = cloneBoard(board);
     const newMoveHistory = [...moveHistory];
@@ -552,7 +550,6 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     const playersKing = piecesByPlayer
       .get(player.id)
       ?.find((piece) => piece.type === PieceType.KING);
-    console.log(playersKing);
 
     if (!playersKing) return { isKingInCheck: false };
 

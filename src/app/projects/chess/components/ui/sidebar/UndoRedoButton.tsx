@@ -1,5 +1,4 @@
 import { useGame } from "../../../context/GameContext";
-import { PlayerType } from "../../../types";
 import { getEffectiveSquare, isComputerPlaying } from "../../../utils";
 import RightArrowIcon from "@/assets/icons/right-arrow-icon.svg";
 

@@ -29,7 +29,6 @@ export const useStockfishHandler = (
   const highlighterRef = useRef(highlighter);
   const isBoardFlippedRef = useRef(isBoardFlipped);
   const [engineReady, setEngineReady] = useState(false);
-  const [engineConfigured, setEngineConfigured] = useState(false);
   const hasConfiguredEngine = useRef(false);
   const [shouldStopThinking, setShouldStopThinking] = useState(false);
   const [shouldFindMove, setShouldFindMove] = useState(false);
@@ -81,8 +80,8 @@ export const useStockfishHandler = (
   const terminate = useCallback(() => {
     workerRef.current?.terminate();
     workerRef.current = null;
+    hasConfiguredEngine.current = false;
     setEngineReady(false);
-    setEngineConfigured(false);
   }, []);
 
   const handleDepthMessage = useCallback(
@@ -215,18 +214,16 @@ export const useStockfishHandler = (
         const msg = e.data;
 
         if (msg.type === "ready") {
-          console.log("Engine loaded");
-
           sendCommand("uci");
           sendCommand("isready");
         } else if (msg.data === "uciok") {
+          console.log("loaded");
           setEngineReady(true);
         } else if (msg.data === "readyok") {
           if (!hasConfiguredEngine.current) {
             hasConfiguredEngine.current = true;
             configureEngine(strengthLevel);
           } else {
-            setEngineConfigured(true);
             setShouldFindMove(true);
           }
         } else {
@@ -253,16 +250,14 @@ export const useStockfishHandler = (
   useEffect(() => {
     if (!workerRef.current) return;
     terminate();
-    setEngineConfigured(false);
     hasConfiguredEngine.current = false;
     setShouldFindMove(true);
-    console.log(version);
 
     startWorker(version);
   }, [version, startWorker, terminate]);
 
   useEffect(() => {
-    if (shouldFindMove && engineReady && engineConfigured) {
+    if (shouldFindMove && engineReady && hasConfiguredEngine.current) {
       const {
         board,
         players,
@@ -287,7 +282,7 @@ export const useStockfishHandler = (
       sendCommand(`position fen ${fen}`);
       sendCommand(`go depth ${depth}`);
     }
-  }, [shouldFindMove, engineReady, engineConfigured, depth, isBoardFlipped]);
+  }, [shouldFindMove, engineReady, depth, isBoardFlipped]);
 
   useEffect(() => {
     if (shouldStopThinking) {

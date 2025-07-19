@@ -3,4 +3,4 @@ export * from "./square";
 export * from "./move";
 export * from "./player";
 export * from "./piece";
-export * from "./movelist";
+export * from "./moveList";

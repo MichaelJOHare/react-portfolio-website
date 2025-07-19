@@ -81,7 +81,6 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
   };
 
   // useEffect because only running this once on mount, don't need gameManager in dep array
-  //        can maybe get rid of this if I set gameState equal to what initializeBoard does
   useEffect(() => {
     gameManager.initializeBoard();
     /* eslint-disable-next-line react-hooks/exhaustive-deps */

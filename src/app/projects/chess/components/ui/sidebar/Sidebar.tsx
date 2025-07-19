@@ -10,9 +10,9 @@ export const Sidebar = () => {
     gameManager,
     highlighter,
     promotionHandler,
-    onResetGame,
     isBoardFlipped,
     toggleFlipBoard,
+    onResetGame,
   } = useGame();
   const {
     board,
