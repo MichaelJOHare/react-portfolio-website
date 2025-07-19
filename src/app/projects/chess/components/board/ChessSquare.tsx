@@ -72,8 +72,7 @@ const ChessSquareComponent = ({ square, children }: SquareProps) => {
   const colorClass = getColor();
   return (
     <div
-      className={`relative flex aspect-square h-full w-full items-center
-        justify-center select-none ${colorClass}`}
+      className={`relative flex aspect-square h-full w-full items-center justify-center select-none ${colorClass}`}
       ref={setNodeRef}
       onClick={() => handleClick(square.row, square.col)}
     >
@@ -82,13 +81,9 @@ const ChessSquareComponent = ({ square, children }: SquareProps) => {
         <div className="absolute h-1/3 w-1/3 rounded-full bg-green-600"></div>
       )}
       {isValidMove && isOccupied && !isOver && (
-        <div
-          className="absolute flex h-full w-full items-center justify-center
-            overflow-hidden bg-green-600"
-        >
+        <div className="absolute flex h-full w-full items-center justify-center overflow-hidden bg-green-600">
           <div
-            className={`relative h-full w-full rounded-full ${getColor()}
-            scale-115 transform`}
+            className={`relative h-full w-full rounded-full ${getColor()} scale-115 transform`}
           ></div>
         </div>
       )}
@@ -97,16 +92,14 @@ const ChessSquareComponent = ({ square, children }: SquareProps) => {
 
       {isLabeledColumn && (
         <div
-          className={`desktop-md:text-sm absolute top-0 right-0 pt-1 pr-1
-          text-xs ${isDark ? "text-yellow-900" : "text-orange-200"} select-none`}
+          className={`desktop-md:text-sm absolute top-0 right-0 pt-1 pr-1 text-xs ${isDark ? "text-yellow-900" : "text-orange-200"} select-none`}
         >
           {columnLabel}
         </div>
       )}
       {isLabeledRow && (
         <div
-          className={`desktop-md:text-sm absolute bottom-0 left-0 pl-1 text-xs
-          ${isDark ? "text-yellow-900" : "text-orange-200"} select-none`}
+          className={`desktop-md:text-sm absolute bottom-0 left-0 pl-1 text-xs ${isDark ? "text-yellow-900" : "text-orange-200"} select-none`}
         >
           {rowLabel}
         </div>

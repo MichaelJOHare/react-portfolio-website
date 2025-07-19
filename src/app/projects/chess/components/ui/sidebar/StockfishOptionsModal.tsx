@@ -85,11 +85,9 @@ export const StockfishOptionsModal = ({
 
   return (
     <div
-      className={`desktop-md:h-full desktop-md:mt-0 desktop-md:pb-0
-        limitedHeight:h-auto absolute top-0 left-0 mt-2 flex w-full items-center
-        justify-center pb-2 transition-opacity ${
-          isOpen ? "z-20 opacity-100" : "pointer-events-none z-0 opacity-0"
-        }`}
+      className={`desktop-md:h-full desktop-md:mt-0 desktop-md:pb-0 limitedHeight:h-auto absolute top-0 left-0 mt-2 flex w-full items-center justify-center pb-2 transition-opacity ${
+        isOpen ? "z-20 opacity-100" : "pointer-events-none z-0 opacity-0"
+      }`}
     >
       <div className="relative flex size-full">
         <div className="absolute top-2 right-3">
@@ -102,13 +100,9 @@ export const StockfishOptionsModal = ({
         </div>
         <div
           ref={menuRef}
-          className="flex h-full w-full flex-col rounded-lg bg-neutral-300 p-4
-            dark:bg-gray-700"
+          className="flex h-full w-full flex-col rounded-lg bg-neutral-300 p-4 dark:bg-gray-700"
         >
-          <h1
-            className="limitedHeight:text-2xl flex self-center pb-4 text-2xl
-              2xl:text-3xl"
-          >
+          <h1 className="limitedHeight:text-2xl flex self-center pb-4 text-2xl 2xl:text-3xl">
             Stockfish Options
           </h1>
           <div className="desktop-md:flex-col flex grow flex-col justify-around">
@@ -131,14 +125,10 @@ export const StockfishOptionsModal = ({
                   <button
                     type="button"
                     key={level}
-                    className={`size-12 rounded-lg px-1 text-4xl
-                    text-neutral-100 hover:shadow-md ${
+                    className={`size-12 rounded-lg px-1 text-4xl text-neutral-100 hover:shadow-md ${
                       level === strengthLevel
-                        ? `bg-emerald-500 hover:shadow-neutral-600
-                          dark:bg-emerald-400 dark:hover:shadow-slate-900`
-                        : `bg-neutral-500 hover:bg-neutral-800
-                          hover:shadow-neutral-600 dark:bg-teal-700
-                          dark:hover:bg-teal-800 dark:hover:shadow-slate-900`
+                        ? `bg-emerald-500 hover:shadow-neutral-600 dark:bg-emerald-400 dark:hover:shadow-slate-900`
+                        : `bg-neutral-500 hover:bg-neutral-800 hover:shadow-neutral-600 dark:bg-teal-700 dark:hover:bg-teal-800 dark:hover:shadow-slate-900`
                     }`}
                     onClick={() => setStrengthLevel(level)}
                   >
@@ -155,10 +145,8 @@ export const StockfishOptionsModal = ({
                   className={`rounded-lg hover:shadow-md ${
                     colorChoice === 0
                       ? "bg-emerald-500 dark:bg-emerald-400"
-                      : `bg-neutral-500 hover:bg-neutral-600
-                        hover:shadow-neutral-600 dark:bg-teal-700
-                        dark:hover:bg-teal-800 dark:hover:shadow-slate-900`
-                    }`}
+                      : `bg-neutral-500 hover:bg-neutral-600 hover:shadow-neutral-600 dark:bg-teal-700 dark:hover:bg-teal-800 dark:hover:shadow-slate-900`
+                  }`}
                   onClick={() => setColorChoice(0)}
                 >
                   <WhiteKing className="h-18 w-18 scale-[99%]" />
@@ -168,10 +156,8 @@ export const StockfishOptionsModal = ({
                   className={`rounded-lg hover:shadow-md ${
                     colorChoice === 2
                       ? "bg-emerald-500 dark:bg-emerald-400"
-                      : `bg-neutral-500 hover:bg-neutral-600
-                        hover:shadow-neutral-600 dark:bg-teal-700
-                        dark:hover:bg-teal-800 dark:hover:shadow-slate-900`
-                    }`}
+                      : `bg-neutral-500 hover:bg-neutral-600 hover:shadow-neutral-600 dark:bg-teal-700 dark:hover:bg-teal-800 dark:hover:shadow-slate-900`
+                  }`}
                   onClick={() => setColorChoice(2)}
                 >
                   <RandomKing className="h-18 w-18 scale-[99%]" />
@@ -181,10 +167,8 @@ export const StockfishOptionsModal = ({
                   className={`rounded-lg hover:shadow-md ${
                     colorChoice === 1
                       ? "bg-emerald-500 dark:bg-emerald-400"
-                      : `bg-neutral-500 hover:bg-neutral-600
-                        hover:shadow-neutral-600 dark:bg-teal-700
-                        dark:hover:bg-teal-800 dark:hover:shadow-slate-900`
-                    }`}
+                      : `bg-neutral-500 hover:bg-neutral-600 hover:shadow-neutral-600 dark:bg-teal-700 dark:hover:bg-teal-800 dark:hover:shadow-slate-900`
+                  }`}
                   onClick={() => setColorChoice(1)}
                 >
                   <BlackKing className="h-18 w-18 scale-[99%]" />
@@ -194,14 +178,11 @@ export const StockfishOptionsModal = ({
             <div className="pt-2">
               <button
                 type="button"
-                className={`h-14 w-full bg-zinc-700 pb-1 text-3xl font-medium
-                  text-neutral-100 hover:shadow-sm dark:bg-teal-700
-                  dark:hover:shadow-md ${
-                    colorChoice !== -1 && strengthLevel !== -1
-                      ? "hover:bg-emerald-500 dark:hover:bg-emerald-400"
-                      : "hover:bg-zinc-800 dark:hover:bg-teal-800"
-                  } rounded-lg hover:shadow-zinc-800
-                  dark:hover:shadow-slate-900`}
+                className={`h-14 w-full bg-zinc-700 pb-1 text-3xl font-medium text-neutral-100 hover:shadow-sm dark:bg-teal-700 dark:hover:shadow-md ${
+                  colorChoice !== -1 && strengthLevel !== -1
+                    ? "hover:bg-emerald-500 dark:hover:bg-emerald-400"
+                    : "hover:bg-zinc-800 dark:hover:bg-teal-800"
+                } rounded-lg hover:shadow-zinc-800 dark:hover:shadow-slate-900`}
                 onClick={handlePlayToggle}
               >
                 {playClicked ? "Stop" : "Play"}

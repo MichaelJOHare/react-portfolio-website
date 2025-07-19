@@ -17,11 +17,7 @@ export const Card = ({
   playable,
 }: CardProps) => (
   <div className="h-128 max-w-136 p-4 md:w-1/2">
-    <div
-      className="flex h-full flex-col overflow-hidden rounded-md border-2
-        border-gray-400 hover:bg-slate-100 dark:border-gray-700
-        dark:hover:bg-zinc-800"
-    >
+    <div className="flex h-full flex-col overflow-hidden rounded-md border-2 border-gray-400 hover:bg-slate-100 dark:border-gray-700 dark:hover:bg-zinc-800">
       <Link href={href} aria-label={`Link to ${title}`}>
         <Image
           alt={title}
@@ -46,8 +42,7 @@ export const Card = ({
         <div className="mt-auto">
           <Link
             href={href}
-            className="text-primary-500 hover:text-primary-600
-              dark:hover:text-primary-400 text-base leading-6 font-medium"
+            className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 text-base leading-6 font-medium"
             aria-label={`Link to ${title}`}
           >
             {playable ? "Play now" : "Learn more"} &rarr;

@@ -35,6 +35,7 @@ export const usePromotionHandler = (
 
   const setPromotionDetails = (move: Move) => {
     // add highlighter.clearPreviousMoveSquares() maybe?  but don't want to clear array, just hide temporarily so undo/redo works with highlighter
+    // maybe pop it and store it in here, then add back in onPromotionSelect
     const squaresToHide = getSquaresToHideDuringPromotion(
       move,
       move.piece.color,

@@ -27,13 +27,11 @@ export const MoveListButton = ({
   return (
     <button
       type="button"
-      className={`flex h-full items-center gap-1 rounded px-2 py-1
-        hover:bg-zinc-300 dark:hover:bg-slate-400 ${
-          isActive
-            ? `border border-stone-700 bg-zinc-200 dark:border-stone-200
-              dark:bg-slate-600`
-            : ""
-        } ${isWhite ? "mr-1" : "ml-1 pl-2"}`}
+      className={`flex h-full items-center gap-1 rounded px-2 py-1 hover:bg-zinc-300 dark:hover:bg-slate-400 ${
+        isActive
+          ? `border border-stone-700 bg-zinc-200 dark:border-stone-200 dark:bg-slate-600`
+          : ""
+      } ${isWhite ? "mr-1" : "ml-1 pl-2"}`}
       onClick={onClick}
     >
       {move.piece.type !== PieceType.PAWN && (

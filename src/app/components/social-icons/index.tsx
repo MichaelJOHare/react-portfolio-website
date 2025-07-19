@@ -28,8 +28,7 @@ export const SocialIcon = ({
 
   return (
     <a
-      className="text-sm transition hover:text-neutral-700
-        dark:hover:text-neutral-500"
+      className="text-sm transition hover:text-neutral-700 dark:hover:text-neutral-500"
       target="_blank"
       rel="noopener noreferrer"
       href={href}

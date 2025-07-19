@@ -53,10 +53,7 @@ export const ThemeSwitch = () => {
   }
 
   return (
-    <div
-      className="flex h-full w-19 justify-center rounded transition-colors
-        hover:bg-neutral-300 dark:hover:bg-neutral-600"
-    >
+    <div className="flex h-full w-19 justify-center rounded transition-colors hover:bg-neutral-300 dark:hover:bg-neutral-600">
       <button
         className="flex h-full w-full justify-center"
         aria-label="Toggle Dark Mode"

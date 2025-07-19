@@ -39,11 +39,9 @@ export const MobileNav = () => {
         </svg>
       </button>
       <div
-        className={`fixed top-0 left-0 z-50 h-full w-full transform bg-white
-          opacity-95 duration-300 ease-in-out dark:bg-zinc-900
-          dark:opacity-[0.98] ${
-            navShow ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={`fixed top-0 left-0 z-50 h-full w-full transform bg-white opacity-95 duration-300 ease-in-out dark:bg-zinc-900 dark:opacity-[0.98] ${
+          navShow ? "translate-x-0" : "translate-x-full"
+        }`}
       >
         <div className="flex justify-end">
           <button
@@ -70,8 +68,7 @@ export const MobileNav = () => {
             <div key={link.title} className="px-12 py-4">
               <Link
                 href={link.href}
-                className="text-2xl font-bold tracking-widest text-gray-900
-                  dark:text-gray-100"
+                className="text-2xl font-bold tracking-widest text-gray-900 dark:text-gray-100"
                 onClick={onToggleNav}
               >
                 {link.title}

@@ -30,27 +30,16 @@ export const Header = () => {
           <Link
             key={link.title}
             href={link.href}
-            className="hidden h-full w-24 items-center justify-center border-r
-              font-bold first:w-22 sm:flex"
+            className="hidden h-full w-24 items-center justify-center border-r font-bold first:w-22 sm:flex"
           >
-            <div
-              className="flex h-full w-full items-center justify-center rounded
-                transition-colors hover:bg-neutral-300
-                dark:hover:bg-neutral-600"
-            >
+            <div className="flex h-full w-full items-center justify-center rounded transition-colors hover:bg-neutral-300 dark:hover:bg-neutral-600">
               {link.title}
             </div>
           </Link>
         ))}
         <div className="group relative w-19 border-r">
-          <div
-            className="h-full w-full rounded transition-colors
-              hover:bg-neutral-300 dark:hover:bg-neutral-600"
-          >
-            <button
-              className="flex h-full w-full cursor-pointer items-center
-                justify-center"
-            >
+          <div className="h-full w-full rounded transition-colors hover:bg-neutral-300 dark:hover:bg-neutral-600">
+            <button className="flex h-full w-full cursor-pointer items-center justify-center">
               <a
                 href="/assets/resume/Michael_O'Hare_Resume.pdf"
                 aria-label="Link to download Résumé"
@@ -62,11 +51,7 @@ export const Header = () => {
           </div>
           <span
             role="tooltip"
-            className="pointer-events-none absolute -top-7 -left-4 w-max
-              rounded-lg bg-zinc-700 py-2 pr-2 text-sm font-medium
-              text-neutral-100 opacity-0 shadow-sm transition-opacity
-              duration-300 group-hover:opacity-100 dark:bg-neutral-300
-              dark:text-neutral-900"
+            className="pointer-events-none absolute -top-7 -left-4 w-max rounded-lg bg-zinc-700 py-2 pr-2 text-sm font-medium text-neutral-100 opacity-0 shadow-sm transition-opacity duration-300 group-hover:opacity-100 dark:bg-neutral-300 dark:text-neutral-900"
           >
             Résumé
           </span>
