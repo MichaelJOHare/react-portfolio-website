@@ -25,7 +25,7 @@ export const toFEN = (
   };
   const epTarget = getEnPassantTarget(moveHistory, isBoardFlipped);
 
-  // piece placement
+  //  piece placement
   for (let fenRank = 0; fenRank < 8; fenRank++) {
     let emptySquares = 0;
 
