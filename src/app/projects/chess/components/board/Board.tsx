@@ -95,17 +95,14 @@ export const Board = () => {
         )}
         {board.map((row, rowIndex) =>
           row.map((square, colIndex) => (
-            <ChessSquare
-              key={`${rowIndex}-${colIndex}`}
-              square={{ row: rowIndex, col: colIndex }}
-            >
+            <ChessSquare key={`${rowIndex}-${colIndex}`} square={square}>
               {square.piece &&
                 square.piece.isAlive &&
                 !isSquareToHide(square) && (
                   <ChessPiece
                     type={square.piece.type}
                     color={square.piece.color}
-                    square={{ row: rowIndex, col: colIndex }}
+                    square={square}
                   />
                 )}
             </ChessSquare>

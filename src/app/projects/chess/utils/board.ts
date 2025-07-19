@@ -18,7 +18,7 @@ import {
 
 type PieceSetup = {
   type: PieceType;
-  positions: { row: number; col: number }[];
+  positions: Square[];
   movementStrategy: MovementStrategy;
 };
 

@@ -68,13 +68,13 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     computerOpponentOptions.colorChoice,
     computerOpponentOptions.strengthLevel,
   );
-  const { startWorker } = stockfishHandler;
   const pieceSelector = usePieceSelector(
     gameManager,
     highlighter,
     promotionHandler,
     stockfishHandler,
   );
+  const { startWorker } = stockfishHandler;
 
   const toggleFlipBoard = () => {
     setIsBoardFlipped(!isBoardFlipped);
@@ -93,13 +93,6 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
       startWorker(version);
     }
   }, [stockfishEnabled, version, isPlayingVsComputer, startWorker]);
-
-  // can probably just put this in the play button instead
-  useEffect(() => {
-    if (isPlayingVsComputer) {
-      setStockfishEnabled(false);
-    }
-  }, [isPlayingVsComputer]);
 
   return (
     <GameContext.Provider

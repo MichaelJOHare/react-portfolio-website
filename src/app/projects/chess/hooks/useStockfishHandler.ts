@@ -256,6 +256,7 @@ export const useStockfishHandler = (
     setEngineConfigured(false);
     hasConfiguredEngine.current = false;
     setShouldFindMove(true);
+    console.log(version);
 
     startWorker(version);
   }, [version, startWorker, terminate]);
@@ -293,13 +294,12 @@ export const useStockfishHandler = (
       sendCommand("stop");
       setShouldStopThinking(false);
       setShouldFindMove(true);
-      // maybe set engineReady true?
     }
   }, [shouldStopThinking]);
 
   /* USE EFFECTS FOR FETCHING MOVE, INTERRUPTING ENGINE, AND LOADING DIFFERENT VERSION */
 
-  /* USEEFFECTS FOR USEREF UPDATEs */
+  /* USE EFFECTS FOR USEREF UPDATEs */
 
   useEffect(() => {
     gmRef.current = gameManager;
@@ -313,7 +313,7 @@ export const useStockfishHandler = (
     isBoardFlippedRef.current = isBoardFlipped;
   }, [isBoardFlipped]);
 
-  /* USEEFFECTS FOR USEREF UPDATES */
+  /* USE EFFECTS FOR USEREF UPDATES */
 
   return {
     startWorker,

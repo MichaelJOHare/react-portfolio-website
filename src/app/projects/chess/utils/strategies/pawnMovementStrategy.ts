@@ -170,13 +170,10 @@ export const pawnMovementStrategy: MovementStrategy = (
       row === enPassantEndRow &&
       Math.abs(col - lastMove.to.col) === 1
     ) {
-      const currentSquare: Square = { row, col }; // use createSquare in here?
-      const targetSquare: Square = {
-        row: row + direction,
-        col: lastMove.to.col,
-        piece,
-      };
-      const capturedPiece = board[lastMove.to.row][lastMove.to.col].piece;
+      const currentSquare = createSquare(row, col, piece);
+      const targetSquare = createSquare(row + direction, lastMove.to.col);
+
+      const capturedPiece = getPieceAt(board, lastMove.to.row, lastMove.to.col);
       if (capturedPiece) {
         const tempMove = createEnPassantMove(
           piece,
@@ -197,10 +194,15 @@ export const pawnMovementStrategy: MovementStrategy = (
     board: Square[][],
     legalMoves: Move[],
   ) => {
-    const forwardSquare: Square = { row: row + direction, col };
+    const forwardSquare = createSquare(row + direction, col);
+    const pieceInFrontOfPawn = getPieceAt(
+      board,
+      forwardSquare.row,
+      forwardSquare.col,
+    );
 
     if (row === rowBeforePromotionRow) {
-      if (!board[forwardSquare.row][forwardSquare.col].piece) {
+      if (!pieceInFrontOfPawn) {
         Object.values(PieceType).forEach((promotionType) => {
           if (
             promotionType !== PieceType.PAWN &&
@@ -208,7 +210,7 @@ export const pawnMovementStrategy: MovementStrategy = (
           ) {
             const promotionMove = createPromotionMove(
               piece,
-              { row, col, piece },
+              piece.currentSquare,
               forwardSquare,
               promotionType,
               true,
@@ -220,27 +222,27 @@ export const pawnMovementStrategy: MovementStrategy = (
 
       [-1, 1].forEach((colOffset) => {
         const newCol = col + colOffset;
-        let capturedPiece: Piece | undefined;
         if (newCol >= 0 && newCol < 8) {
-          capturedPiece = board[forwardSquare.row][newCol].piece;
-        }
-        if (capturedPiece && capturedPiece.color !== piece.color) {
-          Object.values(PieceType).forEach((promotionType) => {
-            if (
-              promotionType !== PieceType.PAWN &&
-              promotionType !== PieceType.KING
-            ) {
-              const promotionMove = createPromotionMove(
-                piece,
-                { row, col },
-                { row: forwardSquare.row, col: newCol, piece },
-                promotionType,
-                true,
-                capturedPiece,
-              );
-              legalMoves.push(promotionMove);
-            }
-          });
+          const capturedPiece = getPieceAt(board, forwardSquare.row, newCol);
+          if (capturedPiece && capturedPiece.color !== piece.color) {
+            Object.values(PieceType).forEach((promotionType) => {
+              if (
+                promotionType !== PieceType.PAWN &&
+                promotionType !== PieceType.KING
+              ) {
+                const targetSquare = createSquare(forwardSquare.row, newCol);
+                const promotionMove = createPromotionMove(
+                  piece,
+                  piece.currentSquare,
+                  targetSquare,
+                  promotionType,
+                  true,
+                  capturedPiece,
+                );
+                legalMoves.push(promotionMove);
+              }
+            });
+          }
         }
       });
     }

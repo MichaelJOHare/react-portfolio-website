@@ -190,8 +190,11 @@ export const executePromoMove = (
     board[move.to.row][move.to.col].piece = promotedPawn;
     piecesToUpdate.push(promotedPawn);
     if (capturedPiecePromo) {
-      capturedPiecePromo.isAlive = false;
-      piecesToUpdate.push(capturedPiecePromo);
+      const newCapturedPiecePromo = {
+        ...capturedPiecePromo,
+        isAlive: false,
+      };
+      piecesToUpdate.push(newCapturedPiecePromo);
     }
   }
   return piecesToUpdate;
@@ -446,6 +449,29 @@ export const getEffectiveSquare = (
     (!wasBoardFlipped && isBoardFlipped)
     ? flipSquare(square)
     : square;
+};
+
+export const getEffectiveMove = (
+  move: Move,
+  fromFlipped: boolean,
+  toFlipped: boolean,
+): Move => {
+  const baseMove: Move = {
+    ...move,
+    from: getEffectiveSquare(move.from, fromFlipped, toFlipped),
+    to: getEffectiveSquare(move.to, fromFlipped, toFlipped),
+  };
+
+  if (move.type === MoveType.EP) {
+    const epMove = baseMove as EnPassantMove;
+    epMove.capturedPieceSquare = getEffectiveSquare(
+      (move as EnPassantMove).capturedPieceSquare,
+      fromFlipped,
+      toFlipped,
+    );
+  }
+
+  return baseMove;
 };
 
 /*

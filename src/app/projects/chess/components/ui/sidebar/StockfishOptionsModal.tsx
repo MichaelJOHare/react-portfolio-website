@@ -7,6 +7,7 @@ import { useGame } from "../../../context/GameContext";
 import { StockfishAnalysisToggle } from "./StockfishAnalysisToggle";
 import { StockfishVersionMenu } from "./StockfishVersionMenu";
 import { PlayerType } from "../../../types";
+import { setPlayerType } from "../../../utils";
 
 type StockfishOptionsModalProps = {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export const StockfishOptionsModal = ({
     gameManager,
     highlighter,
     isBoardFlipped,
+    setStockfishEnabled,
     setComputerOpponentOptions,
     toggleFlipBoard,
   } = useGame();
@@ -29,6 +31,8 @@ export const StockfishOptionsModal = ({
   const [colorChoice, setColorChoice] = useState(-1);
   const [playClicked, setPlayClicked] = useState(false);
   const strengthLevels = [1, 2, 3, 4, 5, 6, 7, 8];
+  const whitePlayer = gameManager.players[0];
+  const blackPlayer = gameManager.players[1];
 
   const handlePlayToggle = () => {
     if (!playClicked) {
@@ -37,9 +41,9 @@ export const StockfishOptionsModal = ({
 
       const isBlack = actualColor === 1;
       if (isBlack) {
-        gameManager.players[0].type = PlayerType.COMPUTER;
+        setPlayerType(whitePlayer, PlayerType.COMPUTER);
       } else {
-        gameManager.players[1].type = PlayerType.COMPUTER;
+        setPlayerType(blackPlayer, PlayerType.COMPUTER);
       }
 
       if (isBlack !== isBoardFlipped) {
@@ -48,12 +52,15 @@ export const StockfishOptionsModal = ({
         highlighter.flipAllHighlights();
       }
 
+      setStockfishEnabled(false);
       setComputerOpponentOptions({
         strengthLevel,
         colorChoice: actualColor,
       });
       onClose();
     } else {
+      setPlayerType(whitePlayer, PlayerType.HUMAN);
+      setPlayerType(blackPlayer, PlayerType.HUMAN);
       setComputerOpponentOptions({ strengthLevel: -1, colorChoice: -1 });
     }
     setPlayClicked((prev) => !prev);
@@ -79,7 +86,6 @@ export const StockfishOptionsModal = ({
     if (isOpen) {
       setStrengthLevel(-1);
       setColorChoice(-1);
-      setPlayClicked(false);
     }
   }, [isOpen]);
 

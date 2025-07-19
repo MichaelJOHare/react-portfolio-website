@@ -21,7 +21,7 @@ export const SidebarButton = ({ icon, label, onClick }: GameLogButtonProps) => {
     <div className="group relative">
       <button
         type="button"
-        className="rounded-sm p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+        className="rounded-sm p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-500 dark:hover:text-white"
         onClick={onClick}
         aria-label={label}
       >
