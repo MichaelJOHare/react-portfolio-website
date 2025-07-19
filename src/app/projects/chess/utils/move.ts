@@ -112,7 +112,7 @@ export const executeStandardMove = (
     if (capturedPiece) {
       const newCapturedPiece = {
         ...capturedPiece,
-        isAlive: true,
+        isAlive: false,
       };
       piecesToUpdate.push(newCapturedPiece);
     }
