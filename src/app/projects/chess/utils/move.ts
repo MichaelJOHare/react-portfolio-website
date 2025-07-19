@@ -110,8 +110,11 @@ export const executeStandardMove = (
     board[move.to.row][move.to.col].piece = updatedPiece;
     piecesToUpdate.push(updatedPiece);
     if (capturedPiece) {
-      capturedPiece.isAlive = false;
-      piecesToUpdate.push(capturedPiece);
+      const newCapturedPiece = {
+        ...capturedPiece,
+        isAlive: true,
+      };
+      piecesToUpdate.push(newCapturedPiece);
     }
   }
   return piecesToUpdate;
@@ -130,11 +133,17 @@ export const executeEnPassantMove = (
   };
   board[enPassantMove.from.row][enPassantMove.from.col].piece = undefined;
   if (updatedPawn) {
-    board[move.to.row][move.to.col].piece = updatedPawn;
+    board[enPassantMove.to.row][enPassantMove.to.col].piece = updatedPawn;
     piecesToUpdate.push(updatedPawn);
     if (epCapturedPiece) {
-      epCapturedPiece.isAlive = false;
-      piecesToUpdate.push(epCapturedPiece);
+      board[enPassantMove.capturedPieceSquare.row][
+        enPassantMove.capturedPieceSquare.col
+      ].piece = undefined;
+      const newEpCapturedPiece = {
+        ...epCapturedPiece,
+        isAlive: false,
+      };
+      piecesToUpdate.push(newEpCapturedPiece);
     }
   }
   return piecesToUpdate;

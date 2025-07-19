@@ -35,8 +35,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# large nnue files
-*.nnue
-
 # to do file
 /src/TODO.txt
