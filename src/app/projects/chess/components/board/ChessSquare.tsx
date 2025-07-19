@@ -2,7 +2,6 @@ import { useDroppable } from "@dnd-kit/core";
 import React, { useMemo } from "react";
 import { Square } from "../../types";
 import { useGame } from "../../context/GameContext";
-import { flipSquare } from "../../utils";
 
 type SquareProps = {
   square: Square;
@@ -45,10 +44,7 @@ const ChessSquareComponent = ({ square, children }: SquareProps) => {
       isOver && dragStartSquare && !isSameSquare(square, dragStartSquare);
 
     const isSelected = isSameSquare(selectedPieceSquare, square);
-    const displayedKingSquare = isBoardFlipped
-      ? kingSquare && flipSquare(kingSquare)
-      : kingSquare;
-    const isKingHere = isSameSquare(displayedKingSquare, square);
+    const isKingHere = isSameSquare(kingSquare, square);
 
     if (isPreviousMoveSquare && !(isOver && isValidMove)) {
       return isDark ? "bg-previousMoveLight" : "bg-previousMoveDark";
@@ -77,7 +73,7 @@ const ChessSquareComponent = ({ square, children }: SquareProps) => {
   return (
     <div
       className={`relative flex aspect-square h-full w-full items-center
-        justify-center ${colorClass}`}
+        justify-center select-none ${colorClass}`}
       ref={setNodeRef}
       onClick={() => handleClick(square.row, square.col)}
     >

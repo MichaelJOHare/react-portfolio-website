@@ -222,9 +222,13 @@ export const undoStandardMove = (
   piecesToUpdate.push(updatedPiece);
 
   if (capturedPiece) {
-    capturedPiece.isAlive = true;
-    board[toSquare.row][toSquare.col].piece = capturedPiece;
-    piecesToUpdate.push(capturedPiece);
+    const revivedPiece = {
+      ...capturedPiece,
+      isAlive: true,
+      currentSquare: toSquare,
+    };
+    board[toSquare.row][toSquare.col].piece = revivedPiece;
+    piecesToUpdate.push(revivedPiece);
   }
 
   return piecesToUpdate;
@@ -265,9 +269,13 @@ export const undoEnPassantMove = (
   piecesToUpdate.push(updatedPawn);
 
   if (epCapturedPiece) {
-    epCapturedPiece.isAlive = true;
-    board[epCaptureSquare.row][epCaptureSquare.col].piece = epCapturedPiece;
-    piecesToUpdate.push(epCapturedPiece);
+    const revivedPiece = {
+      ...epCapturedPiece,
+      isAlive: true,
+      currentSquare: epCaptureSquare,
+    };
+    board[epCaptureSquare.row][epCaptureSquare.col].piece = revivedPiece;
+    piecesToUpdate.push(revivedPiece);
   }
 
   return piecesToUpdate;
@@ -353,9 +361,13 @@ export const undoPromoMove = (
   piecesToUpdate.push(unPromotedPawn);
 
   if (capturedPiecePromo) {
-    board[toSquare.row][toSquare.col].piece = capturedPiecePromo;
-    capturedPiecePromo.isAlive = true;
-    piecesToUpdate.push(capturedPiecePromo);
+    const revivedPiece = {
+      ...capturedPiecePromo,
+      isAlive: true,
+      currentSquare: toSquare,
+    };
+    board[toSquare.row][toSquare.col].piece = revivedPiece;
+    piecesToUpdate.push(revivedPiece);
   }
 
   return piecesToUpdate;

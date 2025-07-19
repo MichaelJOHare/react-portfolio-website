@@ -32,6 +32,11 @@ export const createPiece = (
   hasMoved,
 });
 
+export const clonePiece = (piece: Piece, currentSquare: Square): Piece => ({
+  ...piece,
+  currentSquare,
+});
+
 export const getMovementStrategyFromType = (
   pieceType: PieceType,
 ): MovementStrategy | undefined => {

@@ -30,6 +30,7 @@ import {
   cloneBoard,
   createSquare,
   getEffectiveSquare,
+  clonePiece,
 } from "../utils";
 
 type GameState = {
@@ -299,6 +300,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
           wasBoardFlipped,
           isBoardFlipped,
         );
+        console.log(move, boardCopy);
 
         piecesByPlayer = updatePiecesByPlayer(
           result.updatedPieces,
@@ -463,15 +465,17 @@ export const useGameManager = (isBoardFlipped: boolean) => {
       updatedPiecesByPlayer,
       tempMoveHistory,
     );
-    const opponentMoves = getPlayerMoves(
+
+    const moves = getLegalMovesFor(
       opponent,
+      player,
       newBoard,
       updatedPiecesByPlayer,
       tempMoveHistory,
     );
 
-    const causedCheck = isKingInCheck;
-    const causedCheckMate = isKingInCheck && opponentMoves.length === 0;
+    const causedCheckMate = isKingInCheck && moves.length === 0;
+    const causedCheck = isKingInCheck && !causedCheckMate;
 
     const updatedMoveHistory = [...gameState.moveHistory];
     updatedMoveHistory.push({
@@ -564,33 +568,35 @@ export const useGameManager = (isBoardFlipped: boolean) => {
       row.map((square) => createSquare(square.row, square.col, undefined)),
     );
 
-    const newPiecesByPlayer = new Map(gameState.piecesByPlayer);
+    const newPiecesByPlayer = new Map<string, Piece[]>();
 
-    gameState.piecesByPlayer.forEach((pieces, playerId) => {
-      const flippedPieces = pieces
-        .filter((piece) => piece.isAlive)
-        .map((piece) => {
-          const oldRow = piece.currentSquare.row;
-          const oldCol = piece.currentSquare.col;
-          const newRow = 7 - oldRow;
-          const newCol = 7 - oldCol;
-          const newSquare = flippedBoard[newRow][newCol];
+    gameState.board.forEach((row) =>
+      row.forEach((square) => {
+        const piece = square.piece;
+        if (!piece || !piece.isAlive) return;
 
-          const newPiece = {
-            ...piece,
-            currentSquare: newSquare,
-          };
+        const newRow = 7 - piece.currentSquare.row;
+        const newCol = 7 - piece.currentSquare.col;
+        const newSquare = flippedBoard[newRow][newCol];
+        const newPiece = clonePiece(piece, newSquare);
+        newSquare.piece = newPiece;
 
-          newSquare.piece = newPiece;
-          return newPiece;
-        });
-      newPiecesByPlayer.set(playerId, flippedPieces);
-    });
+        const playerPieces = newPiecesByPlayer.get(piece.player.id) || [];
+        playerPieces.push(newPiece);
+        newPiecesByPlayer.set(piece.player.id, playerPieces);
+      }),
+    );
+
+    const newKingSquare = gameState.kingSquare && {
+      row: 7 - gameState.kingSquare.row,
+      col: 7 - gameState.kingSquare.col,
+    };
 
     setGameState((prev) => ({
       ...prev,
       board: flippedBoard,
       piecesByPlayer: newPiecesByPlayer,
+      kingSquare: newKingSquare,
     }));
   };
 
