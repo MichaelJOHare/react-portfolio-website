@@ -8,7 +8,8 @@ type SquareProps = {
   children: React.ReactNode;
 };
 
-const ChessSquareComponent = ({ square, children }: SquareProps) => {
+export const ChessSquare = ({ square, children }: SquareProps) => {
+  console.count();
   const { gameManager, highlighter, pieceSelector, isBoardFlipped } = useGame();
   const { isOver, setNodeRef } = useDroppable({
     id: `${square.row}-${square.col}`,
@@ -67,11 +68,23 @@ const ChessSquareComponent = ({ square, children }: SquareProps) => {
     return isDark ? "bg-lightSquare" : "bg-darkSquare";
   };
 
-  const colorClass = getColor();
+  const color = useMemo(() => {
+    // fixed the large amount of calls to getColor but this component still renders a lot when dragging piece
+    return getColor();
+  }, [
+    isOver,
+    selectedPieceSquare?.row,
+    selectedPieceSquare?.col,
+    validMoves,
+    isKingInCheck,
+    square.row,
+    square.col,
+    square.piece,
+  ]);
 
   return (
     <div
-      className={`relative flex aspect-square h-full w-full items-center justify-center select-none ${colorClass}`}
+      className={`relative flex aspect-square h-full w-full items-center justify-center select-none ${color}`}
       ref={setNodeRef}
       onClick={() => handleClick(square.row, square.col)}
     >
@@ -110,5 +123,3 @@ const ChessSquareComponent = ({ square, children }: SquareProps) => {
     </div>
   );
 };
-
-export const ChessSquare = React.memo(ChessSquareComponent);
