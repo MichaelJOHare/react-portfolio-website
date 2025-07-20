@@ -7,6 +7,7 @@ import {
   Piece,
   PieceType,
   Square,
+  PlayerColor,
 } from "../types";
 import {
   isAttackedByOpponent,
@@ -387,6 +388,146 @@ export const undoPromoMove = (
 
 /*
  ***** UNDO MOVE EXECUTION *****
+ */
+
+/*
+ ***** DO AND UNDO MOVE BY TYPE *****
+ */
+
+export const executeMoveByType = (
+  move: Move,
+  board: Square[][],
+  halfMoveClock: number,
+  fullMoveNumber: number,
+): {
+  updatedPieces: Piece[];
+  capturedPieces: Piece[];
+  updatedHalfMoveClock: number;
+  updatedFullMoveNumber: number;
+} => {
+  const updatedCapturedPieces: Piece[] = [];
+  let updatedPieces: Piece[] = [];
+
+  if (move.capturedPiece) {
+    const captured = { ...move.capturedPiece, isAlive: false };
+    updatedCapturedPieces.push(captured);
+  }
+
+  switch (move.type) {
+    case MoveType.STNDRD:
+      updatedPieces = executeStandardMove(move, board, move.capturedPiece);
+      break;
+    case MoveType.CASTLE:
+      updatedPieces = executeCastlingMove(move, board);
+      break;
+    case MoveType.EP:
+      updatedPieces = executeEnPassantMove(move, board, move.capturedPiece);
+      break;
+    case MoveType.PROMO:
+      updatedPieces = executePromoMove(move, board, move.capturedPiece);
+      break;
+  }
+
+  const updatedHalfMoveClock =
+    move.piece.type === PieceType.PAWN || move.capturedPiece
+      ? 0
+      : halfMoveClock + 1;
+
+  const updatedFullMoveNumber =
+    move.piece.color === PlayerColor.BLACK
+      ? fullMoveNumber + 1
+      : fullMoveNumber;
+
+  return {
+    updatedPieces,
+    capturedPieces: updatedCapturedPieces,
+    updatedHalfMoveClock,
+    updatedFullMoveNumber,
+  };
+};
+
+export const undoMoveByType = (
+  move: Move,
+  board: Square[][],
+  capturedPieces: Piece[],
+  wasBoardFlipped: boolean,
+  isBoardFlipped: boolean,
+  halfMoveClock: number,
+  fullMoveNumber: number,
+): {
+  updatedPieces: Piece[];
+  capturedPieces: Piece[];
+  updatedHalfMoveClock: number;
+  updatedFullMoveNumber: number;
+} => {
+  let updatedCapturedPieces: Piece[] = [...capturedPieces];
+  let updatedPieces: Piece[] = [];
+
+  switch (move.type) {
+    case MoveType.STNDRD:
+      updatedPieces = undoStandardMove(
+        move,
+        board,
+        move.capturedPiece,
+        wasBoardFlipped,
+        isBoardFlipped,
+      );
+      break;
+    case MoveType.CASTLE:
+      updatedPieces = undoCastlingMove(
+        move,
+        board,
+        wasBoardFlipped,
+        isBoardFlipped,
+      );
+      break;
+    case MoveType.EP:
+      updatedPieces = undoEnPassantMove(
+        move,
+        board,
+        move.capturedPiece,
+        wasBoardFlipped,
+        isBoardFlipped,
+      );
+      break;
+    case MoveType.PROMO:
+      updatedPieces = undoPromoMove(
+        move,
+        board,
+        move.capturedPiece,
+        wasBoardFlipped,
+        isBoardFlipped,
+      );
+      break;
+  }
+
+  if (move.capturedPiece) {
+    const captured = { ...move.capturedPiece, isAlive: true };
+    updatedCapturedPieces = capturedPieces.filter(
+      (piece) => piece.id !== captured.id,
+    );
+  }
+
+  const updatedHalfMoveClock =
+    move.piece.type === PieceType.PAWN || move.capturedPiece
+      ? halfMoveClock
+      : halfMoveClock - 1;
+
+  const updatedFullMoveNumber =
+    move.piece.color === PlayerColor.BLACK
+      ? fullMoveNumber - 1
+      : fullMoveNumber;
+
+  return {
+    updatedPieces,
+    capturedPieces: updatedCapturedPieces,
+    updatedHalfMoveClock,
+    updatedFullMoveNumber,
+  };
+};
+
+/*
+ ***** DO AND UNDO MOVE BY TYPE *****
  */
 
 /*
