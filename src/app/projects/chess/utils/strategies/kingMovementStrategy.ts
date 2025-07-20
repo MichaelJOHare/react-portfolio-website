@@ -6,11 +6,7 @@ import {
   getPieceAt,
 } from "../index";
 
-export const kingMovementStrategy: MovementStrategy = (
-  board,
-  piece,
-  isBoardFlipped,
-) => {
+export const kingMovementStrategy: MovementStrategy = (board, piece) => {
   const legalMoves: Move[] = [];
   const row = piece.currentSquare.row;
   const col = piece.currentSquare.col;
@@ -31,9 +27,7 @@ export const kingMovementStrategy: MovementStrategy = (
     king: Piece,
     legalMoves: Move[],
   ) => {
-    const rookPositions = isBoardFlipped
-      ? { kingSideRookCol: 0, queenSideRookCol: 7 }
-      : { kingSideRookCol: 7, queenSideRookCol: 0 };
+    const rookPositions = { kingSideRookCol: 7, queenSideRookCol: 0 };
     const kingSideRook = getPieceAt(
       board,
       king.currentSquare.row,
@@ -45,7 +39,6 @@ export const kingMovementStrategy: MovementStrategy = (
       rookPositions.queenSideRookCol,
     );
 
-    const direction = isBoardFlipped ? -1 : 1;
     if (kingSideRook && !kingSideRook.hasMoved && !king.hasMoved) {
       legalMoves.push(
         createCastlingMove(
@@ -54,13 +47,13 @@ export const kingMovementStrategy: MovementStrategy = (
           king.currentSquare,
           createSquare(
             king.currentSquare.row,
-            king.currentSquare.col + 2 * direction,
+            king.currentSquare.col + 2,
             king,
           ),
           kingSideRook.currentSquare,
           createSquare(
             kingSideRook.currentSquare.row,
-            kingSideRook.currentSquare.col - 2 * direction,
+            kingSideRook.currentSquare.col - 2,
             kingSideRook,
           ),
         ),
@@ -75,13 +68,13 @@ export const kingMovementStrategy: MovementStrategy = (
           king.currentSquare,
           createSquare(
             king.currentSquare.row,
-            king.currentSquare.col - 2 * direction,
+            king.currentSquare.col - 2,
             king,
           ),
           queenSideRook.currentSquare,
           createSquare(
             queenSideRook.currentSquare.row,
-            queenSideRook.currentSquare.col + 3 * direction,
+            queenSideRook.currentSquare.col + 3,
             queenSideRook,
           ),
         ),

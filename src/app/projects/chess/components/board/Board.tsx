@@ -28,7 +28,6 @@ export const Board = () => {
   } = highlighter;
   const stockfishArrow = getStockfishArrow(
     highlightedSquares.stockfishBestMove,
-    isBoardFlipped,
   );
 
   const onDragStart = (event: DragStartEvent) => {
@@ -65,7 +64,7 @@ export const Board = () => {
       {/* try to make corner squares rounded, right side not rounded when sf enabled */}
       <div
         id="chessboard"
-        className="desktop-md:w-[70vmin] desktop-md:h-[70vmin] limitedHeight:w-[90vmin] limitedHeight:h-[90vmin] relative grid h-[90vmin] w-[90vmin] touch-none grid-cols-8"
+        className={`${isBoardFlipped ? "rotate-180" : ""} desktop-md:w-[70vmin] desktop-md:h-[70vmin] limitedHeight:w-[90vmin] limitedHeight:h-[90vmin] relative grid h-[90vmin] w-[90vmin] touch-none grid-cols-8`}
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}

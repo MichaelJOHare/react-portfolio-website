@@ -48,18 +48,13 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
   const [colorChoice, setColorChoice] = useState(ColorChoice.NONE);
 
   const isPlayingVsComputer = colorChoice !== -1 && strengthLevel !== -1;
-  const gameManager = useGameManager(isBoardFlipped);
-  const highlighter = useHighlighter();
-  const promotionHandler = usePromotionHandler(
-    gameManager,
-    highlighter,
-    isBoardFlipped,
-  );
+  const gameManager = useGameManager();
+  const highlighter = useHighlighter(isBoardFlipped);
+  const promotionHandler = usePromotionHandler(gameManager, highlighter);
   const stockfishHandler = useStockfishHandler(
     gameManager,
     highlighter,
     version,
-    isBoardFlipped,
     colorChoice,
     strengthLevel,
   );

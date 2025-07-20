@@ -31,7 +31,7 @@ export const defaultBoard = (): Square[][] => {
 export const cloneBoard = (board: Square[][]) =>
   board.map((row) => row.map((square) => ({ ...square })));
 
-export const setupPieces = (isBoardFlipped: boolean): PieceSetup[] => [
+export const setupPieces = (): PieceSetup[] => [
   {
     type: PieceType.ROOK,
     positions: [
@@ -58,12 +58,12 @@ export const setupPieces = (isBoardFlipped: boolean): PieceSetup[] => [
   },
   {
     type: PieceType.QUEEN,
-    positions: isBoardFlipped ? [{ row: 0, col: 4 }] : [{ row: 0, col: 3 }],
+    positions: [{ row: 0, col: 3 }],
     movementStrategy: queenMovementStrategy,
   },
   {
     type: PieceType.KING,
-    positions: isBoardFlipped ? [{ row: 0, col: 3 }] : [{ row: 0, col: 4 }],
+    positions: [{ row: 0, col: 4 }],
     movementStrategy: kingMovementStrategy,
   },
   {
@@ -110,10 +110,9 @@ export const isKingInCheck = (opponentMoves: Move[]) => {
 export const getSquaresToHideDuringPromotion = (
   move: Move,
   color: PlayerColor,
-  isBoardFlipped: boolean,
 ) => {
   const squaresToHide = [];
-  const increment = (color === PlayerColor.WHITE) === isBoardFlipped ? -1 : 1;
+  const increment = color === PlayerColor.WHITE ? 1 : -1;
 
   for (let i = 0; i < 4; i++) {
     squaresToHide.push({
@@ -123,5 +122,6 @@ export const getSquaresToHideDuringPromotion = (
   }
 
   squaresToHide.push({ row: move.from.row, col: move.from.col });
+
   return squaresToHide;
 };

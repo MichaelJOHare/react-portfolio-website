@@ -11,7 +11,6 @@ export const toFEN = (
   moveHistory: Move[],
   halfMoveClock: number,
   fullMoveNumber: number,
-  isBoardFlipped: boolean,
 ): string => {
   let fen = "";
 
@@ -23,16 +22,16 @@ export const toFEN = (
     [PieceType.KNIGHT]: { [PlayerColor.WHITE]: "N", [PlayerColor.BLACK]: "n" },
     [PieceType.PAWN]: { [PlayerColor.WHITE]: "P", [PlayerColor.BLACK]: "p" },
   };
-  const epTarget = getEnPassantTarget(moveHistory, isBoardFlipped);
+  const epTarget = getEnPassantTarget(moveHistory);
 
   //  piece placement
   for (let fenRank = 0; fenRank < 8; fenRank++) {
     let emptySquares = 0;
 
-    const boardRow = isBoardFlipped ? 7 - fenRank : fenRank;
+    const boardRow = fenRank;
 
     for (let fenFile = 0; fenFile < 8; fenFile++) {
-      const boardCol = isBoardFlipped ? 7 - fenFile : fenFile;
+      const boardCol = fenFile;
 
       const piece = getPieceAt(board, boardRow, boardCol);
       if (!piece) {
@@ -98,7 +97,7 @@ const generateCastlingAvailability = (board: Square[][]) => {
   return castlingAvailability || "-";
 };
 
-const getEnPassantTarget = (moveHistory: Move[], isBoardFlipped: boolean) => {
+const getEnPassantTarget = (moveHistory: Move[]) => {
   const move =
     moveHistory.length > 0 ? moveHistory[moveHistory.length - 1] : null;
 
@@ -107,12 +106,8 @@ const getEnPassantTarget = (moveHistory: Move[], isBoardFlipped: boolean) => {
     move.piece.type === PieceType.PAWN &&
     Math.abs(move.from.row - move.to.row) === 2
   ) {
-    let targetRow = (move.from.row + move.to.row) / 2;
+    const targetRow = (move.from.row + move.to.row) / 2;
     const targetCol = move.from.col;
-
-    if (isBoardFlipped) {
-      targetRow = 7 - targetRow;
-    }
 
     return createSquare(targetRow, targetCol);
   }

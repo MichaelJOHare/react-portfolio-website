@@ -18,7 +18,6 @@ import {
   cloneBoard,
   createSquare,
   clonePiece,
-  getEffectiveMove,
   undoMoveByType,
   executeMoveByType,
   getCheckStatus,
@@ -41,7 +40,7 @@ type GameState = {
   fullMoveNumber: number;
 };
 
-export const useGameManager = (isBoardFlipped: boolean) => {
+export const useGameManager = () => {
   const [gameState, setGameState] = useState<GameState>({
     board: defaultBoard(),
     players: [
@@ -61,7 +60,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
   });
 
   const initializeBoard = () => {
-    const setup = setupPieces(isBoardFlipped);
+    const setup = setupPieces();
     const newBoard = cloneBoard(gameState.board);
     const newPiecesByPlayer = new Map();
     const whitePlayer = gameState.players[0];
@@ -69,8 +68,8 @@ export const useGameManager = (isBoardFlipped: boolean) => {
 
     [PlayerColor.WHITE, PlayerColor.BLACK].forEach((color) => {
       const isWhite = color === PlayerColor.WHITE;
-      const rowOffset = isBoardFlipped ? (isWhite ? 0 : 7) : isWhite ? 7 : 0;
-      const pawnRow = isBoardFlipped ? (isWhite ? 1 : 6) : isWhite ? 6 : 1;
+      const rowOffset = isWhite ? 7 : 0;
+      const pawnRow = isWhite ? 6 : 1;
 
       setup.forEach(({ type, positions, movementStrategy }) => {
         positions.forEach(({ row, col }) => {
@@ -117,7 +116,6 @@ export const useGameManager = (isBoardFlipped: boolean) => {
       gameState.board,
       gameState.piecesByPlayer,
       gameState.moveHistory,
-      isBoardFlipped,
     );
   };
 
@@ -151,8 +149,6 @@ export const useGameManager = (isBoardFlipped: boolean) => {
           lastRecord.move,
           boardCopy,
           newCaptured,
-          lastRecord.wasBoardFlipped,
-          isBoardFlipped,
           halfMoveClock,
           fullMoveNumber,
         );
@@ -170,16 +166,10 @@ export const useGameManager = (isBoardFlipped: boolean) => {
         const lastUndone = newUndoneMoves.pop();
         if (!lastUndone) break;
 
-        const { move, wasBoardFlipped, causedCheck, causedCheckMate } =
-          lastUndone;
-        const effectiveMove = getEffectiveMove(
-          move,
-          wasBoardFlipped,
-          isBoardFlipped,
-        );
+        const { move, causedCheck, causedCheckMate } = lastUndone;
 
         const result = executeMoveByType(
-          effectiveMove,
+          move,
           boardCopy,
           halfMoveClock,
           fullMoveNumber,
@@ -192,7 +182,6 @@ export const useGameManager = (isBoardFlipped: boolean) => {
         );
         newMoveHistory.push({
           move,
-          wasBoardFlipped,
           causedCheck,
           causedCheckMate,
         });
@@ -208,7 +197,6 @@ export const useGameManager = (isBoardFlipped: boolean) => {
       players[1 - currentPlayerIndex],
       newPiecesByPlayer,
       newMoveHistory,
-      isBoardFlipped,
     );
 
     setGameState((prev) => ({
@@ -282,7 +270,6 @@ export const useGameManager = (isBoardFlipped: boolean) => {
       ...moveHistory,
       {
         move: validMove,
-        wasBoardFlipped: isBoardFlipped,
         causedCheck: false,
         causedCheckMate: false,
       },
@@ -293,7 +280,6 @@ export const useGameManager = (isBoardFlipped: boolean) => {
       player,
       updatedPiecesByPlayer,
       tempMoveHistory,
-      isBoardFlipped,
     );
 
     const moves = getLegalMovesFor(
@@ -302,7 +288,6 @@ export const useGameManager = (isBoardFlipped: boolean) => {
       newBoard,
       updatedPiecesByPlayer,
       tempMoveHistory,
-      isBoardFlipped,
     );
 
     const causedCheckMate = isKingInCheck && moves.length === 0;
@@ -311,7 +296,6 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     const updatedMoveHistory = [...moveHistory];
     updatedMoveHistory.push({
       move: validMove,
-      wasBoardFlipped: isBoardFlipped,
       causedCheck,
       causedCheckMate,
     });
@@ -331,43 +315,6 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     }));
   };
 
-  const flipPiecesOnBoard = () => {
-    const flippedBoard = gameState.board.map((row) =>
-      row.map((square) => createSquare(square.row, square.col, undefined)),
-    );
-
-    const newPiecesByPlayer = new Map<string, Piece[]>();
-
-    gameState.board.forEach((row) =>
-      row.forEach((square) => {
-        const piece = square.piece;
-        if (!piece || !piece.isAlive) return;
-
-        const newRow = 7 - piece.currentSquare.row;
-        const newCol = 7 - piece.currentSquare.col;
-        const newSquare = flippedBoard[newRow][newCol];
-        const newPiece = clonePiece(piece, newSquare);
-        newSquare.piece = newPiece;
-
-        const playerPieces = newPiecesByPlayer.get(piece.player.id) || [];
-        playerPieces.push(newPiece);
-        newPiecesByPlayer.set(piece.player.id, playerPieces);
-      }),
-    );
-
-    const newKingSquare = gameState.kingSquare && {
-      row: 7 - gameState.kingSquare.row,
-      col: 7 - gameState.kingSquare.col,
-    };
-
-    setGameState((prev) => ({
-      ...prev,
-      board: flippedBoard,
-      piecesByPlayer: newPiecesByPlayer,
-      kingSquare: newKingSquare,
-    }));
-  };
-
   return {
     ...gameState,
     setGameState,
@@ -375,6 +322,5 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     getLegalMoves,
     replayMoves,
     executeMove,
-    flipPiecesOnBoard,
   };
 };

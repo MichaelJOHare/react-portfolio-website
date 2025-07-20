@@ -20,7 +20,6 @@ export const StockfishOptionsModal = ({
 }: StockfishOptionsModalProps) => {
   const {
     gameManager,
-    highlighter,
     isBoardFlipped,
     setStockfishEnabled,
     setColorChoice,
@@ -49,8 +48,6 @@ export const StockfishOptionsModal = ({
 
       if (isBlack !== isBoardFlipped) {
         toggleFlipBoard();
-        gameManager.flipPiecesOnBoard();
-        highlighter.flipAllHighlights();
       }
 
       setStockfishEnabled(false);

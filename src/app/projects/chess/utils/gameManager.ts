@@ -11,22 +11,35 @@ import {
   Square,
 } from "../types";
 
+export const getPlayerMoves = (
+  player: Player,
+  board: Square[][],
+  piecesByPlayer: Map<string, Piece[]>,
+  moveHistory: MoveHistory[],
+) => {
+  const playerPieces = piecesByPlayer.get(player.id);
+  const playerMoves: Move[] = [];
+  const movesHistory = moveHistory.map((r) => r.move);
+
+  playerPieces?.forEach((piece) => {
+    if (piece.isAlive) {
+      const pieceMoves = piece.movementStrategy(board, piece, movesHistory);
+      playerMoves.push(...pieceMoves);
+    }
+  });
+
+  return playerMoves;
+};
+
 export const getLegalMovesFor = (
   player: Player,
   opponent: Player,
   board: Square[][],
   piecesByPlayer: Map<string, Piece[]>,
   moveHistory: MoveHistory[],
-  isBoardFlipped: boolean,
 ): Move[] => {
   const legalMoves: Move[] = [];
-  const pieceMoves = getPlayerMoves(
-    player,
-    board,
-    piecesByPlayer,
-    moveHistory,
-    isBoardFlipped,
-  );
+  const pieceMoves = getPlayerMoves(player, board, piecesByPlayer, moveHistory);
 
   pieceMoves.forEach((move) => {
     const { tempBoard, capturedPiece } = simulateMove(move, board);
@@ -45,7 +58,6 @@ export const getLegalMovesFor = (
       tempBoard,
       tempPiecesByPlayer,
       moveHistory,
-      isBoardFlipped,
     );
 
     const isCastlingMove = move.type === MoveType.CASTLE;
@@ -59,32 +71,6 @@ export const getLegalMovesFor = (
   });
 
   return legalMoves;
-};
-
-export const getPlayerMoves = (
-  player: Player,
-  board: Square[][],
-  piecesByPlayer: Map<string, Piece[]>,
-  moveHistory: MoveHistory[],
-  isBoardFlipped: boolean,
-) => {
-  const playerPieces = piecesByPlayer.get(player.id);
-  const playerMoves: Move[] = [];
-  const movesHistory = moveHistory.map((r) => r.move);
-
-  playerPieces?.forEach((piece) => {
-    if (piece.isAlive) {
-      const pieceMoves = piece.movementStrategy(
-        board,
-        piece,
-        isBoardFlipped,
-        movesHistory,
-      );
-      playerMoves.push(...pieceMoves);
-    }
-  });
-
-  return playerMoves;
 };
 
 export const simulateMove = (move: Move, board: Square[][]) => {
@@ -113,7 +99,6 @@ export const getCheckStatus = (
   opponent: Player,
   piecesByPlayer: Map<string, Piece[]>,
   moveHistory: MoveHistory[],
-  isBoardFlipped: boolean,
 ): { isKingInCheck: boolean; kingSquare?: Square } => {
   const playersKing = piecesByPlayer
     .get(player.id)
@@ -126,7 +111,6 @@ export const getCheckStatus = (
     board,
     piecesByPlayer,
     moveHistory,
-    isBoardFlipped,
   );
   const kingInCheck = isKingInCheck(opponentMoves);
 

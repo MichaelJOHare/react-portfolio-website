@@ -43,13 +43,8 @@ export const determinePromotionType = (char: string) => {
   }
 };
 
-export const getStockfishArrow = (
-  move: ChessEngineMove | null,
-  isBoardFlipped: boolean,
-): ArrowProps =>
-  move
-    ? getArrowFromMove(isBoardFlipped ? mirrorEngineMove(move) : move)
-    : emptyArrow();
+export const getStockfishArrow = (move: ChessEngineMove | null): ArrowProps =>
+  move ? getArrowFromMove(move) : emptyArrow();
 
 export const getArrowFromMove = (move: ChessEngineMove): ArrowProps => {
   if (!move) return emptyArrow();
@@ -74,44 +69,12 @@ export const getArrowFromMove = (move: ChessEngineMove): ArrowProps => {
   };
 };
 
-export const mirrorEngineMove = (move: ChessEngineMove): ChessEngineMove => {
-  if (move) {
-    return {
-      from: mirrorSquare(move.from),
-      to: mirrorSquare(move.to),
-      promotion: move.promotion,
-    };
-  }
-  return null;
-};
-
-const mirrorSquare = (square: string): string => {
-  const file = square[0];
-  const rank = square[1];
-
-  const mirroredFile = String.fromCharCode(
-    "h".charCodeAt(0) - (file.charCodeAt(0) - "a".charCodeAt(0)),
-  );
-
-  const mirroredRank = (9 - parseInt(rank)).toString();
-
-  return `${mirroredFile}${mirroredRank}`;
-};
-
-export const convertNotationToSquare = (
-  notation: string | undefined,
-  isBoardFlipped: boolean,
-) => {
+export const convertNotationToSquare = (notation: string | undefined) => {
   if (notation) {
     const col = notation.charCodeAt(0) - "a".charCodeAt(0);
     const row = 8 - parseInt(notation[1]);
 
-    const flippedRow = 7 - row;
-    const flippedCol = 7 - col;
-
-    return isBoardFlipped
-      ? createSquare(flippedRow, flippedCol)
-      : createSquare(row, col);
+    return createSquare(row, col);
   }
 };
 

@@ -1,5 +1,5 @@
 import { Move, MoveHistory, PieceType } from "../../../types";
-import { getMoveDisplay, getPieceUnicode, getSquare } from "../../../utils";
+import { getMoveDisplay, getPieceUnicode } from "../../../utils";
 
 export const MoveListButton = ({
   move,
@@ -14,12 +14,10 @@ export const MoveListButton = ({
   onClick: () => void;
   isWhite: boolean;
 }) => {
-  const from = getSquare(move.from, record.wasBoardFlipped);
-  const to = getSquare(move.to, record.wasBoardFlipped);
   const display = getMoveDisplay(
     move,
-    from,
-    to,
+    move.from,
+    move.to,
     record.causedCheck,
     record.causedCheckMate,
   );

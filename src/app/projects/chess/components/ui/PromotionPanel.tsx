@@ -22,10 +22,12 @@ export const PromotionPanel = () => {
 
   if (!promotionSquare || !promotingColor) return null;
 
-  const promotionPieces: PieceType[] =
-    promotingColor === PlayerColor.WHITE
-      ? [PieceType.QUEEN, PieceType.ROOK, PieceType.BISHOP, PieceType.KNIGHT]
-      : [PieceType.KNIGHT, PieceType.BISHOP, PieceType.ROOK, PieceType.QUEEN];
+  const promotionPieces = [
+    PieceType.QUEEN,
+    PieceType.ROOK,
+    PieceType.BISHOP,
+    PieceType.KNIGHT,
+  ];
 
   const calculatePosition = (
     square: Square,
@@ -43,21 +45,21 @@ export const PromotionPanel = () => {
     color: PlayerColor,
     isLargeScreen: boolean,
   ): string => {
-    const isPlayerOnTop =
-      (color === PlayerColor.BLACK && isBoardFlipped) ||
-      (color === PlayerColor.WHITE && !isBoardFlipped);
-    const size = isLargeScreen ? 8.75 : 11;
-    const offset = isLargeScreen ? 35 : 45;
-    return `${isPlayerOnTop ? index * size : offset + index * size}vmin`;
-  };
+    const isPlayerOnTop = color === PlayerColor.WHITE;
 
-  const orderedPromotionPieces = isBoardFlipped
-    ? promotionPieces.slice().reverse()
-    : promotionPieces;
+    const squareSize = isLargeScreen ? 8.75 : 11;
+    const topOfPromotionSquare = promotionSquare.row * squareSize;
+
+    const offset = isPlayerOnTop
+      ? topOfPromotionSquare + index * squareSize
+      : topOfPromotionSquare - (3 - index) * squareSize;
+
+    return `${offset}vmin`;
+  };
 
   return (
     <div className="absolute z-20 flex h-full w-full flex-col backdrop-blur-xs backdrop-filter">
-      {orderedPromotionPieces.map((type, index) => (
+      {promotionPieces.map((type, index) => (
         <div
           key={type}
           className="desktop-md:w-[8.75vmin] desktop-md:h-[8.75vmin] limitedHeight:w-[11.25vmin] limitedHeight:h-[11.25vmin] absolute h-[11.25vmin] w-[11.25vmin] cursor-pointer"
@@ -70,7 +72,7 @@ export const PromotionPanel = () => {
           <img
             src={`/assets/images/${promotingColor}-${type}.svg`}
             alt={`${promotingColor}-${type}`}
-            className="h-full w-full select-none hover:border-4 hover:border-green-700"
+            className={`h-full w-full select-none hover:border-4 hover:border-green-700 ${isBoardFlipped ? "rotate-180" : ""}`}
           />
         </div>
       ))}

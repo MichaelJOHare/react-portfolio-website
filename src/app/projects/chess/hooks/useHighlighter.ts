@@ -20,7 +20,7 @@ type HighlightedSquares = {
   stockfishBestMove: ChessEngineMove | null;
 };
 
-export const useHighlighter = () => {
+export const useHighlighter = (isBoardFlipped: boolean) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasMovedOutOfSquare, setHasMovedOutOfSquare] = useState(false);
   const [originalSquare, setOriginalSquare] = useState<Square | null>(null);
@@ -159,9 +159,15 @@ export const useHighlighter = () => {
     if (!board) return null;
 
     const rect = board.getBoundingClientRect();
-    const relX = x - rect.left;
-    const relY = y - rect.top;
     const squareSize = board.clientWidth / 8;
+
+    let relX = x - rect.left;
+    let relY = y - rect.top;
+
+    if (isBoardFlipped) {
+      relX = board.clientWidth - relX;
+      relY = board.clientHeight - relY;
+    }
 
     return {
       row: Math.floor(relY / squareSize),
@@ -207,35 +213,6 @@ export const useHighlighter = () => {
     }));
   };
 
-  const flipAllHighlights = () => {
-    setHighlightedSquares((prev) => {
-      const flippedPrevious = prev.previousMoveSquares.map((sq) => ({
-        ...sq,
-        row: 7 - sq.row,
-        col: 7 - sq.col,
-      }));
-
-      const flippedArrows = prev.arrowsDrawnOnSquares.map((arrow) => ({
-        x1: 100 - arrow.x1,
-        y1: 100 - arrow.y1,
-        x2: 100 - arrow.x2,
-        y2: 100 - arrow.y2,
-      }));
-
-      const flippedCircles = prev.circlesDrawnOnSquares.map((circle) => ({
-        cx: 100 - circle.cx,
-        cy: 100 - circle.cy,
-      }));
-
-      return {
-        previousMoveSquares: flippedPrevious,
-        arrowsDrawnOnSquares: flippedArrows,
-        circlesDrawnOnSquares: flippedCircles,
-        stockfishBestMove: prev.stockfishBestMove,
-      };
-    });
-  };
-
   const addStockfishBestMoveArrow = (move: ChessEngineMove) =>
     setHighlightedSquares((prev) => ({
       ...prev,
@@ -257,7 +234,6 @@ export const useHighlighter = () => {
     addPreviousMoveSquares,
     clearPreviousMoveSquares,
     undoPreviousMoveSquares,
-    flipAllHighlights,
     addStockfishBestMoveArrow,
     clearStockfishBestMoveArrow,
     clearDrawnHighlights,

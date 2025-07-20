@@ -9,22 +9,20 @@ type SquareProps = {
 };
 
 const ChessSquareComponent = ({ square, children }: SquareProps) => {
+  const { gameManager, highlighter, pieceSelector, isBoardFlipped } = useGame();
   const { isOver, setNodeRef } = useDroppable({
     id: `${square.row}-${square.col}`,
   });
-  const { gameManager, highlighter, pieceSelector, isBoardFlipped } = useGame();
   const { isKingInCheck, kingSquare } = gameManager;
   const { highlightedSquares } = highlighter;
   const { validMoves } = pieceSelector;
   const { handleClick, selectedPieceSquare, dragStartSquare } = pieceSelector;
   const isDark = (square.row + square.col) % 2 === 0;
   const isOccupied = !!children;
-  const isLabeledColumn = square.col === 7;
-  const isLabeledRow = square.row === 7;
-  const columnLabel = isBoardFlipped ? 1 + square.row : 8 - square.row;
-  const rowLabel = isBoardFlipped
-    ? String.fromCharCode(104 - square.col)
-    : String.fromCharCode(97 + square.col);
+  const isLabeledColumn = (isBoardFlipped ? 7 - square.col : square.col) === 7;
+  const isLabeledRow = (isBoardFlipped ? 7 - square.row : square.row) === 7;
+  const columnLabel = 8 - square.row;
+  const rowLabel = String.fromCharCode(97 + square.col);
 
   const validMoveSet = useMemo(() => {
     return new Set(validMoves.map((m) => `${m.row}-${m.col}`));
@@ -70,6 +68,7 @@ const ChessSquareComponent = ({ square, children }: SquareProps) => {
   };
 
   const colorClass = getColor();
+
   return (
     <div
       className={`relative flex aspect-square h-full w-full items-center justify-center select-none ${colorClass}`}
@@ -83,7 +82,7 @@ const ChessSquareComponent = ({ square, children }: SquareProps) => {
       {isValidMove && isOccupied && !isOver && (
         <div className="absolute flex h-full w-full items-center justify-center overflow-hidden bg-green-600">
           <div
-            className={`relative h-full w-full rounded-full ${getColor()} scale-115 transform`}
+            className={`relative h-full w-full rounded-full ${getColor()} scale-115`}
           ></div>
         </div>
       )}
@@ -92,14 +91,18 @@ const ChessSquareComponent = ({ square, children }: SquareProps) => {
 
       {isLabeledColumn && (
         <div
-          className={`desktop-md:text-sm absolute top-0 right-0 pt-1 pr-1 text-xs ${isDark ? "text-yellow-900" : "text-orange-200"} select-none`}
+          className={`desktop-md:text-sm absolute pt-1 pr-1 ${
+            isBoardFlipped ? "bottom-0 left-0 rotate-180" : "top-0 right-0"
+          } text-xs ${isDark ? "text-yellow-900" : "text-orange-200"} select-none`}
         >
           {columnLabel}
         </div>
       )}
       {isLabeledRow && (
         <div
-          className={`desktop-md:text-sm absolute bottom-0 left-0 pl-1 text-xs ${isDark ? "text-yellow-900" : "text-orange-200"} select-none`}
+          className={`desktop-md:text-sm absolute pb-1 pl-1 ${
+            isBoardFlipped ? "top-0 right-0 rotate-180" : "bottom-0 left-0"
+          } text-xs ${isDark ? "text-yellow-900" : "text-orange-200"} select-none`}
         >
           {rowLabel}
         </div>

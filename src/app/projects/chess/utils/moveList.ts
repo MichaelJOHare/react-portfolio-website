@@ -1,5 +1,5 @@
 import { Move, PieceType, Square } from "../types";
-import { flipSquare, getFileFromCol, squareToString } from "./square";
+import { getFileFromCol, squareToString } from "./square";
 
 export const getMoveDisplay = (
   move: Move,
@@ -25,6 +25,3 @@ export const getMoveDisplay = (
 
   return display;
 };
-
-export const getSquare = (square: Square, shouldFlip: boolean) =>
-  shouldFlip ? flipSquare(square) : square;

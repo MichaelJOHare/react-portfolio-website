@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { flipSquare, getSquaresToHideDuringPromotion } from "../utils";
+import { getSquaresToHideDuringPromotion } from "../utils";
 import {
   GameManager,
   Highlighter,
@@ -21,7 +21,6 @@ type PromotionPanelState = {
 export const usePromotionHandler = (
   gameManager: GameManager,
   highlighter: Highlighter,
-  isBoardFlipped: boolean,
 ) => {
   const { executeMove, getLegalMoves } = gameManager;
   const [promotionPanelState, setPromotionPanelState] =
@@ -39,7 +38,6 @@ export const usePromotionHandler = (
     const squaresToHide = getSquaresToHideDuringPromotion(
       move,
       move.piece.color,
-      isBoardFlipped,
     );
     setPromotionPanelState({
       isShown: true,
@@ -65,34 +63,6 @@ export const usePromotionHandler = (
     highlighter.addPreviousMoveSquares(from, to);
   };
 
-  const flipPromotionDetails = () => {
-    setPromotionPanelState((prev) => {
-      if (
-        !prev ||
-        !prev.promotingPawn?.currentSquare ||
-        !prev.promotionSquare
-      ) {
-        return prev;
-      }
-
-      const flippedPawnSquare = flipSquare(prev.promotingPawn.currentSquare);
-      const flippedPromotionSquare = flipSquare(prev.promotionSquare);
-      const flippedSquaresToHide = prev.squaresToHide.map((sq) =>
-        flipSquare(sq),
-      );
-
-      return {
-        ...prev,
-        promotingPawn: {
-          ...prev.promotingPawn,
-          currentSquare: flippedPawnSquare,
-        },
-        promotionSquare: flippedPromotionSquare,
-        squaresToHide: flippedSquaresToHide,
-      };
-    });
-  };
-
   const clearPromotionDetails = () => {
     setPromotionPanelState({
       isShown: false,
@@ -107,7 +77,6 @@ export const usePromotionHandler = (
     ...promotionPanelState,
     onPromotionSelect,
     setPromotionDetails,
-    flipPromotionDetails,
     clearPromotionDetails,
   };
 };

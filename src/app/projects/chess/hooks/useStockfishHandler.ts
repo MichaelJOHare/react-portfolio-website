@@ -26,14 +26,12 @@ export const useStockfishHandler = (
   gameManager: GameManager,
   highlighter: Highlighter,
   version: "sf-16" | "sf-17",
-  isBoardFlipped: boolean,
   colorChoice: number,
   strengthLevel: number,
 ) => {
   const workerRef = useRef<Worker | null>(null);
   const gmRef = useRef(gameManager);
   const highlighterRef = useRef(highlighter);
-  const isBoardFlippedRef = useRef(isBoardFlipped);
   const [engineReady, setEngineReady] = useState(false);
   const hasConfiguredEngine = useRef(false);
   const [shouldStopThinking, setShouldStopThinking] = useState(false);
@@ -127,8 +125,8 @@ export const useStockfishHandler = (
         const players = gmRef.current.players;
         const currentPlayerIndex = gmRef.current.currentPlayerIndex;
 
-        const fromSq = convertNotationToSquare(from, isBoardFlippedRef.current);
-        const toSq = convertNotationToSquare(to, isBoardFlippedRef.current);
+        const fromSq = convertNotationToSquare(from);
+        const toSq = convertNotationToSquare(to);
 
         const isEngineTurn =
           (players[currentPlayerIndex].color === PlayerColor.WHITE &&
@@ -281,7 +279,6 @@ export const useStockfishHandler = (
         movesHistory,
         halfMoveClock,
         fullMoveNumber,
-        isBoardFlipped,
       );
 
       setEngineReady(false);
@@ -289,7 +286,7 @@ export const useStockfishHandler = (
       sendCommand(`position fen ${fen}`);
       sendCommand(`go depth ${depth}`);
     }
-  }, [shouldFindMove, engineReady, depth, isBoardFlipped]);
+  }, [shouldFindMove, engineReady, depth]);
 
   useEffect(() => {
     if (shouldStopThinking) {
@@ -310,10 +307,6 @@ export const useStockfishHandler = (
   useEffect(() => {
     highlighterRef.current = highlighter;
   }, [highlighter]);
-
-  useEffect(() => {
-    isBoardFlippedRef.current = isBoardFlipped;
-  }, [isBoardFlipped]);
 
   /* USE EFFECTS FOR USEREF UPDATES */
 

@@ -6,14 +6,7 @@ import { SidebarButton } from "./SidebarButton";
 import { MoveList } from "./MoveList";
 
 export const Sidebar = () => {
-  const {
-    gameManager,
-    highlighter,
-    promotionHandler,
-    isBoardFlipped,
-    toggleFlipBoard,
-    onResetGame,
-  } = useGame();
+  const { gameManager, toggleFlipBoard, onResetGame } = useGame();
   const {
     board,
     players,
@@ -21,10 +14,7 @@ export const Sidebar = () => {
     halfMoveClock,
     fullMoveNumber,
     moveHistory,
-    flipPiecesOnBoard,
   } = gameManager;
-  const { flipAllHighlights } = highlighter;
-  const { flipPromotionDetails } = promotionHandler;
   const [showFenTextArea, setShowFenTextArea] = useState(false);
   const [showStockfishOptions, setShowStockfishOptions] = useState(false);
   const movesHistory = moveHistory.map((record) => record.move);
@@ -37,9 +27,6 @@ export const Sidebar = () => {
 
   const onFlipBoard = () => {
     toggleFlipBoard();
-    flipPiecesOnBoard();
-    flipAllHighlights();
-    flipPromotionDetails();
   };
 
   return (
@@ -93,7 +80,6 @@ export const Sidebar = () => {
                 movesHistory,
                 halfMoveClock,
                 fullMoveNumber,
-                isBoardFlipped,
               )}
               onChange={updateStateOnFenChange}
               /* add on user change -> update board/state */

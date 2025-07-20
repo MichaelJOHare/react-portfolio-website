@@ -1,5 +1,5 @@
 import { useGame } from "../../../context/GameContext";
-import { getEffectiveSquare, isComputerPlaying } from "../../../utils";
+import { isComputerPlaying } from "../../../utils";
 import RightArrowIcon from "@/assets/icons/right-arrow-icon.svg";
 
 type UndoRedoButtonProps = {
@@ -13,7 +13,6 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
     pieceSelector,
     promotionHandler,
     stockfishHandler,
-    isBoardFlipped,
   } = useGame();
   const {
     clearDrawnHighlights,
@@ -54,18 +53,8 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
 
     const previousMoveSquares = undoneMoveHistory
       .slice(-redoCount)
-      .map(({ move, wasBoardFlipped }) => {
-        const fromSq = getEffectiveSquare(
-          move.from,
-          wasBoardFlipped,
-          isBoardFlipped,
-        );
-        const toSq = getEffectiveSquare(
-          move.to,
-          wasBoardFlipped,
-          isBoardFlipped,
-        );
-        return { startSquare: fromSq, endSquare: toSq };
+      .map(({ move }) => {
+        return { startSquare: move.from, endSquare: move.to };
       });
 
     replayMoves(redoCount, false);
