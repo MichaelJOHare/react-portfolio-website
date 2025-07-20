@@ -9,7 +9,6 @@ type SquareProps = {
 };
 
 export const ChessSquare = ({ square, children }: SquareProps) => {
-  console.count();
   const { gameManager, highlighter, pieceSelector, isBoardFlipped } = useGame();
   const { isOver, setNodeRef } = useDroppable({
     id: `${square.row}-${square.col}`,

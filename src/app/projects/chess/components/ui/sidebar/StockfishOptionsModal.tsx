@@ -51,7 +51,7 @@ export const StockfishOptionsModal = ({
       }
 
       setStockfishEnabled(false);
-      setTempStrengthLevel(tempStrengthLevel);
+      setStrengthLevel(tempStrengthLevel);
       setColorChoice(actualColor);
       onClose();
     } else {
