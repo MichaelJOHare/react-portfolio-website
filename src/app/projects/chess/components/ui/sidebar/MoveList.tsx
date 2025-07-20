@@ -1,4 +1,5 @@
 import { useGame } from "../../../context/GameContext";
+import { ColorChoice, NO_SELECTION } from "../../../types";
 import { MoveListButton } from "./MoveListButton";
 
 export const MoveList = () => {
@@ -8,7 +9,8 @@ export const MoveList = () => {
     pieceSelector,
     promotionHandler,
     stockfishHandler,
-    computerOpponentOptions,
+    colorChoice,
+    strengthLevel,
   } = useGame();
   const {
     undoPreviousMoveSquares,
@@ -19,6 +21,8 @@ export const MoveList = () => {
   const { deselectPiece } = pieceSelector;
   const { clearPromotionDetails } = promotionHandler;
   const { resetEngine } = stockfishHandler;
+  const isPlayingVsComputer =
+    colorChoice !== ColorChoice.NONE && strengthLevel !== NO_SELECTION;
 
   const clearUI = () => {
     resetEngine();
@@ -30,10 +34,7 @@ export const MoveList = () => {
 
   const onMoveClick = (index: number) => {
     // eventually change this to visually undo moves to show board state at time of move clicked
-    if (
-      computerOpponentOptions.colorChoice === -1 &&
-      computerOpponentOptions.strengthLevel === -1
-    ) {
+    if (isPlayingVsComputer) {
       clearUI();
       const movesToUndo = moveHistory.length - index - 1;
       if (movesToUndo > 0) {

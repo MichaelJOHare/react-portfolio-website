@@ -90,6 +90,15 @@ export type ChessEngineMove = {
   promotion?: string;
 } | null;
 
+export const STOCKFISH_STRENGTH_LEVELS = [1, 2, 3, 4, 5, 6, 7, 8];
+export const NO_SELECTION = -1;
+export enum ColorChoice {
+  WHITE = 0,
+  BLACK = 1,
+  RANDOM = 2,
+  NONE = -1,
+}
+
 export interface CastlingMove extends Move {
   rook: Piece;
   kingFrom: Square;

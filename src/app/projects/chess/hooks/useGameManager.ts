@@ -201,6 +201,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
   const undoMoveByType = (
     move: Move,
     board: Square[][],
+    capturedPieces: Piece[],
     wasBoardFlipped: boolean,
     isBoardFlipped: boolean,
   ): {
@@ -209,7 +210,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     halfMoveClock: number;
     fullMoveNumber: number;
   } => {
-    let updatedCapturedPieces: Piece[] = [...gameState.capturedPieces];
+    let updatedCapturedPieces: Piece[] = [...capturedPieces];
     let updatedPieces: Piece[] = [];
 
     switch (move.type) {
@@ -252,7 +253,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
 
     if (move.capturedPiece) {
       const captured = { ...move.capturedPiece, isAlive: true };
-      updatedCapturedPieces = gameState.capturedPieces.filter(
+      updatedCapturedPieces = capturedPieces.filter(
         (piece) => piece.id !== captured.id,
       );
     }
@@ -301,6 +302,7 @@ export const useGameManager = (isBoardFlipped: boolean) => {
         const result = undoMoveByType(
           lastRecord.move,
           boardCopy,
+          newCaptured,
           lastRecord.wasBoardFlipped,
           isBoardFlipped,
         );

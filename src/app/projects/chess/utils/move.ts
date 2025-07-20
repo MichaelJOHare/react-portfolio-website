@@ -14,7 +14,7 @@ import {
   getMovementStrategyFromType,
   createSquare,
   flipSquare,
-} from "../utils";
+} from ".";
 import { pawnMovementStrategy } from "./strategies";
 
 /*
@@ -227,7 +227,7 @@ export const undoStandardMove = (
     ...move.piece,
     currentSquare: fromSquare,
     hasMoved: false, // needs to check if hasMoved was set to true on last move only, if not then keep it set to true
-  }; //                 probably need to attach firstMove to move object, then on move -> hasMoved === true ? firstMove = move : firstMove
+  }; //                 probably make hasMoved an object that holds start and end square to check here
 
   board[fromSquare.row][fromSquare.col].piece = updatedPiece;
   board[toSquare.row][toSquare.col].piece = undefined;
@@ -324,7 +324,7 @@ export const undoCastlingMove = (
   const updatedKing = {
     ...castlingMove.piece,
     currentSquare: kingFromSq,
-    hasMoved: false, // this works since undoing a castling move means the castling move pieces must have had hasMoved set to false
+    hasMoved: false, // undoing castle move means it was legal
   };
   const updatedRook = {
     ...castlingMove.rook,

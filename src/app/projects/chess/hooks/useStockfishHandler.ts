@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import debounce from "lodash.debounce";
-import { GameManager, Highlighter, PlayerColor } from "../types";
+import {
+  ColorChoice,
+  GameManager,
+  Highlighter,
+  NO_SELECTION,
+  PlayerColor,
+} from "../types";
 import {
   calculateThreadsForNNUE,
   convertNotationToSquare,
@@ -37,7 +43,8 @@ export const useStockfishHandler = (
   const [depth, setDepth] = useState(-1);
   const lastDepthUpdateRef = useRef(0);
   const lastArrowUpdateRef = useRef(0);
-  const isPlaying = colorChoice !== -1 && strengthLevel !== -1;
+  const isPlaying =
+    colorChoice !== ColorChoice.NONE && strengthLevel !== NO_SELECTION;
   const defaultDepth = 24;
   const debouncedSetEvalCentipawn = useMemo(
     () => debounce((val: number) => setEvalCentipawn(val), 100),

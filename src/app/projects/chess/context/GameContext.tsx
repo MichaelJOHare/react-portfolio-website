@@ -1,16 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import {
-  GameManager,
-  Highlighter,
-  PieceSelector,
-  PromotionHandler,
-  StockfishHandler,
-} from "../types";
 import { useGameManager } from "../hooks/useGameManager";
 import { useHighlighter } from "../hooks/useHighlighter";
 import { usePieceSelector } from "../hooks/usePieceSelector";
 import { usePromotionHandler } from "../hooks/usePromotionHandler";
 import { useStockfishHandler } from "../hooks/useStockfishHandler";
+import {
+  ColorChoice,
+  GameManager,
+  Highlighter,
+  NO_SELECTION,
+  PieceSelector,
+  PromotionHandler,
+  StockfishHandler,
+} from "../types";
 
 interface Props {
   children: React.ReactNode;
@@ -26,15 +28,11 @@ type GameContextType = {
   isBoardFlipped: boolean;
   toggleFlipBoard: () => void;
   stockfishEnabled: boolean;
-  setStockfishEnabled: (value: boolean) => void;
-  computerOpponentOptions: {
-    strengthLevel: number;
-    colorChoice: number;
-  };
-  setComputerOpponentOptions: (value: {
-    strengthLevel: number;
-    colorChoice: number;
-  }) => void;
+  setStockfishEnabled: (val: boolean) => void;
+  colorChoice: ColorChoice;
+  strengthLevel: number;
+  setColorChoice: (val: ColorChoice) => void;
+  setStrengthLevel: (val: number) => void;
   version: "sf-16" | "sf-17";
   setVersion: (version: "sf-16" | "sf-17") => void;
   onResetGame: () => void;
@@ -46,12 +44,9 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
   const [isBoardFlipped, setIsBoardFlipped] = useState(false);
   const [version, setVersion] = useState<"sf-16" | "sf-17">("sf-16");
   const [stockfishEnabled, setStockfishEnabled] = useState(false);
-  const [computerOpponentOptions, setComputerOpponentOptions] = useState({
-    strengthLevel: -1,
-    colorChoice: -1,
-  });
+  const [strengthLevel, setStrengthLevel] = useState(NO_SELECTION);
+  const [colorChoice, setColorChoice] = useState(ColorChoice.NONE);
 
-  const { strengthLevel, colorChoice } = computerOpponentOptions;
   const isPlayingVsComputer = colorChoice !== -1 && strengthLevel !== -1;
   const gameManager = useGameManager(isBoardFlipped);
   const highlighter = useHighlighter();
@@ -65,8 +60,8 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     highlighter,
     version,
     isBoardFlipped,
-    computerOpponentOptions.colorChoice,
-    computerOpponentOptions.strengthLevel,
+    colorChoice,
+    strengthLevel,
   );
   const pieceSelector = usePieceSelector(
     gameManager,
@@ -105,8 +100,10 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
         toggleFlipBoard,
         stockfishEnabled,
         setStockfishEnabled,
-        computerOpponentOptions,
-        setComputerOpponentOptions,
+        colorChoice,
+        strengthLevel,
+        setColorChoice,
+        setStrengthLevel,
         version,
         setVersion,
         onResetGame,

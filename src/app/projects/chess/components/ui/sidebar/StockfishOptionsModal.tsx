@@ -6,7 +6,7 @@ import CloseModalIcon from "@/assets/icons/close-modal-icon.svg";
 import { useGame } from "../../../context/GameContext";
 import { StockfishAnalysisToggle } from "./StockfishAnalysisToggle";
 import { StockfishVersionMenu } from "./StockfishVersionMenu";
-import { PlayerType } from "../../../types";
+import { ColorChoice, NO_SELECTION, PlayerType } from "../../../types";
 import { setPlayerType } from "../../../utils";
 
 type StockfishOptionsModalProps = {
@@ -23,12 +23,13 @@ export const StockfishOptionsModal = ({
     highlighter,
     isBoardFlipped,
     setStockfishEnabled,
-    setComputerOpponentOptions,
+    setColorChoice,
+    setStrengthLevel,
     toggleFlipBoard,
   } = useGame();
   const menuRef = useRef<HTMLDivElement>(null);
-  const [strengthLevel, setStrengthLevel] = useState(-1);
-  const [colorChoice, setColorChoice] = useState(-1);
+  const [tempStrengthLevel, setTempStrengthLevel] = useState(-1);
+  const [tempColorChoice, setTempColorChoice] = useState(-1);
   const [playClicked, setPlayClicked] = useState(false);
   const strengthLevels = [1, 2, 3, 4, 5, 6, 7, 8];
   const whitePlayer = gameManager.players[0];
@@ -37,7 +38,7 @@ export const StockfishOptionsModal = ({
   const handlePlayToggle = () => {
     if (!playClicked) {
       const actualColor =
-        colorChoice === 2 ? (Math.random() < 0.5 ? 0 : 1) : colorChoice;
+        tempColorChoice === 2 ? (Math.random() < 0.5 ? 0 : 1) : tempColorChoice;
 
       const isBlack = actualColor === 1;
       if (isBlack) {
@@ -53,15 +54,14 @@ export const StockfishOptionsModal = ({
       }
 
       setStockfishEnabled(false);
-      setComputerOpponentOptions({
-        strengthLevel,
-        colorChoice: actualColor,
-      });
+      setTempStrengthLevel(tempStrengthLevel);
+      setColorChoice(actualColor);
       onClose();
     } else {
       setPlayerType(whitePlayer, PlayerType.HUMAN);
       setPlayerType(blackPlayer, PlayerType.HUMAN);
-      setComputerOpponentOptions({ strengthLevel: -1, colorChoice: -1 });
+      setColorChoice(ColorChoice.NONE);
+      setStrengthLevel(NO_SELECTION);
     }
     setPlayClicked((prev) => !prev);
   };
@@ -84,8 +84,8 @@ export const StockfishOptionsModal = ({
 
   useEffect(() => {
     if (isOpen) {
-      setStrengthLevel(-1);
-      setColorChoice(-1);
+      setTempColorChoice(-1);
+      setTempStrengthLevel(-1);
     }
   }, [isOpen]);
 
@@ -112,10 +112,8 @@ export const StockfishOptionsModal = ({
             Stockfish Options
           </h1>
           <div className="desktop-md:flex-col flex grow flex-col justify-around">
-            <div className="flex flex-col">
-              <ul className="self-center pb-2">
-                <StockfishAnalysisToggle />
-              </ul>
+            <div className="flex flex-col self-center pb-2">
+              <StockfishAnalysisToggle />
             </div>
             <StockfishVersionMenu />
             <div className="mt-2 border-t dark:border-gray-300" />
@@ -132,11 +130,11 @@ export const StockfishOptionsModal = ({
                     type="button"
                     key={level}
                     className={`size-12 rounded-lg px-1 text-4xl text-neutral-100 hover:shadow-md ${
-                      level === strengthLevel
+                      level === tempStrengthLevel
                         ? `bg-emerald-500 hover:shadow-neutral-600 dark:bg-emerald-400 dark:hover:shadow-slate-900`
                         : `bg-neutral-500 hover:bg-neutral-800 hover:shadow-neutral-600 dark:bg-teal-700 dark:hover:bg-teal-800 dark:hover:shadow-slate-900`
                     }`}
-                    onClick={() => setStrengthLevel(level)}
+                    onClick={() => setTempStrengthLevel(level)}
                   >
                     {level}
                   </button>
@@ -149,33 +147,33 @@ export const StockfishOptionsModal = ({
                 <button
                   type="button"
                   className={`rounded-lg hover:shadow-md ${
-                    colorChoice === 0
+                    tempColorChoice === ColorChoice.WHITE
                       ? "bg-emerald-500 dark:bg-emerald-400"
                       : `bg-neutral-500 hover:bg-neutral-600 hover:shadow-neutral-600 dark:bg-teal-700 dark:hover:bg-teal-800 dark:hover:shadow-slate-900`
                   }`}
-                  onClick={() => setColorChoice(0)}
+                  onClick={() => setTempColorChoice(0)}
                 >
                   <WhiteKing className="h-18 w-18 scale-[99%]" />
                 </button>
                 <button
                   type="button"
                   className={`rounded-lg hover:shadow-md ${
-                    colorChoice === 2
+                    tempColorChoice === ColorChoice.RANDOM
                       ? "bg-emerald-500 dark:bg-emerald-400"
                       : `bg-neutral-500 hover:bg-neutral-600 hover:shadow-neutral-600 dark:bg-teal-700 dark:hover:bg-teal-800 dark:hover:shadow-slate-900`
                   }`}
-                  onClick={() => setColorChoice(2)}
+                  onClick={() => setTempColorChoice(2)}
                 >
                   <RandomKing className="h-18 w-18 scale-[99%]" />
                 </button>
                 <button
                   type="button"
                   className={`rounded-lg hover:shadow-md ${
-                    colorChoice === 1
+                    tempColorChoice === ColorChoice.BLACK
                       ? "bg-emerald-500 dark:bg-emerald-400"
                       : `bg-neutral-500 hover:bg-neutral-600 hover:shadow-neutral-600 dark:bg-teal-700 dark:hover:bg-teal-800 dark:hover:shadow-slate-900`
                   }`}
-                  onClick={() => setColorChoice(1)}
+                  onClick={() => setTempColorChoice(1)}
                 >
                   <BlackKing className="h-18 w-18 scale-[99%]" />
                 </button>
@@ -185,7 +183,8 @@ export const StockfishOptionsModal = ({
               <button
                 type="button"
                 className={`h-14 w-full bg-zinc-700 pb-1 text-3xl font-medium text-neutral-100 hover:shadow-sm dark:bg-teal-700 dark:hover:shadow-md ${
-                  colorChoice !== -1 && strengthLevel !== -1
+                  tempColorChoice !== ColorChoice.NONE &&
+                  tempStrengthLevel !== NO_SELECTION
                     ? "hover:bg-emerald-500 dark:hover:bg-emerald-400"
                     : "hover:bg-zinc-800 dark:hover:bg-teal-800"
                 } rounded-lg hover:shadow-zinc-800 dark:hover:shadow-slate-900`}

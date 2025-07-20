@@ -6,7 +6,7 @@ export const StockfishAnalysisToggle = () => {
   const { setStockfishEnabled, stockfishEnabled } = useGame();
   const [showIcon, setShowIcon] = useState(stockfishEnabled);
 
-  // delay icon toggle to sync with animation
+  // delays icon toggle to sync with animation
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
     if (stockfishEnabled) {
