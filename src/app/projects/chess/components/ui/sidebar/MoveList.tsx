@@ -34,7 +34,7 @@ export const MoveList = () => {
 
   const onMoveClick = (index: number) => {
     // eventually change this to visually undo moves to show board state at time of move clicked
-    if (isPlayingVsComputer) {
+    if (!isPlayingVsComputer) {
       clearUI();
       const movesToUndo = moveHistory.length - index - 1;
       if (movesToUndo > 0) {
@@ -68,8 +68,8 @@ export const MoveList = () => {
                   move={whiteRecord.move}
                   record={whiteRecord}
                   isActive={whiteIndex === moveHistory.length - 1}
-                  onClick={() => onMoveClick(whiteIndex)}
                   isWhite={true}
+                  onClick={() => onMoveClick(whiteIndex)}
                 />
               )}
 
@@ -78,8 +78,8 @@ export const MoveList = () => {
                   move={blackRecord.move}
                   record={blackRecord}
                   isActive={blackIndex === moveHistory.length - 1}
-                  onClick={() => onMoveClick(blackIndex)}
                   isWhite={false}
+                  onClick={() => onMoveClick(blackIndex)}
                 />
               ) : (
                 <span />

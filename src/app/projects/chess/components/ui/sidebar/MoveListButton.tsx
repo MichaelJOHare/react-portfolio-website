@@ -5,14 +5,14 @@ export const MoveListButton = ({
   move,
   record,
   isActive,
-  onClick,
   isWhite,
+  onClick,
 }: {
   move: Move;
   record: MoveHistory;
   isActive: boolean;
-  onClick: () => void;
   isWhite: boolean;
+  onClick: () => void;
 }) => {
   const display = getMoveDisplay(
     move,
