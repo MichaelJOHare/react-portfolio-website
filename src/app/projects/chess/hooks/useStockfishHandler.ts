@@ -11,7 +11,7 @@ import {
   calculateThreadsForNNUE,
   convertNotationToSquare,
   determinePromotionType,
-  getStockfishConfigFromUiLevel,
+  getConfigFromLevel,
 } from "../utils/stockfish";
 import { toFEN } from "../utils/FEN";
 
@@ -60,7 +60,7 @@ export const useStockfishHandler = (
 
   const configureEngine = useCallback(
     (skillLevel: number) => {
-      const { skill, depth } = getStockfishConfigFromUiLevel(skillLevel);
+      const { skill, depth } = getConfigFromLevel(skillLevel);
       const effectiveDepth = isPlaying ? depth : defaultDepth;
       const threads = calculateThreadsForNNUE();
       setDepth(effectiveDepth);

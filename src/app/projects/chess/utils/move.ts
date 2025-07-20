@@ -402,8 +402,8 @@ export const executeMoveByType = (
 ): {
   updatedPieces: Piece[];
   capturedPieces: Piece[];
-  updatedHalfMoveClock: number;
-  updatedFullMoveNumber: number;
+  newHalfMoveClock: number;
+  newFullMoveNumber: number;
 } => {
   const updatedCapturedPieces: Piece[] = [];
   let updatedPieces: Piece[] = [];
@@ -428,12 +428,12 @@ export const executeMoveByType = (
       break;
   }
 
-  const updatedHalfMoveClock =
+  const newHalfMoveClock =
     move.piece.type === PieceType.PAWN || move.capturedPiece
       ? 0
       : halfMoveClock + 1;
 
-  const updatedFullMoveNumber =
+  const newFullMoveNumber =
     move.piece.color === PlayerColor.BLACK
       ? fullMoveNumber + 1
       : fullMoveNumber;
@@ -441,8 +441,8 @@ export const executeMoveByType = (
   return {
     updatedPieces,
     capturedPieces: updatedCapturedPieces,
-    updatedHalfMoveClock,
-    updatedFullMoveNumber,
+    newHalfMoveClock,
+    newFullMoveNumber,
   };
 };
 
@@ -457,8 +457,8 @@ export const undoMoveByType = (
 ): {
   updatedPieces: Piece[];
   capturedPieces: Piece[];
-  updatedHalfMoveClock: number;
-  updatedFullMoveNumber: number;
+  newHalfMoveClock: number;
+  newFullMoveNumber: number;
 } => {
   let updatedCapturedPieces: Piece[] = [...capturedPieces];
   let updatedPieces: Piece[] = [];
@@ -508,12 +508,12 @@ export const undoMoveByType = (
     );
   }
 
-  const updatedHalfMoveClock =
+  const newHalfMoveClock =
     move.piece.type === PieceType.PAWN || move.capturedPiece
       ? halfMoveClock
       : halfMoveClock - 1;
 
-  const updatedFullMoveNumber =
+  const newFullMoveNumber =
     move.piece.color === PlayerColor.BLACK
       ? fullMoveNumber - 1
       : fullMoveNumber;
@@ -521,8 +521,8 @@ export const undoMoveByType = (
   return {
     updatedPieces,
     capturedPieces: updatedCapturedPieces,
-    updatedHalfMoveClock,
-    updatedFullMoveNumber,
+    newHalfMoveClock,
+    newFullMoveNumber,
   };
 };
 

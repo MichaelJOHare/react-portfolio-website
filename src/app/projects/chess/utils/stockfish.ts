@@ -8,13 +8,9 @@ import {
 } from "../types";
 import { createSquare, getSquareFromNotation } from "./square";
 
-export const mapUiLevelToInternal = (uiLevel: number) => {
+export const getConfigFromLevel = (uiLevel: number) => {
   const clamped = Math.max(1, Math.min(8, uiLevel));
-  return Math.round((clamped - 1) * (29 / 7));
-};
-
-export const getStockfishConfigFromUiLevel = (uiLevel: number) => {
-  const internalLevel = mapUiLevelToInternal(uiLevel);
+  const internalLevel = Math.round((clamped - 1) * (29 / 7));
   const skill = Math.min(internalLevel, 20);
   const depth = internalLevel < 15 ? Math.ceil((internalLevel + 1) / 5) : 24;
 

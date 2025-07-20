@@ -75,15 +75,6 @@ export type MoveHistory = {
   causedCheckMate: boolean;
 };
 
-export interface Move {
-  type: MoveType;
-  from: Square;
-  to: Square;
-  piece: Piece;
-  capturedPiece?: Piece;
-  isPromotion?: boolean;
-}
-
 export type ChessEngineMove = {
   from: string;
   to: string;
@@ -97,6 +88,15 @@ export enum ColorChoice {
   BLACK = 1,
   RANDOM = 2,
   NONE = -1,
+}
+
+export interface Move {
+  type: MoveType;
+  from: Square;
+  to: Square;
+  piece: Piece;
+  capturedPiece?: Piece;
+  isPromotion?: boolean;
 }
 
 export interface CastlingMove extends Move {

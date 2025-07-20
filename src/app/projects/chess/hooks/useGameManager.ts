@@ -108,8 +108,9 @@ export const useGameManager = (isBoardFlipped: boolean) => {
   };
 
   const getLegalMoves = () => {
-    const player = gameState.players[gameState.currentPlayerIndex];
-    const opponent = gameState.players[1 - gameState.currentPlayerIndex];
+    const { players, currentPlayerIndex } = gameState;
+    const player = players[currentPlayerIndex];
+    const opponent = players[1 - currentPlayerIndex];
     return getLegalMovesFor(
       player,
       opponent,
@@ -126,12 +127,13 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     const {
       board,
       players,
+      currentPlayerIndex,
       moveHistory,
       undoneMoveHistory,
       capturedPieces,
       piecesByPlayer,
     } = gameState;
-    let { currentPlayerIndex, halfMoveClock, fullMoveNumber } = gameState;
+    let { halfMoveClock, fullMoveNumber } = gameState;
 
     const boardCopy = cloneBoard(board);
     const updatedCurrentPlayerIndex = 1 - currentPlayerIndex;
@@ -160,8 +162,8 @@ export const useGameManager = (isBoardFlipped: boolean) => {
           result.updatedPieces,
           newPiecesByPlayer,
         );
-        halfMoveClock = result.updatedHalfMoveClock;
-        fullMoveNumber = result.updatedFullMoveNumber;
+        halfMoveClock = result.newHalfMoveClock;
+        fullMoveNumber = result.newFullMoveNumber;
 
         newUndoneMoves.push(lastRecord);
       } else {
@@ -195,8 +197,8 @@ export const useGameManager = (isBoardFlipped: boolean) => {
           causedCheckMate,
         });
 
-        halfMoveClock = result.updatedHalfMoveClock;
-        fullMoveNumber = result.updatedFullMoveNumber;
+        halfMoveClock = result.newHalfMoveClock;
+        fullMoveNumber = result.newFullMoveNumber;
       }
     }
 
@@ -267,8 +269,8 @@ export const useGameManager = (isBoardFlipped: boolean) => {
     const {
       updatedPieces,
       capturedPieces,
-      updatedHalfMoveClock,
-      updatedFullMoveNumber,
+      newHalfMoveClock,
+      newFullMoveNumber,
     } = executeMoveByType(validMove, newBoard, halfMoveClock, fullMoveNumber);
 
     const updatedPiecesByPlayer = updatePiecesByPlayer(
@@ -321,8 +323,8 @@ export const useGameManager = (isBoardFlipped: boolean) => {
       currentPlayerIndex: prev.currentPlayerIndex === 0 ? 1 : 0,
       moveHistory: updatedMoveHistory,
       undoneMoveHistory: remainingUndoneMoves ? remainingUndoneMoves : [],
-      halfMoveClock: updatedHalfMoveClock,
-      fullMoveNumber: updatedFullMoveNumber,
+      halfMoveClock: newHalfMoveClock,
+      fullMoveNumber: newFullMoveNumber,
       capturedPieces: [...prev.capturedPieces, ...capturedPieces],
       isKingInCheck,
       kingSquare,
