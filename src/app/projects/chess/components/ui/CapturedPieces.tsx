@@ -20,12 +20,13 @@ export const CapturedPieces = ({ color }: CapturedPiecesProps) => {
   const { capturedPieces } = gameManager;
   const opponentCaptured = capturedPieces.filter((p) => p.color !== color);
   const ownCaptured = capturedPieces.filter((p) => p.color === color);
+
   const gainedPoints = ownCaptured.reduce(
-    (sum, p) => sum + (material[p.type] || 0),
+    (sum, p) => sum + (p.wasPromoted ? 1 : material[p.type] || 0),
     0,
   );
   const lostPoints = opponentCaptured.reduce(
-    (sum, p) => sum + (material[p.type] || 0),
+    (sum, p) => sum + (p.wasPromoted ? 1 : material[p.type] || 0),
     0,
   );
   const materialAdvantage = gainedPoints - lostPoints;

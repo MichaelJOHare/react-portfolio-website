@@ -184,6 +184,7 @@ export const executePromoMove = (
     currentSquare: promotionMove.to,
     type: promotionMove.promotionType,
     movementStrategy: moveStrat,
+    wasPromoted: true,
   };
   board[promotionMove.from.row][promotionMove.from.col].piece = undefined;
   if (promotedPawn) {
@@ -308,6 +309,7 @@ export const undoPromoMove = (
     currentSquare: promotionMove.from,
     type: PieceType.PAWN,
     movementStrategy: pawnMovementStrategy,
+    wasPromoted: false,
   };
 
   board[promotionMove.to.row][promotionMove.to.col].piece = undefined;

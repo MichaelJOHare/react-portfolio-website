@@ -8,6 +8,7 @@ import {
   PieceType,
   PlayerColor,
   Square,
+  StockfishHandler,
 } from "../types";
 
 type PromotionPanelState = {
@@ -21,6 +22,7 @@ type PromotionPanelState = {
 export const usePromotionHandler = (
   gameManager: GameManager,
   highlighter: Highlighter,
+  stockfishHandler: StockfishHandler,
 ) => {
   const { executeMove, getLegalMoves } = gameManager;
   const [promotionPanelState, setPromotionPanelState] =
@@ -35,6 +37,8 @@ export const usePromotionHandler = (
   const setPromotionDetails = (move: Move) => {
     // add highlighter.clearPreviousMoveSquares() maybe?  but don't want to clear array, just hide temporarily so undo/redo works with highlighter
     // maybe pop it and store it in here, then add back in onPromotionSelect
+    highlighter.clearStockfishBestMoveArrow();
+    highlighter.addPreviousMoveSquares(move.from, move.to);
     const squaresToHide = getSquaresToHideDuringPromotion(
       move,
       move.piece.color,
@@ -49,6 +53,7 @@ export const usePromotionHandler = (
   };
 
   const onPromotionSelect = (type: PieceType) => {
+    console.log("Calling");
     const { promotionSquare, promotingPawn } = promotionPanelState;
     if (!promotionSquare || !promotingPawn) return;
 
@@ -60,7 +65,7 @@ export const usePromotionHandler = (
     executeMove(from.row, from.col, to.row, to.col, playerMoves, type);
 
     clearPromotionDetails();
-    highlighter.addPreviousMoveSquares(from, to);
+    stockfishHandler.interruptEngine();
   };
 
   const clearPromotionDetails = () => {

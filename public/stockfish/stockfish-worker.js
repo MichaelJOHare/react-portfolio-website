@@ -20,7 +20,7 @@ onmessage = async (e) => {
 
       if (data.version === "sf-16") {
         await loadNNUE("/stockfish/sf-16/nn-ecb35f70ff2a.nnue", 0);
-      } else {
+      } else if (data.version === "sf-17") {
         await loadNNUE("/stockfish/sf-17/nn-1c0000000000.nnue", 0);
         await loadNNUE("/stockfish/sf-17/nn-37f18f62d772.nnue", 1);
       }

@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { useGame } from "../../../context/GameContext";
 import StockfishOptionsIcon from "@/assets/icons/stockfish-options-icon.svg";
 
-export const StockfishAnalysisToggle = () => {
+type SfAnalysisProps = {
+  onAnalysisToggle: (sfEnabled: boolean) => void;
+};
+
+export const StockfishAnalysisToggle = ({
+  onAnalysisToggle,
+}: SfAnalysisProps) => {
   const { setStockfishEnabled, stockfishEnabled } = useGame();
   const [showIcon, setShowIcon] = useState(stockfishEnabled);
 
@@ -25,18 +31,30 @@ export const StockfishAnalysisToggle = () => {
           type="checkbox"
           value=""
           checked={stockfishEnabled}
-          onChange={(e) => setStockfishEnabled(e.target.checked)}
+          onChange={(e) => {
+            setStockfishEnabled(e.target.checked);
+            onAnalysisToggle(e.target.checked);
+          }}
         />
-        <div className="absolute left-0 h-full w-30 rounded-full bg-neutral-500 shadow-neutral-700 transition-all duration-300 group-hover:shadow-md peer-checked:left-26 peer-checked:bg-emerald-700 dark:shadow-slate-900 dark:peer-checked:bg-emerald-600"></div>
-        <span className="relative flex h-full w-30 items-center justify-center text-xl font-medium text-white transition">
+        <div className="absolute h-full w-30 rounded-full bg-neutral-500 shadow-sm shadow-neutral-700 transition will-change-[box-shadow] group-hover:shadow-md peer-checked:translate-x-26 peer-checked:bg-emerald-700 peer-checked:will-change-auto dark:shadow-slate-900 dark:peer-checked:bg-emerald-600" />
+        <span className="relative flex h-full w-30 items-center justify-center text-xl font-medium text-neutral-100">
           Off
         </span>
-        <span className="relative flex h-full w-30 items-center justify-center text-xl font-medium text-neutral-100 transition">
-          {showIcon ? (
-            <StockfishOptionsIcon className="drop-shadow-sfOn ml-6 h-10 w-10 text-orange-300" />
-          ) : (
-            "On"
-          )}
+        <span className="relative flex h-full w-30 items-center justify-center text-xl font-medium text-neutral-100">
+          <div className="relative flex h-full w-full items-center justify-center">
+            <span
+              className={`absolute transition-opacity duration-100 ease-in ${
+                showIcon ? "opacity-0" : "opacity-100"
+              }`}
+            >
+              On
+            </span>
+            <StockfishOptionsIcon
+              className={`drop-shadow-sfOn absolute ml-6 h-10 w-10 text-orange-300 transition-opacity duration-100 ease-in ${
+                showIcon ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          </div>
         </span>
       </label>
     </div>

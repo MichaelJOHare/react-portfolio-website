@@ -33,8 +33,6 @@ type GameContextType = {
   strengthLevel: number;
   setColorChoice: (val: ColorChoice) => void;
   setStrengthLevel: (val: number) => void;
-  version: "sf-16" | "sf-17";
-  setVersion: (version: "sf-16" | "sf-17") => void;
   onResetGame: () => void;
 };
 
@@ -42,21 +40,21 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider = ({ children, onResetGame }: Props) => {
   const [isBoardFlipped, setIsBoardFlipped] = useState(false);
-  const [version, setVersion] = useState<"sf-16" | "sf-17">("sf-16");
   const [stockfishEnabled, setStockfishEnabled] = useState(false);
   const [strengthLevel, setStrengthLevel] = useState(NO_SELECTION);
   const [colorChoice, setColorChoice] = useState(ColorChoice.NONE);
-
-  const isPlayingVsComputer = colorChoice !== -1 && strengthLevel !== -1;
   const gameManager = useGameManager();
   const highlighter = useHighlighter(isBoardFlipped);
-  const promotionHandler = usePromotionHandler(gameManager, highlighter);
   const stockfishHandler = useStockfishHandler(
     gameManager,
     highlighter,
-    version,
     colorChoice,
     strengthLevel,
+  );
+  const promotionHandler = usePromotionHandler(
+    gameManager,
+    highlighter,
+    stockfishHandler,
   );
   const pieceSelector = usePieceSelector(
     gameManager,
@@ -64,7 +62,6 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     promotionHandler,
     stockfishHandler,
   );
-  const { startWorker } = stockfishHandler;
 
   const toggleFlipBoard = () => {
     setIsBoardFlipped(!isBoardFlipped);
@@ -75,13 +72,6 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     gameManager.initializeBoard();
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, []);
-
-  // useEffect because async worker needs to start and terminate based on state
-  useEffect(() => {
-    if (stockfishEnabled || isPlayingVsComputer) {
-      startWorker(version);
-    }
-  }, [stockfishEnabled, version, isPlayingVsComputer, startWorker]);
 
   return (
     <GameContext.Provider
@@ -99,8 +89,6 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
         strengthLevel,
         setColorChoice,
         setStrengthLevel,
-        version,
-        setVersion,
         onResetGame,
       }}
     >

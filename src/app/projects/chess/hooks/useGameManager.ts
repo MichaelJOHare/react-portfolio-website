@@ -16,8 +16,6 @@ import {
   defaultBoard,
   setupPieces,
   cloneBoard,
-  createSquare,
-  clonePiece,
   undoMoveByType,
   executeMoveByType,
   getCheckStatus,

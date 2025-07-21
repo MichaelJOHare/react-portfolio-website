@@ -19,11 +19,8 @@ export type Piece = {
   movementStrategy: MovementStrategy;
   isAlive: boolean;
   hasMoved?: boolean;
+  wasPromoted?: boolean;
 };
-
-export interface MovementStrategy {
-  (board: Square[][], piece: Piece, moveHistory: Move[]): Move[];
-}
 
 export enum PieceType {
   PAWN = "pawn",
@@ -32,6 +29,10 @@ export enum PieceType {
   BISHOP = "bishop",
   QUEEN = "queen",
   KING = "king",
+}
+
+export interface MovementStrategy {
+  (board: Square[][], piece: Piece, moveHistory: Move[]): Move[];
 }
 
 export type Player = {
@@ -75,12 +76,18 @@ export type ChessEngineMove = {
   promotion?: string;
 } | null;
 
+export enum StockfishVersion {
+  SF16 = "sf-16",
+  SF17 = "sf-17",
+  NONE = "0",
+}
+
 export const STOCKFISH_STRENGTH_LEVELS = [1, 2, 3, 4, 5, 6, 7, 8];
 export const NO_SELECTION = -1;
 export enum ColorChoice {
   WHITE = 0,
-  BLACK = 1,
-  RANDOM = 2,
+  BLACK = 2,
+  RANDOM = 1,
   NONE = -1,
 }
 

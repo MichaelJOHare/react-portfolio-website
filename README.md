@@ -1,5 +1,8 @@
 ## If you are cloning this repository to implement your own Stockfish web app:
 
+Sometimes Git Large File Storage (LFS) behaves strangely with these nnue files.
+If you run into issues, delete the files in the project, download them and put those in the project.
+
 Download NNUE files from: https://tests.stockfishchess.org/nns
 
 ## Stockfish 17.1 files

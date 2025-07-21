@@ -10,14 +10,19 @@ type ChessPieceProps = {
 
 export const ChessPiece = ({ type, color, square }: ChessPieceProps) => {
   const { isBoardFlipped } = useGame();
+  const isMobile =
+    typeof window !== "undefined" &&
+    window.matchMedia("(pointer: coarse)").matches;
+  const scale = isMobile ? 1.5 : 1;
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: `${square.row}-${square.col}`,
     });
   const style = transform
     ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`, // detect mobile, scale up if so
-      } //                                                              pointer-coarse:scale-150 in the img down below but then have to adjust translate3d
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0) scale(${scale})`,
+        transformOrigin: "center center",
+      }
     : undefined;
 
   return (

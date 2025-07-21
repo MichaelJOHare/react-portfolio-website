@@ -7,6 +7,7 @@ import { PlayerColor } from "../../types";
 export const ChessGameContainer = () => {
   const { stockfishHandler, stockfishEnabled, isBoardFlipped } = useGame();
   const { evalCentipawn } = stockfishHandler;
+  console.log(evalCentipawn);
 
   return (
     <div className="desktop-md:flex-row limitedHeight:flex-col flex flex-col justify-center">

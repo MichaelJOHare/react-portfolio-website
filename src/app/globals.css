@@ -6,20 +6,9 @@
   }
 }
 @theme {
-  /*
-  --animate-pop: cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --text-2xs: 0.65rem;
+  --text-2xs--line-height: 0.975rem;
 
-  @keyframes pop {
-    0% {
-      transform: scale(1);
-    }
-    100% {
-      transform: translate3d(-10%, -10%, 0) scale(1.5);
-    }
-  }
-
-Need to figure this out later
- */
   --breakpoint-desktop-md: 70rem;
 
   --color-darkSquare: #b58863;

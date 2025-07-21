@@ -21,6 +21,7 @@ export const createPiece = (
   movementStrategy: MovementStrategy,
   isAlive: boolean,
   hasMoved?: boolean,
+  wasPromoted?: boolean,
 ): Piece => ({
   id: `${color}_${type}_${currentSquare.row}_${currentSquare.col}`,
   player,
@@ -30,6 +31,7 @@ export const createPiece = (
   movementStrategy,
   isAlive,
   hasMoved,
+  wasPromoted,
 });
 
 export const clonePiece = (piece: Piece, currentSquare: Square): Piece => ({

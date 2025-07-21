@@ -1,9 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { useGame } from "../../../context/GameContext";
 import DropdownArrow from "@/assets/icons/drop-down-arrow.svg";
+import { StockfishVersion } from "../../../types";
 
-export const StockfishVersionMenu = () => {
-  const { setVersion, version } = useGame();
+type VersionMenuProps = {
+  version: StockfishVersion;
+  onVersionSelect: (version: StockfishVersion) => void;
+};
+
+export const StockfishVersionMenu = ({
+  version,
+  onVersionSelect,
+}: VersionMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -19,8 +26,8 @@ export const StockfishVersionMenu = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSelectVersion = (version: "sf-16" | "sf-17") => {
-    setVersion(version);
+  const handleSelectVersion = (version: StockfishVersion) => {
+    onVersionSelect(version);
     setIsOpen(false);
   };
 
@@ -53,7 +60,7 @@ export const StockfishVersionMenu = () => {
         >
           <div className="py-1" role="none">
             <button
-              onClick={() => handleSelectVersion("sf-16")}
+              onClick={() => handleSelectVersion(StockfishVersion.SF16)}
               className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-neutral-300"
               role="menuitem"
             >
@@ -63,7 +70,7 @@ export const StockfishVersionMenu = () => {
               <span className="float-right text-gray-500">7MB</span>
             </button>
             <button
-              onClick={() => handleSelectVersion("sf-17")}
+              onClick={() => handleSelectVersion(StockfishVersion.SF17)}
               className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-neutral-300"
               role="menuitem"
             >

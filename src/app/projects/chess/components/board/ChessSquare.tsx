@@ -32,10 +32,11 @@ export const ChessSquare = ({ square, children }: SquareProps) => {
   const getColor = () => {
     const isSameSquare = (a?: Square, b?: Square) =>
       a?.row === b?.row && a?.col === b?.col;
+    //console.log(highlightedSquares.previousMoveSquares.slice(-2));
 
     const isPreviousMoveSquare =
       highlightedSquares.previousMoveSquares
-        ?.slice(-2)
+        .slice(-2)
         .some((sq) => isSameSquare(sq, square)) ?? false;
 
     const isDropTarget =
@@ -67,23 +68,10 @@ export const ChessSquare = ({ square, children }: SquareProps) => {
     return isDark ? "bg-lightSquare" : "bg-darkSquare";
   };
 
-  const color = useMemo(() => {
-    // fixed the large amount of calls to getColor but this component still renders a lot when dragging piece
-    return getColor();
-  }, [
-    isOver,
-    selectedPieceSquare?.row,
-    selectedPieceSquare?.col,
-    validMoves,
-    isKingInCheck,
-    square.row,
-    square.col,
-    square.piece,
-  ]);
-
+  const colorClass = getColor();
   return (
     <div
-      className={`relative flex aspect-square h-full w-full items-center justify-center select-none ${color}`}
+      className={`relative flex aspect-square h-full w-full items-center justify-center select-none ${colorClass}`}
       ref={setNodeRef}
       onClick={() => handleClick(square.row, square.col)}
     >
@@ -103,18 +91,18 @@ export const ChessSquare = ({ square, children }: SquareProps) => {
 
       {isLabeledColumn && (
         <div
-          className={`desktop-md:text-sm absolute pt-1 pr-1 ${
+          className={`text-2xs absolute pt-0.5 pr-0.5 sm:text-lg ${
             isBoardFlipped ? "bottom-0 left-0 rotate-180" : "top-0 right-0"
-          } text-xs ${isDark ? "text-yellow-900" : "text-orange-200"} select-none`}
+          } ${isDark ? "text-yellow-900" : "text-orange-200"} select-none`}
         >
           {columnLabel}
         </div>
       )}
       {isLabeledRow && (
         <div
-          className={`desktop-md:text-sm absolute pb-1 pl-1 ${
+          className={`text-2xs absolute pb-0.5 pl-0.5 sm:text-lg ${
             isBoardFlipped ? "top-0 right-0 rotate-180" : "bottom-0 left-0"
-          } text-xs ${isDark ? "text-yellow-900" : "text-orange-200"} select-none`}
+          } ${isDark ? "text-yellow-900" : "text-orange-200"} select-none`}
         >
           {rowLabel}
         </div>

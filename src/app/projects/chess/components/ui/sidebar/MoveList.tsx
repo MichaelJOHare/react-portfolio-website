@@ -20,12 +20,12 @@ export const MoveList = () => {
   const { replayMoves, moveHistory } = gameManager;
   const { deselectPiece } = pieceSelector;
   const { clearPromotionDetails } = promotionHandler;
-  const { resetEngine } = stockfishHandler;
+  const { interruptEngine } = stockfishHandler;
   const isPlayingVsComputer =
     colorChoice !== ColorChoice.NONE && strengthLevel !== NO_SELECTION;
 
   const clearUI = () => {
-    resetEngine();
+    interruptEngine();
     clearPromotionDetails();
     clearDrawnHighlights();
     clearStockfishBestMoveArrow();
