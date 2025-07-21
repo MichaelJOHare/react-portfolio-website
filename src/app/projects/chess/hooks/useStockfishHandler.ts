@@ -65,14 +65,10 @@ export const useStockfishHandler = (
   };
 
   const configureEngine = useCallback((version: StockfishVersion) => {
-    const { colorChoice, strengthLevel } = engineOptionsRef.current;
-    const isPlaying =
-      colorChoice !== ColorChoice.NONE && strengthLevel !== NO_SELECTION;
+    const { strengthLevel } = engineOptionsRef.current;
     const { skill, depth } = getConfigFromLevel(strengthLevel);
-    const effectiveDepth = isPlaying ? depth : defaultDepth;
     const threads = calculateThreadsForNNUE();
-    depthRef.current = effectiveDepth;
-    console.log("skill level: ", skill);
+    depthRef.current = depth;
     sendCommand(`setoption name Skill Level value ${skill}`);
     sendCommand(`setoption name Threads value ${threads}`);
     if (version === "sf-16") {
@@ -106,9 +102,7 @@ export const useStockfishHandler = (
       fullMoveNumber,
     );
 
-    console.log("position fen: ", fen);
     sendCommand(`position fen ${fen}`);
-    console.log("go depth: ", depthRef.current);
     sendCommand(`go depth ${depthRef.current}`);
     engineStatusRef.current = "thinking";
   }, []);
@@ -119,11 +113,11 @@ export const useStockfishHandler = (
     sendCommand("isready");
   }, []);
 
-  const terminate = useCallback(() => {
+  const terminateWorker = useCallback(() => {
     workerRef.current?.terminate();
     workerRef.current = null;
     hasConfiguredEngine.current = false;
-    engineStatusRef.current = "ready";
+    engineStatusRef.current = "idle";
   }, []);
 
   const handleDepthMessage = useCallback(
@@ -257,7 +251,6 @@ export const useStockfishHandler = (
       if (scriptUrl === StockfishVersion.NONE) {
         return;
       }
-      terminate();
 
       const worker = new window.Worker("/stockfish/stockfish-worker.js", {
         type: "module",
@@ -300,7 +293,7 @@ export const useStockfishHandler = (
         data: { version: scriptUrl },
       });
     },
-    [requestStockfishMove, configureEngine, handleEngineMessage, terminate],
+    [requestStockfishMove, configureEngine, handleEngineMessage],
   );
 
   /* USE EFFECTS FOR USEREF UPDATEs */
@@ -317,6 +310,7 @@ export const useStockfishHandler = (
 
   return {
     startWorker,
+    terminateWorker,
     interruptEngine,
     depthPercentage,
     evalCentipawn,

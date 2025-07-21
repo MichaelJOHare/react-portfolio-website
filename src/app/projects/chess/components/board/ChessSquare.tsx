@@ -32,7 +32,6 @@ export const ChessSquare = ({ square, children }: SquareProps) => {
   const getColor = () => {
     const isSameSquare = (a?: Square, b?: Square) =>
       a?.row === b?.row && a?.col === b?.col;
-    //console.log(highlightedSquares.previousMoveSquares.slice(-2));
 
     const isPreviousMoveSquare =
       highlightedSquares.previousMoveSquares

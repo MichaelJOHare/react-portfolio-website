@@ -37,3 +37,6 @@ next-env.d.ts
 
 # to do file
 /src/TODO.txt
+
+# profiler api
+/src/app/api/profiler-log/*

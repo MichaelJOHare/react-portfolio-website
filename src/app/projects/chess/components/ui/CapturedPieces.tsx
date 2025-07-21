@@ -1,5 +1,5 @@
 import { useGame } from "../../context/GameContext";
-import { PieceType, PlayerColor } from "../../types";
+import { Piece, PieceType, PlayerColor } from "../../types";
 import { getPieceUnicode } from "../../utils";
 
 type CapturedPiecesProps = {
@@ -17,30 +17,67 @@ const material = {
 
 export const CapturedPieces = ({ color }: CapturedPiecesProps) => {
   const { gameManager } = useGame();
-  const { capturedPieces } = gameManager;
-  const opponentCaptured = capturedPieces.filter((p) => p.color !== color);
-  const ownCaptured = capturedPieces.filter((p) => p.color === color);
+  const { capturedPieces, piecesByPlayer } = gameManager;
 
-  const gainedPoints = ownCaptured.reduce(
-    (sum, p) => sum + (p.wasPromoted ? 1 : material[p.type] || 0),
+  const opponentColor =
+    color === PlayerColor.WHITE ? PlayerColor.BLACK : PlayerColor.WHITE;
+  const ownAlivePieces =
+    piecesByPlayer.get(color)?.filter((p) => p.isAlive) ?? [];
+  const oppAlivePieces =
+    piecesByPlayer.get(opponentColor)?.filter((p) => p.isAlive) ?? [];
+
+  const aliveOwnMaterial = ownAlivePieces.reduce(
+    (sum, p) => sum + (material[p.type] || 0),
     0,
   );
-  const lostPoints = opponentCaptured.reduce(
-    (sum, p) => sum + (p.wasPromoted ? 1 : material[p.type] || 0),
+  const aliveOpponentMaterial = oppAlivePieces.reduce(
+    (sum, p) => sum + (material[p.type] || 0),
     0,
   );
-  const materialAdvantage = gainedPoints - lostPoints;
+
+  const materialAdvantage = aliveOpponentMaterial - aliveOwnMaterial;
+
+  const isOpponent = (p: Piece) => p.color !== color;
+  const isOwn = (p: Piece) => p.color === color;
+  const capturedType = (p: Piece) => (p.wasPromoted ? PieceType.PAWN : p.type);
+
+  const buildPieceCount = (pieces: Piece[]) => {
+    const count = new Map<PieceType, number>();
+    for (const p of pieces) {
+      const type = capturedType(p);
+      count.set(type, (count.get(type) || 0) + 1);
+    }
+    return count;
+  };
+
+  const ownCount = buildPieceCount(capturedPieces.filter(isOwn));
+  const opponentCount = buildPieceCount(capturedPieces.filter(isOpponent));
+
+  // cancel out matched pieces
+  for (const [type, ownQty] of ownCount.entries()) {
+    const oppQty = opponentCount.get(type) || 0;
+    const minQty = Math.min(ownQty, oppQty);
+    if (minQty > 0) {
+      ownCount.set(type, ownQty - minQty);
+      opponentCount.set(type, oppQty - minQty);
+    }
+  }
+
+  const renderCaptured = (countMap: Map<PieceType, number>) =>
+    Array.from(countMap.entries()).flatMap(([type, count]) =>
+      Array.from({ length: count }).map((_, i) => (
+        <span
+          key={`${type}-${i}`}
+          className="font-mono text-lg text-neutral-600 dark:text-neutral-200"
+        >
+          {getPieceUnicode(type)}
+        </span>
+      )),
+    );
 
   return (
     <div className="h-7 w-full">
-      {ownCaptured.map((piece, index) => (
-        <span
-          className="font-mono text-lg text-neutral-600 dark:text-neutral-200"
-          key={index}
-        >
-          {getPieceUnicode(piece.type)}
-        </span>
-      ))}
+      {renderCaptured(ownCount)}
       <span className="ml-2 text-sm font-semibold">
         {materialAdvantage > 0 ? `+${materialAdvantage}` : ""}
       </span>

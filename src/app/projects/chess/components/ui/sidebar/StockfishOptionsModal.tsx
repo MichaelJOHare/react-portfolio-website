@@ -35,7 +35,7 @@ export const StockfishOptionsModal = ({
     toggleFlipBoard,
   } = useGame();
   const menuRef = useRef<HTMLDivElement>(null);
-  const { startWorker } = stockfishHandler;
+  const { startWorker, terminateWorker } = stockfishHandler;
   const [version, setVersion] = useState(StockfishVersion.SF16);
   const [tempStrengthLevel, setTempStrengthLevel] = useState(NO_SELECTION);
   const [tempColorChoice, setTempColorChoice] = useState(ColorChoice.NONE);
@@ -80,7 +80,7 @@ export const StockfishOptionsModal = ({
       setHasClickedPlay(false);
       setColorChoice(ColorChoice.NONE);
       setStrengthLevel(NO_SELECTION);
-      startWorker(StockfishVersion.NONE);
+      terminateWorker();
     }
   };
 
@@ -88,11 +88,15 @@ export const StockfishOptionsModal = ({
     if (sfEnabled) {
       startWorker(version);
     } else {
-      startWorker(StockfishVersion.NONE);
+      terminateWorker();
     }
   };
 
-  const handleVersionSelect = (version: StockfishVersion) => {
+  const handleVersionSelect = (versionInput: StockfishVersion) => {
+    if (versionInput === version) {
+      terminateWorker();
+      return;
+    }
     setVersion(version);
     if (stockfishEnabled || isPlaying) {
       startWorker(version);
