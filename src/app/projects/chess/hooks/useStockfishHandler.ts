@@ -49,7 +49,7 @@ export const useStockfishHandler = (
   }>({ colorChoice, strengthLevel });
 
   const debouncedSetEvalCentipawn = useMemo(
-    () => debounce((val: number) => setEvalCentipawn(val), 100),
+    () => debounce((val: number) => setEvalCentipawn(val), 50),
     [setEvalCentipawn],
   );
   const debouncedAddStockfishArrow = useMemo(
@@ -64,27 +64,25 @@ export const useStockfishHandler = (
     workerRef.current?.postMessage(cmd);
   };
 
-  const configureEngine = useCallback(
-    (skillLevel: number, version: StockfishVersion) => {
-      const { colorChoice, strengthLevel } = engineOptionsRef.current;
-      const isPlaying =
-        colorChoice !== ColorChoice.NONE && strengthLevel !== NO_SELECTION;
-      const { skill, depth } = getConfigFromLevel(skillLevel);
-      const effectiveDepth = isPlaying ? depth : defaultDepth;
-      const threads = calculateThreadsForNNUE();
-      depthRef.current = effectiveDepth;
-      sendCommand(`setoption name Skill Level value ${skill}`);
-      sendCommand(`setoption name Threads value ${threads}`);
-      if (version === "sf-16") {
-        sendCommand("setoption name Use NNUE value true");
-      }
-      sendCommand("setoption name UCI_ShowWDL value true");
-      sendCommand("ucinewgame");
+  const configureEngine = useCallback((version: StockfishVersion) => {
+    const { colorChoice, strengthLevel } = engineOptionsRef.current;
+    const isPlaying =
+      colorChoice !== ColorChoice.NONE && strengthLevel !== NO_SELECTION;
+    const { skill, depth } = getConfigFromLevel(strengthLevel);
+    const effectiveDepth = isPlaying ? depth : defaultDepth;
+    const threads = calculateThreadsForNNUE();
+    depthRef.current = effectiveDepth;
+    console.log("skill level: ", skill);
+    sendCommand(`setoption name Skill Level value ${skill}`);
+    sendCommand(`setoption name Threads value ${threads}`);
+    if (version === "sf-16") {
+      sendCommand("setoption name Use NNUE value true");
+    }
+    sendCommand("setoption name UCI_ShowWDL value true");
+    sendCommand("ucinewgame");
 
-      sendCommand("isready");
-    },
-    [],
-  );
+    sendCommand("isready");
+  }, []);
 
   const requestStockfishMove = useCallback(() => {
     if (engineStatusRef.current !== "ready") return;
@@ -108,7 +106,9 @@ export const useStockfishHandler = (
       fullMoveNumber,
     );
 
+    console.log("position fen: ", fen);
     sendCommand(`position fen ${fen}`);
+    console.log("go depth: ", depthRef.current);
     sendCommand(`go depth ${depthRef.current}`);
     engineStatusRef.current = "thinking";
   }, []);
@@ -232,7 +232,7 @@ export const useStockfishHandler = (
 
   const handleEngineMessage = useCallback(
     (event: MessageEvent) => {
-      const line = typeof event === "object" ? event.data : event;
+      const line = event.data;
 
       if (INFORMS_DEPTH.test(line)) {
         handleDepthMessage(line);
@@ -274,7 +274,7 @@ export const useStockfishHandler = (
           engineStatusRef.current = "loaded";
         } else if (msg.data === "readyok") {
           if (engineStatusRef.current === "loaded") {
-            configureEngine(strengthLevel, scriptUrl);
+            configureEngine(scriptUrl);
             engineStatusRef.current = "configured";
             return;
           }
@@ -300,13 +300,7 @@ export const useStockfishHandler = (
         data: { version: scriptUrl },
       });
     },
-    [
-      strengthLevel,
-      requestStockfishMove,
-      configureEngine,
-      handleEngineMessage,
-      terminate,
-    ],
+    [requestStockfishMove, configureEngine, handleEngineMessage, terminate],
   );
 
   /* USE EFFECTS FOR USEREF UPDATEs */

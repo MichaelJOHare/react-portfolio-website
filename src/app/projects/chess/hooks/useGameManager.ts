@@ -132,11 +132,11 @@ export const useGameManager = () => {
     let { halfMoveClock, fullMoveNumber } = gameState;
 
     const boardCopy = cloneBoard(board);
-    const updatedCurrentPlayerIndex = 1 - currentPlayerIndex;
     const newMoveHistory = [...moveHistory];
     const newUndoneMoves = [...undoneMoveHistory];
     let newCaptured = [...capturedPieces];
     let newPiecesByPlayer = new Map(piecesByPlayer);
+    let updatedCurrentPlayerIndex = currentPlayerIndex;
 
     for (let i = 0; i < count; i++) {
       if (isUndo) {
@@ -187,12 +187,13 @@ export const useGameManager = () => {
         halfMoveClock = result.newHalfMoveClock;
         fullMoveNumber = result.newFullMoveNumber;
       }
+      updatedCurrentPlayerIndex = 1 - updatedCurrentPlayerIndex;
     }
 
     const { isKingInCheck, kingSquare } = getCheckStatus(
       boardCopy,
-      players[currentPlayerIndex],
-      players[1 - currentPlayerIndex],
+      players[updatedCurrentPlayerIndex],
+      players[1 - updatedCurrentPlayerIndex],
       newPiecesByPlayer,
       newMoveHistory,
     );

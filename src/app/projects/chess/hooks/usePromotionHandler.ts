@@ -53,7 +53,6 @@ export const usePromotionHandler = (
   };
 
   const onPromotionSelect = (type: PieceType) => {
-    console.log("Calling");
     const { promotionSquare, promotingPawn } = promotionPanelState;
     if (!promotionSquare || !promotingPawn) return;
 

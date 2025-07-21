@@ -2,6 +2,7 @@ import { emptyArrow } from "../hooks/useHighlighter";
 import {
   ArrowProps,
   ChessEngineMove,
+  NO_SELECTION,
   Piece,
   PieceType,
   Square,
@@ -9,6 +10,10 @@ import {
 import { createSquare, getSquareFromNotation } from "./square";
 
 export const getConfigFromLevel = (uiLevel: number) => {
+  if (uiLevel === NO_SELECTION) {
+    return { skill: 20, depth: 24 };
+  }
+
   const clamped = Math.max(1, Math.min(8, uiLevel));
   const internalLevel = Math.round((clamped - 1) * (29 / 7));
   const skill = Math.min(internalLevel, 20);
