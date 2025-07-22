@@ -11,6 +11,8 @@ import {
   knightMovementStrategy,
   queenMovementStrategy,
   rookMovementStrategy,
+  kingMovementStrategy,
+  pawnMovementStrategy,
 } from "./strategies";
 
 export const createPiece = (
@@ -55,6 +57,12 @@ export const getMovementStrategyFromType = (
       break;
     case PieceType.KNIGHT:
       moveStrat = knightMovementStrategy;
+      break;
+    case PieceType.KING:
+      moveStrat = kingMovementStrategy;
+      break;
+    case PieceType.PAWN:
+      moveStrat = pawnMovementStrategy;
       break;
     default:
       moveStrat = undefined;

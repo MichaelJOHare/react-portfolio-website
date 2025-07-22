@@ -13,7 +13,7 @@ export const ChessPiece = ({ type, color, square }: ChessPieceProps) => {
   const isMobile =
     typeof window !== "undefined" &&
     window.matchMedia("(pointer: coarse)").matches;
-  const scale = isMobile ? 1.5 : 1;
+  const scale = isMobile ? 1.75 : 1;
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: `${square.row}-${square.col}`,

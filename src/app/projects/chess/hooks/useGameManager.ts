@@ -21,6 +21,7 @@ import {
   getCheckStatus,
   getLegalMovesFor,
   updatePiecesByPlayer,
+  fromFEN,
 } from "../utils";
 
 type GameState = {
@@ -314,6 +315,65 @@ export const useGameManager = () => {
     }));
   };
 
+  const loadFromFEN = (fenString: string) => {
+    try {
+      const {
+        players,
+        board,
+        piecesByPlayer,
+        currentPlayerIndex,
+        halfMoveClock,
+        fullMoveNumber,
+      } = gameState;
+      const whitePlayer = players[0];
+      const blackPlayer = players[1];
+
+      const result = fromFEN(fenString, whitePlayer, blackPlayer, {
+        board,
+        piecesByPlayer,
+        currentPlayerIndex,
+        halfMoveClock,
+        fullMoveNumber,
+      });
+
+      const {
+        board: newBoard,
+        piecesByPlayer: newPiecesByPlayer,
+        currentPlayerIndex: newCurrentPlayerIndex,
+        halfMoveClock: newHalfMoveClock,
+        fullMoveNumber: newFullMoveNumber,
+      } = result;
+
+      const currentPlayer = players[newCurrentPlayerIndex];
+      const opponent = players[1 - newCurrentPlayerIndex];
+      const { isKingInCheck, kingSquare } = getCheckStatus(
+        newBoard,
+        currentPlayer,
+        opponent,
+        newPiecesByPlayer,
+        [],
+      );
+
+      setGameState((prev) => ({
+        ...prev,
+        board: newBoard,
+        piecesByPlayer: newPiecesByPlayer,
+        currentPlayerIndex: newCurrentPlayerIndex,
+        halfMoveClock: newHalfMoveClock,
+        fullMoveNumber: newFullMoveNumber,
+        moveHistory: [],
+        undoneMoveHistory: [],
+        capturedPieces: [],
+        isKingInCheck,
+        kingSquare,
+      }));
+
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   return {
     ...gameState,
     setGameState,
@@ -321,5 +381,6 @@ export const useGameManager = () => {
     getLegalMoves,
     replayMoves,
     executeMove,
+    loadFromFEN,
   };
 };

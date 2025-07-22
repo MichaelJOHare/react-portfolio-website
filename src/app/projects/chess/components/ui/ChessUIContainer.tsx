@@ -31,7 +31,9 @@ export const ChessUIContainer = () => {
             max={100}
           ></progress>
         </div>
-        <Sidebar />
+        <div className="min-h-0 flex-1">
+          <Sidebar />
+        </div>
       </div>
     </div>
   );

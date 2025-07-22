@@ -220,9 +220,18 @@ export const StockfishOptionsModal = ({
               </h3>
               <ul className="flex gap-3 self-center">
                 {[
-                  { Icon: WhiteKing, value: ColorChoice.WHITE },
-                  { Icon: RandomKing, value: ColorChoice.RANDOM },
-                  { Icon: BlackKing, value: ColorChoice.BLACK },
+                  {
+                    Icon: WhiteKing,
+                    value: ColorChoice.WHITE,
+                  },
+                  {
+                    Icon: RandomKing,
+                    value: ColorChoice.RANDOM,
+                  },
+                  {
+                    Icon: BlackKing,
+                    value: ColorChoice.BLACK,
+                  },
                 ].map(({ Icon, value }) => (
                   <button
                     key={value}
