@@ -63,7 +63,7 @@ export const StockfishOptionsModal = ({
         blackPlayer.type = PlayerType.COMPUTER;
       }
 
-      if (isBlack && !isBoardFlipped) {
+      if ((isBlack && !isBoardFlipped) || (!isBlack && isBoardFlipped)) {
         toggleFlipBoard();
       }
 

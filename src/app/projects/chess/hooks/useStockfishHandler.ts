@@ -274,7 +274,6 @@ export const useStockfishHandler = (
 
       worker.onmessage = (e) => {
         const msg = e.data;
-        console.log(msg.data);
 
         if (msg.type === "ready") {
           sendCommand("uci");

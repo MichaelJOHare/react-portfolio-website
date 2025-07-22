@@ -63,7 +63,7 @@ export const Sidebar = () => {
           </div>
           <div className="flex h-full min-h-64 flex-col rounded-b-lg bg-neutral-100 px-4 py-2 dark:bg-gray-800">
             <div
-              className="h-full max-h-[50vmin] overflow-y-auto"
+              className="desktop-md:max-h-[50vmin] limitedHeight:max-h-[35vh] h-full max-h-[50vmin] overflow-y-auto"
               style={{ scrollbarGutter: "stable" }}
             >
               <MoveList />

@@ -1,6 +1,7 @@
 import { useGame } from "../../../context/GameContext";
 import { isComputerPlaying } from "../../../utils";
 import RightArrowIcon from "@/assets/icons/right-arrow-icon.svg";
+import LeftArrowIcon from "@/assets/icons/left-arrow-icon.svg";
 
 type UndoRedoButtonProps = {
   direction: "left" | "right";
@@ -72,7 +73,7 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
         }}
         className="me-1.5 inline-flex w-full items-center rounded-lg bg-zinc-700 p-2.5 text-center text-sm font-medium text-neutral-200 hover:bg-zinc-900 dark:bg-zinc-900 dark:hover:bg-zinc-600"
       >
-        <RightArrowIcon className="size-full rotate-180 transform text-neutral-200" />
+        <LeftArrowIcon className="size-full text-neutral-200" />
         <span className="sr-only">Previous Move</span>
       </button>
     );
@@ -86,7 +87,7 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
         className="ms-1.5 inline-flex w-full items-center rounded-lg bg-zinc-700 p-2.5 text-center text-sm font-medium text-neutral-200 hover:bg-zinc-900 dark:bg-zinc-900 dark:hover:bg-zinc-600"
       >
         <RightArrowIcon className="size-full text-neutral-200" />
-        <span className="sr-only">Previous Move</span>
+        <span className="sr-only">Next Move</span>
       </button>
     );
   }

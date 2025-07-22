@@ -9,13 +9,15 @@ export const ChessGameContainer = () => {
   const { evalCentipawn } = stockfishHandler;
 
   return (
-    <div className="desktop-md:flex-row limitedHeight:flex-col flex flex-col justify-center">
+    <div className="desktop-md:flex-row limitedHeight:flex-col limitedHeight:min-h-0 limitedHeight:py-2 desktop-md:items-center flex min-h-[92vh] flex-col justify-center">
       <div className="flex items-center justify-center">
-        <div className="desktop-md:w-[70vmin] flex w-[90vmin] flex-col items-center">
+        <div className="desktop-md:w-[70vmin] limitedHeight:w-[90vmin] flex w-[90vmin] flex-col items-center justify-center">
           <CapturedPieces
             color={isBoardFlipped ? PlayerColor.BLACK : PlayerColor.WHITE}
           />
-          <Board />
+          <div className="flex items-center justify-center">
+            <Board />
+          </div>
           <CapturedPieces
             color={isBoardFlipped ? PlayerColor.WHITE : PlayerColor.BLACK}
           />
