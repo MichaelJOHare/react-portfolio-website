@@ -22,12 +22,15 @@ export const PromotionPanel = () => {
 
   if (!promotionSquare || !promotingColor) return null;
 
-  const promotionPieces = [
+  let promotionPieces = [
     PieceType.QUEEN,
     PieceType.ROOK,
     PieceType.BISHOP,
     PieceType.KNIGHT,
   ];
+  if (promotingColor === PlayerColor.BLACK) {
+    promotionPieces = [...promotionPieces].reverse();
+  }
 
   const calculatePosition = (
     square: Square,
@@ -62,7 +65,7 @@ export const PromotionPanel = () => {
       {promotionPieces.map((type, index) => (
         <div
           key={type}
-          className="desktop-md:w-[8.75vmin] desktop-md:h-[8.75vmin] limitedHeight:w-[11.25vmin] limitedHeight:h-[11.25vmin] absolute h-[11.25vmin] w-[11.25vmin] cursor-pointer"
+          className="desktop-md:w-[8.75vmin] desktop-md:h-[8.75vmin] limitedHeight:w-[11.25vmin] limitedHeight:h-[11.25vmin] absolute h-[11.25vmin] w-[11.25vmin] cursor-pointer from-amber-400 to-amber-700 hover:bg-radial"
           style={{
             top: getTopOffset(index, promotingColor, isLargeScreen),
             left: calculatePosition(promotionSquare, isLargeScreen),
@@ -72,7 +75,7 @@ export const PromotionPanel = () => {
           <img
             src={`/assets/images/${promotingColor}-${type}.svg`}
             alt={`${promotingColor}-${type}`}
-            className={`h-full w-full select-none hover:border-4 hover:border-green-700 ${isBoardFlipped ? "rotate-180" : ""}`}
+            className={`h-full w-full select-none hover:scale-116 ${isBoardFlipped ? "rotate-180" : ""}`}
           />
         </div>
       ))}

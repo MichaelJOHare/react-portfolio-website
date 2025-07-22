@@ -36,8 +36,8 @@ export const useStockfishHandler = (
   const gmRef = useRef(gameManager);
   const engineStatusRef = useRef<EngineStatus>("idle");
   const depthRef = useRef<number>(24);
-  const hasConfiguredEngine = useRef<boolean>(false);
   const wasInterruptedRef = useRef(false);
+  const wasStoppedRef = useRef(false);
   const lastDepthUpdateRef = useRef<number>(0);
   const lastArrowUpdateRef = useRef<number>(0);
   const [evalCentipawn, setEvalCentipawn] = useState(50);
@@ -60,6 +60,10 @@ export const useStockfishHandler = (
     [highlighter],
   );
 
+  const isRunning = () => {
+    return workerRef.current !== null;
+  };
+
   const sendCommand = (cmd: string) => {
     workerRef.current?.postMessage(cmd);
   };
@@ -71,7 +75,7 @@ export const useStockfishHandler = (
     depthRef.current = depth;
     sendCommand(`setoption name Skill Level value ${skill}`);
     sendCommand(`setoption name Threads value ${threads}`);
-    if (version === "sf-16") {
+    if (version === StockfishVersion.SF16) {
       sendCommand("setoption name Use NNUE value true");
     }
     sendCommand("setoption name UCI_ShowWDL value true");
@@ -107,16 +111,20 @@ export const useStockfishHandler = (
     engineStatusRef.current = "thinking";
   }, []);
 
-  const interruptEngine = useCallback(() => {
+  const interruptEngineThinking = useCallback(() => {
     wasInterruptedRef.current = true;
     sendCommand("stop");
     sendCommand("isready");
   }, []);
 
+  const stopEngineThinking = useCallback(() => {
+    wasStoppedRef.current = true;
+    sendCommand("stop");
+  }, []);
+
   const terminateWorker = useCallback(() => {
     workerRef.current?.terminate();
     workerRef.current = null;
-    hasConfiguredEngine.current = false;
     engineStatusRef.current = "idle";
   }, []);
 
@@ -157,6 +165,13 @@ export const useStockfishHandler = (
       const [, from, to, promotion] = line.match(FOUND_BEST_MOVE)!;
       const promotionType = determinePromotionType(promotion);
 
+      if (wasStoppedRef.current) {
+        wasStoppedRef.current = false;
+        engineStatusRef.current = "ready";
+        highlighter.clearStockfishBestMoveArrow();
+        return;
+      }
+
       if (wasInterruptedRef.current) {
         wasInterruptedRef.current = false;
         engineStatusRef.current = "ready";
@@ -185,7 +200,7 @@ export const useStockfishHandler = (
               legalMoves,
               promotionType,
             );
-            highlighter.addPreviousMoveSquares(fromSq, toSq); //maybe do this in executeMove in gameManager?
+            highlighter.addPreviousMoveSquares(fromSq, toSq);
           }, delay);
         }
       } else {
@@ -259,6 +274,7 @@ export const useStockfishHandler = (
 
       worker.onmessage = (e) => {
         const msg = e.data;
+        console.log(msg.data);
 
         if (msg.type === "ready") {
           sendCommand("uci");
@@ -272,16 +288,16 @@ export const useStockfishHandler = (
             return;
           }
 
-          if (engineStatusRef.current === "configured") {
-            engineStatusRef.current = "ready";
-            requestStockfishMove();
-          }
-
           if (wasInterruptedRef.current) {
             wasInterruptedRef.current = false;
             engineStatusRef.current = "ready";
             requestStockfishMove();
             return;
+          }
+
+          if (engineStatusRef.current === "configured") {
+            engineStatusRef.current = "ready";
+            requestStockfishMove();
           }
         } else {
           handleEngineMessage(msg);
@@ -310,8 +326,11 @@ export const useStockfishHandler = (
 
   return {
     startWorker,
+    configureEngine,
+    isRunning,
     terminateWorker,
-    interruptEngine,
+    interruptEngineThinking,
+    stopEngineThinking,
     depthPercentage,
     evalCentipawn,
   };

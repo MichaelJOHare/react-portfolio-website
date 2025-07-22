@@ -19,13 +19,13 @@ export const MoveList = () => {
   } = highlighter;
   const { replayMoves, moveHistory } = gameManager;
   const { deselectPiece } = pieceSelector;
-  const { clearPromotionDetails } = promotionHandler;
-  const { interruptEngine } = stockfishHandler;
+  const { clearPromotionDetails, isShown } = promotionHandler;
+  const { interruptEngineThinking } = stockfishHandler;
   const isPlayingVsComputer =
     colorChoice !== ColorChoice.NONE && strengthLevel !== NO_SELECTION;
 
   const clearUI = () => {
-    interruptEngine();
+    interruptEngineThinking();
     clearPromotionDetails();
     clearDrawnHighlights();
     clearStockfishBestMoveArrow();
@@ -34,13 +34,14 @@ export const MoveList = () => {
 
   const onMoveClick = (index: number) => {
     // eventually change this to visually undo moves to show board state at time of move clicked
+    const increment = isShown ? 1 : 0;
     if (!isPlayingVsComputer) {
       clearUI();
       const movesToUndo = moveHistory.length - index - 1;
       if (movesToUndo > 0) {
         replayMoves(movesToUndo, true);
       }
-      undoPreviousMoveSquares(movesToUndo);
+      undoPreviousMoveSquares(movesToUndo + increment);
     }
   };
 

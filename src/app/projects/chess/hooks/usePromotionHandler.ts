@@ -35,9 +35,7 @@ export const usePromotionHandler = (
     });
 
   const setPromotionDetails = (move: Move) => {
-    // add highlighter.clearPreviousMoveSquares() maybe?  but don't want to clear array, just hide temporarily so undo/redo works with highlighter
-    // maybe pop it and store it in here, then add back in onPromotionSelect
-    highlighter.clearStockfishBestMoveArrow();
+    stockfishHandler.stopEngineThinking();
     highlighter.addPreviousMoveSquares(move.from, move.to);
     const squaresToHide = getSquaresToHideDuringPromotion(
       move,
@@ -64,7 +62,7 @@ export const usePromotionHandler = (
     executeMove(from.row, from.col, to.row, to.col, playerMoves, type);
 
     clearPromotionDetails();
-    stockfishHandler.interruptEngine();
+    stockfishHandler.interruptEngineThinking();
   };
 
   const clearPromotionDetails = () => {

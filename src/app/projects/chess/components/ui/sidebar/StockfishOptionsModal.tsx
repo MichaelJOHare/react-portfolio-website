@@ -35,11 +35,10 @@ export const StockfishOptionsModal = ({
     toggleFlipBoard,
   } = useGame();
   const menuRef = useRef<HTMLDivElement>(null);
-  const { startWorker, terminateWorker } = stockfishHandler;
+  const { startWorker, isRunning, terminateWorker } = stockfishHandler;
   const [version, setVersion] = useState(StockfishVersion.SF16);
   const [tempStrengthLevel, setTempStrengthLevel] = useState(NO_SELECTION);
   const [tempColorChoice, setTempColorChoice] = useState(ColorChoice.NONE);
-  const [hasClickedPlay, setHasClickedPlay] = useState(false);
   const strengthLevels = [1, 2, 3, 4, 5, 6, 7, 8];
   const whitePlayer = gameManager.players[0];
   const blackPlayer = gameManager.players[1];
@@ -68,39 +67,47 @@ export const StockfishOptionsModal = ({
         toggleFlipBoard();
       }
 
-      setHasClickedPlay(true);
-      setStockfishEnabled(false);
-      setStrengthLevel(tempStrengthLevel);
-      setColorChoice(actualColor);
-      startWorker(version);
-      onClose();
+      handlePlayClicked(actualColor);
     } else {
-      whitePlayer.type = PlayerType.HUMAN;
-      blackPlayer.type = PlayerType.HUMAN;
-      setHasClickedPlay(false);
-      setColorChoice(ColorChoice.NONE);
-      setStrengthLevel(NO_SELECTION);
-      terminateWorker();
+      handleStopClicked();
     }
   };
 
   const handleAnalysisToggle = (sfEnabled: boolean) => {
-    if (sfEnabled) {
+    if (sfEnabled && !isRunning()) {
       startWorker(version);
-    } else {
+    } else if (!sfEnabled) {
       terminateWorker();
     }
   };
 
   const handleVersionSelect = (versionInput: StockfishVersion) => {
-    if (versionInput === version) {
+    if (versionInput !== version && isRunning()) {
       terminateWorker();
-      return;
     }
-    setVersion(version);
+    setVersion(versionInput);
     if (stockfishEnabled || isPlaying) {
-      startWorker(version);
+      startWorker(versionInput);
     }
+  };
+
+  const handlePlayClicked = (actualColor: ColorChoice) => {
+    if (isRunning()) {
+      terminateWorker();
+    }
+    setStockfishEnabled(false);
+    setStrengthLevel(tempStrengthLevel);
+    setColorChoice(actualColor);
+    onClose();
+    startWorker(StockfishVersion.SF16);
+  };
+
+  const handleStopClicked = () => {
+    whitePlayer.type = PlayerType.HUMAN;
+    blackPlayer.type = PlayerType.HUMAN;
+    setColorChoice(ColorChoice.NONE);
+    setStrengthLevel(NO_SELECTION);
+    terminateWorker();
   };
 
   useEffect(() => {
@@ -123,7 +130,6 @@ export const StockfishOptionsModal = ({
     if (isOpen && !isPlaying) {
       setTempColorChoice(ColorChoice.NONE);
       setTempStrengthLevel(NO_SELECTION);
-      setHasClickedPlay(false);
     }
   }, [isOpen, isPlaying]);
 
@@ -175,6 +181,7 @@ export const StockfishOptionsModal = ({
             <div className="flex flex-col self-center pb-2">
               <StockfishAnalysisToggle
                 onAnalysisToggle={handleAnalysisToggle}
+                disabled={isPlaying}
               />
             </div>
             <StockfishVersionMenu
@@ -240,7 +247,7 @@ export const StockfishOptionsModal = ({
                 className="h-14 w-full rounded-lg bg-neutral-600 pb-1 text-3xl font-medium text-neutral-100 not-disabled:bg-emerald-600 hover:shadow-md hover:shadow-neutral-600 not-disabled:hover:bg-emerald-500 disabled:cursor-not-allowed disabled:shadow-none dark:bg-teal-800 dark:hover:shadow-slate-900"
                 onClick={handlePlayToggle}
               >
-                {hasClickedPlay ? "Stop" : "Play"}
+                {isOpen && isPlaying ? "Stop" : "Play"}
               </button>
             </div>
           </div>

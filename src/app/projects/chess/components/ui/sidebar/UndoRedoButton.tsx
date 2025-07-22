@@ -23,12 +23,12 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
   const { replayMoves, players, undoneMoveHistory, moveHistory } = gameManager;
   const { deselectPiece } = pieceSelector;
   const { clearPromotionDetails } = promotionHandler;
-  const { interruptEngine } = stockfishHandler;
+  const { interruptEngineThinking } = stockfishHandler;
   const player1 = players[0];
   const player2 = players[1];
 
   const clearUI = () => {
-    interruptEngine();
+    interruptEngineThinking();
     clearPromotionDetails();
     clearDrawnHighlights();
     clearStockfishBestMoveArrow();

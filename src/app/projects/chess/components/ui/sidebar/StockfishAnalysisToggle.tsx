@@ -4,10 +4,12 @@ import StockfishOptionsIcon from "@/assets/icons/stockfish-options-icon.svg";
 
 type SfAnalysisProps = {
   onAnalysisToggle: (sfEnabled: boolean) => void;
+  disabled: boolean;
 };
 
 export const StockfishAnalysisToggle = ({
   onAnalysisToggle,
+  disabled,
 }: SfAnalysisProps) => {
   const { setStockfishEnabled, stockfishEnabled } = useGame();
   const [showIcon, setShowIcon] = useState(stockfishEnabled);
@@ -30,6 +32,7 @@ export const StockfishAnalysisToggle = ({
           className="peer sr-only"
           type="checkbox"
           value=""
+          disabled={disabled}
           checked={stockfishEnabled}
           onChange={(e) => {
             setStockfishEnabled(e.target.checked);

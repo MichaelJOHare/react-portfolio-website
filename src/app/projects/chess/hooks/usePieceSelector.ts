@@ -18,7 +18,7 @@ export const usePieceSelector = (
   const { board, getLegalMoves, executeMove, players, currentPlayerIndex } =
     gameManager;
   const { setPromotionDetails } = promotionHandler;
-  const { interruptEngine } = stockfishHandler;
+  const { interruptEngineThinking } = stockfishHandler;
   const [selectedPieceSquare, setSelectedPieceSquare] = useState<Square>();
   const [dragStartSquare, setDragStartSquare] = useState<Square>();
   const [validMoves, setValidMoves] = useState<Square[]>([]);
@@ -61,7 +61,7 @@ export const usePieceSelector = (
       deselectPiece();
       highlighter.addPreviousMoveSquares(start, end);
       highlighter.clearStockfishBestMoveArrow();
-      interruptEngine();
+      interruptEngineThinking();
     }
   };
 
