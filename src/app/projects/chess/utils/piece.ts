@@ -44,7 +44,7 @@ export const initializePieces = (
   player: Player,
   color: PlayerColor,
   type: PieceType,
-  movementStrategy: any,
+  movementStrategy: MovementStrategy,
 ) => {
   const newBoard = board.map((row) => row.map((square) => ({ ...square })));
   const newPiecesByPlayer = new Map(piecesByPlayer);
