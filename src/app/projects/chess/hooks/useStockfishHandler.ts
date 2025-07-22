@@ -311,7 +311,7 @@ export const useStockfishHandler = (
     [requestStockfishMove, configureEngine, handleEngineMessage],
   );
 
-  /* USE EFFECTS FOR USEREF UPDATEs */
+  /* USE EFFECTS FOR UPDATING USEREFs THAT HAVE EXTERNAL DEPENDENCIES */
 
   useEffect(() => {
     gmRef.current = gameManager;
@@ -321,7 +321,7 @@ export const useStockfishHandler = (
     engineOptionsRef.current = { colorChoice, strengthLevel };
   }, [colorChoice, strengthLevel]);
 
-  /* USE EFFECTS FOR USEREF UPDATES */
+  /* USE EFFECTS FOR UPDATING USEREFs THAT HAVE EXTERNAL DEPENDENCIES */
 
   return {
     startWorker,

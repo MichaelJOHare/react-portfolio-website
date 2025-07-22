@@ -6,7 +6,8 @@ import { SidebarButton } from "./SidebarButton";
 import { MoveList } from "./MoveList";
 
 export const Sidebar = () => {
-  const { gameManager, toggleFlipBoard, onResetGame } = useGame();
+  const { gameManager, stockfishHandler, toggleFlipBoard, onResetGame } =
+    useGame();
   const {
     board,
     players,
@@ -16,6 +17,7 @@ export const Sidebar = () => {
     moveHistory,
     loadFromFEN,
   } = gameManager;
+  const { terminateWorker } = stockfishHandler;
   const [showFenTextArea, setShowFenTextArea] = useState(false);
   const [showStockfishOptions, setShowStockfishOptions] = useState(false);
   const [fenValue, setFenValue] = useState("");
@@ -23,6 +25,39 @@ export const Sidebar = () => {
     "Valid" | "Invalid FEN string" | "Paste FEN string here"
   >("Paste FEN string here");
   const movesHistory = moveHistory.map((record) => record.move);
+
+  const onFlipBoard = () => {
+    toggleFlipBoard();
+  };
+
+  const handleResetGame = () => {
+    terminateWorker();
+    onResetGame();
+  };
+
+  const onToggleFenTextArea = () => {
+    setShowFenTextArea((v) => {
+      if (!v) {
+        setFenStatus("Paste FEN string here");
+      }
+      return !v;
+    });
+  };
+
+  const updateStateOnFenChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    const fenString = event.target.value.trim();
+    setFenValue(fenString);
+
+    if (!fenString) {
+      setFenStatus("Paste FEN string here");
+      return;
+    }
+
+    const success = loadFromFEN(fenString);
+    setFenStatus(success ? "Valid" : "Invalid FEN string");
+  };
 
   useEffect(() => {
     if (showFenTextArea) {
@@ -46,25 +81,6 @@ export const Sidebar = () => {
     fullMoveNumber,
   ]);
 
-  const updateStateOnFenChange = (
-    event: React.ChangeEvent<HTMLTextAreaElement>,
-  ) => {
-    const fenString = event.target.value.trim();
-    setFenValue(fenString);
-
-    if (!fenString) {
-      setFenStatus("Paste FEN string here");
-      return;
-    }
-
-    const success = loadFromFEN(fenString);
-    setFenStatus(success ? "Valid" : "Invalid FEN string");
-  };
-
-  const onFlipBoard = () => {
-    toggleFlipBoard();
-  };
-
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
       <div className="relative h-full min-h-0 w-full">
@@ -79,12 +95,12 @@ export const Sidebar = () => {
               <SidebarButton
                 icon="fen"
                 label="Import/export FEN"
-                onClick={() => setShowFenTextArea((v) => !v)}
+                onClick={onToggleFenTextArea}
               />
               <SidebarButton
                 icon="reset"
                 label="Reset Game"
-                onClick={onResetGame}
+                onClick={handleResetGame}
               />
               <SidebarButton
                 icon="stockfish"
@@ -114,13 +130,14 @@ export const Sidebar = () => {
                   value={fenValue}
                   onChange={updateStateOnFenChange}
                   placeholder="Paste FEN string here..."
+                  spellCheck="false"
                 />
                 <div
-                  className={`mt-1 text-sm ${
+                  className={`mt-1 ml-1.5 text-sm ${
                     fenStatus === "Valid"
                       ? "text-emerald-500"
                       : fenStatus === "Invalid FEN string"
-                        ? "text-rose-600"
+                        ? "text-rose-700 dark:text-rose-400"
                         : "text-shadow-neutral-600 dark:text-neutral-200"
                   }`}
                 >

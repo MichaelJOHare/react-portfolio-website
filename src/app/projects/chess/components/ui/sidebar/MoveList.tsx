@@ -33,7 +33,7 @@ export const MoveList = () => {
   };
 
   const onMoveClick = (index: number) => {
-    // eventually change this to visually undo moves to show board state at time of move clicked
+    // eventually change this to visually undo moves to show board state at time of move that was clicked and prevent moving pieces
     const increment = isShown ? 1 : 0;
     if (!isPlayingVsComputer) {
       clearUI();

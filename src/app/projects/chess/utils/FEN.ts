@@ -1,4 +1,12 @@
-import { Move, PieceType, Player, PlayerColor, Square, Piece } from "../types";
+import {
+  Move,
+  PieceType,
+  Player,
+  PlayerColor,
+  Square,
+  Piece,
+  MoveHistory,
+} from "../types";
 import { getPieceAt, defaultBoard } from "./board";
 import { createSquare, squareToString } from "./square";
 import { createPiece, getMovementStrategyFromType } from "./piece";
@@ -71,7 +79,6 @@ export const toFEN = (
     if (fenRank !== 7) fen += "/";
   }
 
-  // append other FEN parts (simplified for brevity)
   fen +=
     " " + (players[currentPlayerIndex].color === PlayerColor.WHITE ? "w" : "b");
   fen += " " + generateCastlingAvailability(board);
@@ -151,19 +158,22 @@ export const fromFEN = (
   currentPlayerIndex: number;
   halfMoveClock: number;
   fullMoveNumber: number;
+  isValid: boolean;
 } => {
+  const clearedState = {
+    board: defaultBoard(),
+    piecesByPlayer: new Map<string, Piece[]>(),
+    currentPlayerIndex: 0,
+    halfMoveClock: 0,
+    fullMoveNumber: 1,
+    isValid: false,
+  };
   const fenParts = fen.trim().split(" ");
 
   if (fenParts.length !== 6) {
-    return (
-      currentGameState || {
-        board: defaultBoard(),
-        piecesByPlayer: new Map<string, Piece[]>(),
-        currentPlayerIndex: 0,
-        halfMoveClock: 0,
-        fullMoveNumber: 1,
-      }
-    );
+    return currentGameState
+      ? { ...currentGameState, isValid: false }
+      : clearedState;
   }
 
   const [piecePlacement, activeColor, castling, enPassant, halfMove, fullMove] =
@@ -178,53 +188,29 @@ export const fromFEN = (
     !halfMove ||
     !fullMove
   ) {
-    return (
-      currentGameState || {
-        board: defaultBoard(),
-        piecesByPlayer: new Map<string, Piece[]>(),
-        currentPlayerIndex: 0,
-        halfMoveClock: 0,
-        fullMoveNumber: 1,
-      }
-    );
+    return currentGameState
+      ? { ...currentGameState, isValid: false }
+      : clearedState;
   }
 
   if (activeColor !== "w" && activeColor !== "b") {
-    return (
-      currentGameState || {
-        board: defaultBoard(),
-        piecesByPlayer: new Map<string, Piece[]>(),
-        currentPlayerIndex: 0,
-        halfMoveClock: 0,
-        fullMoveNumber: 1,
-      }
-    );
+    return currentGameState
+      ? { ...currentGameState, isValid: false }
+      : clearedState;
   }
 
   const ranks = piecePlacement.split("/");
   if (ranks.length !== 8) {
-    return (
-      currentGameState || {
-        board: defaultBoard(),
-        piecesByPlayer: new Map<string, Piece[]>(),
-        currentPlayerIndex: 0,
-        halfMoveClock: 0,
-        fullMoveNumber: 1,
-      }
-    );
+    return currentGameState
+      ? { ...currentGameState, isValid: false }
+      : clearedState;
   }
 
   for (const rank of ranks) {
     if (!rank || !/^[KQRBNPkqrbnp1-8]+$/.test(rank)) {
-      return (
-        currentGameState || {
-          board: defaultBoard(),
-          piecesByPlayer: new Map<string, Piece[]>(),
-          currentPlayerIndex: 0,
-          halfMoveClock: 0,
-          fullMoveNumber: 1,
-        }
-      );
+      return currentGameState
+        ? { ...currentGameState, isValid: false }
+        : clearedState;
     }
 
     let squareCount = 0;
@@ -236,15 +222,9 @@ export const fromFEN = (
       }
     }
     if (squareCount !== 8) {
-      return (
-        currentGameState || {
-          board: defaultBoard(),
-          piecesByPlayer: new Map<string, Piece[]>(),
-          currentPlayerIndex: 0,
-          halfMoveClock: 0,
-          fullMoveNumber: 1,
-        }
-      );
+      return currentGameState
+        ? { ...currentGameState, isValid: false }
+        : clearedState;
     }
   }
 
@@ -305,15 +285,16 @@ export const fromFEN = (
 
           const movementStrategy = getMovementStrategyFromType(pieceType);
           if (!movementStrategy) {
-            return (
-              currentGameState || {
-                board: defaultBoard(),
-                piecesByPlayer: new Map<string, Piece[]>(),
-                currentPlayerIndex: 0,
-                halfMoveClock: 0,
-                fullMoveNumber: 1,
-              }
-            );
+            return currentGameState
+              ? { ...currentGameState, isValid: false }
+              : {
+                  board: defaultBoard(),
+                  piecesByPlayer: new Map<string, Piece[]>(),
+                  currentPlayerIndex: 0,
+                  halfMoveClock: 0,
+                  fullMoveNumber: 1,
+                  isValid: false,
+                };
           }
 
           const piece = createPiece(
@@ -339,15 +320,16 @@ export const fromFEN = (
       }
     }
   } catch {
-    return (
-      currentGameState || {
-        board: defaultBoard(),
-        piecesByPlayer: new Map<string, Piece[]>(),
-        currentPlayerIndex: 0,
-        halfMoveClock: 0,
-        fullMoveNumber: 1,
-      }
-    );
+    return currentGameState
+      ? { ...currentGameState, isValid: false }
+      : {
+          board: defaultBoard(),
+          piecesByPlayer: new Map<string, Piece[]>(),
+          currentPlayerIndex: 0,
+          halfMoveClock: 0,
+          fullMoveNumber: 1,
+          isValid: false,
+        };
   }
 
   piecesByPlayer.set(whitePlayer.id, whitePlayerPieces);
@@ -363,5 +345,6 @@ export const fromFEN = (
     currentPlayerIndex,
     halfMoveClock,
     fullMoveNumber,
+    isValid: true,
   };
 };

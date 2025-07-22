@@ -21,7 +21,8 @@ import {
   getCheckStatus,
   getLegalMovesFor,
   updatePiecesByPlayer,
-  fromFEN,
+  loadGameStateFromFEN,
+  createFreshGameState,
 } from "../utils";
 
 type GameState = {
@@ -325,10 +326,9 @@ export const useGameManager = () => {
         halfMoveClock,
         fullMoveNumber,
       } = gameState;
-      const whitePlayer = players[0];
-      const blackPlayer = players[1];
 
-      const result = fromFEN(fenString, whitePlayer, blackPlayer, {
+      const { newGameState, isValid } = loadGameStateFromFEN(fenString, {
+        players,
         board,
         piecesByPlayer,
         currentPlayerIndex,
@@ -336,39 +336,15 @@ export const useGameManager = () => {
         fullMoveNumber,
       });
 
-      const {
-        board: newBoard,
-        piecesByPlayer: newPiecesByPlayer,
-        currentPlayerIndex: newCurrentPlayerIndex,
-        halfMoveClock: newHalfMoveClock,
-        fullMoveNumber: newFullMoveNumber,
-      } = result;
+      if (isValid && newGameState) {
+        const freshState = createFreshGameState(newGameState);
+        setGameState((prev) => ({
+          ...prev,
+          ...freshState,
+        }));
+      }
 
-      const currentPlayer = players[newCurrentPlayerIndex];
-      const opponent = players[1 - newCurrentPlayerIndex];
-      const { isKingInCheck, kingSquare } = getCheckStatus(
-        newBoard,
-        currentPlayer,
-        opponent,
-        newPiecesByPlayer,
-        [],
-      );
-
-      setGameState((prev) => ({
-        ...prev,
-        board: newBoard,
-        piecesByPlayer: newPiecesByPlayer,
-        currentPlayerIndex: newCurrentPlayerIndex,
-        halfMoveClock: newHalfMoveClock,
-        fullMoveNumber: newFullMoveNumber,
-        moveHistory: [],
-        undoneMoveHistory: [],
-        capturedPieces: [],
-        isKingInCheck,
-        kingSquare,
-      }));
-
-      return true;
+      return isValid;
     } catch {
       return false;
     }

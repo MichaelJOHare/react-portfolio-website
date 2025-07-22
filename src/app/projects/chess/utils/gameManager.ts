@@ -1,5 +1,6 @@
 import { isKingInCheck } from "./board";
 import { isValidCastlingMove } from "./move";
+import { fromFEN } from "./FEN";
 import {
   CastlingMove,
   Move,
@@ -10,6 +11,27 @@ import {
   Player,
   Square,
 } from "../types";
+
+export const createFreshGameState = (gameState: {
+  board: Square[][];
+  piecesByPlayer: Map<string, Piece[]>;
+  currentPlayerIndex: number;
+  halfMoveClock: number;
+  fullMoveNumber: number;
+  isKingInCheck: boolean;
+  kingSquare?: Square;
+}) => ({
+  board: gameState.board,
+  piecesByPlayer: gameState.piecesByPlayer,
+  currentPlayerIndex: gameState.currentPlayerIndex,
+  halfMoveClock: gameState.halfMoveClock,
+  fullMoveNumber: gameState.fullMoveNumber,
+  moveHistory: [],
+  undoneMoveHistory: [],
+  capturedPieces: [],
+  isKingInCheck: gameState.isKingInCheck,
+  kingSquare: gameState.kingSquare,
+});
 
 export const getPlayerMoves = (
   player: Player,
@@ -134,4 +156,83 @@ export const updatePiecesByPlayer = (
     updatedPiecesByPlayer.set(updatedPiece.player.id, updatedPlayerPieces);
   });
   return updatedPiecesByPlayer;
+};
+
+export const loadGameStateFromFEN = (
+  fenString: string,
+  currentGameState: {
+    players: Player[];
+    board: Square[][];
+    piecesByPlayer: Map<string, Piece[]>;
+    currentPlayerIndex: number;
+    halfMoveClock: number;
+    fullMoveNumber: number;
+  },
+): {
+  newGameState: {
+    board: Square[][];
+    piecesByPlayer: Map<string, Piece[]>;
+    currentPlayerIndex: number;
+    halfMoveClock: number;
+    fullMoveNumber: number;
+    isKingInCheck: boolean;
+    kingSquare?: Square;
+  } | null;
+  isValid: boolean;
+} => {
+  const {
+    players,
+    board,
+    piecesByPlayer,
+    currentPlayerIndex,
+    halfMoveClock,
+    fullMoveNumber,
+  } = currentGameState;
+
+  const whitePlayer = players[0];
+  const blackPlayer = players[1];
+
+  const result = fromFEN(fenString, whitePlayer, blackPlayer, {
+    board,
+    piecesByPlayer,
+    currentPlayerIndex,
+    halfMoveClock,
+    fullMoveNumber,
+  });
+
+  const {
+    board: newBoard,
+    piecesByPlayer: newPiecesByPlayer,
+    currentPlayerIndex: newCurrentPlayerIndex,
+    halfMoveClock: newHalfMoveClock,
+    fullMoveNumber: newFullMoveNumber,
+    isValid,
+  } = result;
+
+  if (!isValid) {
+    return { newGameState: null, isValid: false };
+  }
+
+  const currentPlayer = players[newCurrentPlayerIndex];
+  const opponent = players[1 - newCurrentPlayerIndex];
+  const { isKingInCheck, kingSquare } = getCheckStatus(
+    newBoard,
+    currentPlayer,
+    opponent,
+    newPiecesByPlayer,
+    [],
+  );
+
+  return {
+    newGameState: {
+      board: newBoard,
+      piecesByPlayer: newPiecesByPlayer,
+      currentPlayerIndex: newCurrentPlayerIndex,
+      halfMoveClock: newHalfMoveClock,
+      fullMoveNumber: newFullMoveNumber,
+      isKingInCheck,
+      kingSquare,
+    },
+    isValid: true,
+  };
 };
