@@ -3,6 +3,7 @@ import { isValidCastlingMove } from "./move";
 import { fromFEN } from "./FEN";
 import {
   CastlingMove,
+  GameState,
   Move,
   MoveHistory,
   MoveType,
@@ -160,14 +161,7 @@ export const updatePiecesByPlayer = (
 
 export const loadGameStateFromFEN = (
   fenString: string,
-  currentGameState: {
-    players: Player[];
-    board: Square[][];
-    piecesByPlayer: Map<string, Piece[]>;
-    currentPlayerIndex: number;
-    halfMoveClock: number;
-    fullMoveNumber: number;
-  },
+  currentGameState: GameState,
 ): {
   newGameState: {
     board: Square[][];
@@ -180,56 +174,32 @@ export const loadGameStateFromFEN = (
   } | null;
   isValid: boolean;
 } => {
-  const {
-    players,
-    board,
-    piecesByPlayer,
-    currentPlayerIndex,
-    halfMoveClock,
-    fullMoveNumber,
-  } = currentGameState;
+  const whitePlayer = currentGameState.players[0];
+  const blackPlayer = currentGameState.players[1];
 
-  const whitePlayer = players[0];
-  const blackPlayer = players[1];
+  const result = fromFEN(fenString, whitePlayer, blackPlayer, currentGameState);
 
-  const result = fromFEN(fenString, whitePlayer, blackPlayer, {
-    board,
-    piecesByPlayer,
-    currentPlayerIndex,
-    halfMoveClock,
-    fullMoveNumber,
-  });
-
-  const {
-    board: newBoard,
-    piecesByPlayer: newPiecesByPlayer,
-    currentPlayerIndex: newCurrentPlayerIndex,
-    halfMoveClock: newHalfMoveClock,
-    fullMoveNumber: newFullMoveNumber,
-    isValid,
-  } = result;
-
-  if (!isValid) {
+  if (!result.isValid) {
     return { newGameState: null, isValid: false };
   }
 
-  const currentPlayer = players[newCurrentPlayerIndex];
-  const opponent = players[1 - newCurrentPlayerIndex];
+  const currentPlayer = currentGameState.players[result.currentPlayerIndex];
+  const opponent = currentGameState.players[1 - result.currentPlayerIndex];
   const { isKingInCheck, kingSquare } = getCheckStatus(
-    newBoard,
+    result.board,
     currentPlayer,
     opponent,
-    newPiecesByPlayer,
+    result.piecesByPlayer,
     [],
   );
 
   return {
     newGameState: {
-      board: newBoard,
-      piecesByPlayer: newPiecesByPlayer,
-      currentPlayerIndex: newCurrentPlayerIndex,
-      halfMoveClock: newHalfMoveClock,
-      fullMoveNumber: newFullMoveNumber,
+      board: result.board,
+      piecesByPlayer: result.piecesByPlayer,
+      currentPlayerIndex: result.currentPlayerIndex,
+      halfMoveClock: result.halfMoveClock,
+      fullMoveNumber: result.fullMoveNumber,
       isKingInCheck,
       kingSquare,
     },

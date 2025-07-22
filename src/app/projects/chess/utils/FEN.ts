@@ -5,7 +5,7 @@ import {
   PlayerColor,
   Square,
   Piece,
-  MoveHistory,
+  GameState,
 } from "../types";
 import { getPieceAt, defaultBoard } from "./board";
 import { createSquare, squareToString } from "./square";
@@ -123,35 +123,12 @@ const generateCastlingAvailability = (board: Square[][]) => {
   return castlingAvailability || "-";
 };
 
-const getEnPassantTarget = (moveHistory: Move[]) => {
-  const move =
-    moveHistory.length > 0 ? moveHistory[moveHistory.length - 1] : null;
-
-  if (
-    move &&
-    move.piece.type === PieceType.PAWN &&
-    Math.abs(move.from.row - move.to.row) === 2
-  ) {
-    const targetRow = (move.from.row + move.to.row) / 2;
-    const targetCol = move.from.col;
-
-    return createSquare(targetRow, targetCol);
-  }
-
-  return null;
-};
-
+// at some poinnt, implement en passant target square
 export const fromFEN = (
   fen: string,
   whitePlayer: Player,
   blackPlayer: Player,
-  currentGameState?: {
-    board: Square[][];
-    piecesByPlayer: Map<string, Piece[]>;
-    currentPlayerIndex: number;
-    halfMoveClock: number;
-    fullMoveNumber: number;
-  },
+  currentGameState?: GameState,
 ): {
   board: Square[][];
   piecesByPlayer: Map<string, Piece[]>;
@@ -227,6 +204,7 @@ export const fromFEN = (
         : clearedState;
     }
   }
+  /*  FEN STRUCTURE VALIDATION */
 
   const board = defaultBoard();
   const piecesByPlayer = new Map<string, Piece[]>();
@@ -287,14 +265,7 @@ export const fromFEN = (
           if (!movementStrategy) {
             return currentGameState
               ? { ...currentGameState, isValid: false }
-              : {
-                  board: defaultBoard(),
-                  piecesByPlayer: new Map<string, Piece[]>(),
-                  currentPlayerIndex: 0,
-                  halfMoveClock: 0,
-                  fullMoveNumber: 1,
-                  isValid: false,
-                };
+              : clearedState;
           }
 
           const piece = createPiece(
@@ -322,14 +293,7 @@ export const fromFEN = (
   } catch {
     return currentGameState
       ? { ...currentGameState, isValid: false }
-      : {
-          board: defaultBoard(),
-          piecesByPlayer: new Map<string, Piece[]>(),
-          currentPlayerIndex: 0,
-          halfMoveClock: 0,
-          fullMoveNumber: 1,
-          isValid: false,
-        };
+      : clearedState;
   }
 
   piecesByPlayer.set(whitePlayer.id, whitePlayerPieces);
@@ -347,4 +311,22 @@ export const fromFEN = (
     fullMoveNumber,
     isValid: true,
   };
+};
+
+const getEnPassantTarget = (moveHistory: Move[]) => {
+  const move =
+    moveHistory.length > 0 ? moveHistory[moveHistory.length - 1] : null;
+
+  if (
+    move &&
+    move.piece.type === PieceType.PAWN &&
+    Math.abs(move.from.row - move.to.row) === 2
+  ) {
+    const targetRow = (move.from.row + move.to.row) / 2;
+    const targetCol = move.from.col;
+
+    return createSquare(targetRow, targetCol);
+  }
+
+  return null;
 };

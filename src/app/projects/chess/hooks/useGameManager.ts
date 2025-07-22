@@ -1,14 +1,13 @@
 import { useState } from "react";
 import {
-  Player,
   Piece,
   PlayerColor,
   PlayerType,
   PieceType,
   Move,
-  Square,
   PromotionMove,
   MoveHistory,
+  GameState,
 } from "../types";
 import {
   createPlayer,
@@ -25,21 +24,6 @@ import {
   createFreshGameState,
 } from "../utils";
 
-type GameState = {
-  board: Square[][];
-  players: Player[];
-  piecesByPlayer: Map<string, Piece[]>;
-  currentPlayerIndex: number;
-  currentPlayerMoves: Move[];
-  capturedPieces: Piece[];
-  kingSquare: Square | undefined;
-  isKingInCheck: boolean;
-  moveHistory: MoveHistory[];
-  undoneMoveHistory: MoveHistory[];
-  halfMoveClock: number;
-  fullMoveNumber: number;
-};
-
 export const useGameManager = () => {
   const [gameState, setGameState] = useState<GameState>({
     board: defaultBoard(),
@@ -48,7 +32,6 @@ export const useGameManager = () => {
       createPlayer(PlayerColor.BLACK, PlayerType.HUMAN),
     ],
     piecesByPlayer: new Map<string, Piece[]>(),
-    currentPlayerMoves: [],
     capturedPieces: [],
     kingSquare: undefined,
     isKingInCheck: false,
@@ -318,23 +301,10 @@ export const useGameManager = () => {
 
   const loadFromFEN = (fenString: string) => {
     try {
-      const {
-        players,
-        board,
-        piecesByPlayer,
-        currentPlayerIndex,
-        halfMoveClock,
-        fullMoveNumber,
-      } = gameState;
-
-      const { newGameState, isValid } = loadGameStateFromFEN(fenString, {
-        players,
-        board,
-        piecesByPlayer,
-        currentPlayerIndex,
-        halfMoveClock,
-        fullMoveNumber,
-      });
+      const { newGameState, isValid } = loadGameStateFromFEN(
+        fenString,
+        gameState,
+      );
 
       if (isValid && newGameState) {
         const freshState = createFreshGameState(newGameState);

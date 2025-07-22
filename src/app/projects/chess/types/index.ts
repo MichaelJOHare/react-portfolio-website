@@ -4,6 +4,20 @@ import { usePieceSelector } from "../hooks/usePieceSelector";
 import { usePromotionHandler } from "../hooks/usePromotionHandler";
 import { useStockfishHandler } from "../hooks/useStockfishHandler";
 
+export type GameState = {
+  board: Square[][];
+  players: Player[];
+  piecesByPlayer: Map<string, Piece[]>;
+  currentPlayerIndex: number;
+  capturedPieces: Piece[];
+  kingSquare: Square | undefined;
+  isKingInCheck: boolean;
+  moveHistory: MoveHistory[];
+  undoneMoveHistory: MoveHistory[];
+  halfMoveClock: number;
+  fullMoveNumber: number;
+};
+
 export type Square = {
   row: number;
   col: number;
