@@ -11,7 +11,6 @@ import {
 } from "../types";
 import {
   createPlayer,
-  createPiece,
   defaultBoard,
   setupPieces,
   cloneBoard,
@@ -22,6 +21,7 @@ import {
   updatePiecesByPlayer,
   loadGameStateFromFEN,
   createFreshGameState,
+  initializePieces,
 } from "../utils";
 
 export const useGameManager = () => {
@@ -44,48 +44,41 @@ export const useGameManager = () => {
 
   const initializeBoard = () => {
     const setup = setupPieces();
-    const newBoard = cloneBoard(gameState.board);
-    const newPiecesByPlayer = new Map();
+    let result = {
+      board: cloneBoard(gameState.board),
+      piecesByPlayer: new Map<string, Piece[]>(),
+    };
     const whitePlayer = gameState.players[0];
     const blackPlayer = gameState.players[1];
 
-    [PlayerColor.WHITE, PlayerColor.BLACK].forEach((color) => {
-      const isWhite = color === PlayerColor.WHITE;
-      const rowOffset = isWhite ? 7 : 0;
-      const pawnRow = isWhite ? 6 : 1;
+    setup.forEach(
+      ({ type, whitePositions, blackPositions, movementStrategy }) => {
+        result = initializePieces(
+          result.board,
+          result.piecesByPlayer,
+          whitePositions,
+          whitePlayer,
+          PlayerColor.WHITE,
+          type,
+          movementStrategy,
+        );
 
-      setup.forEach(({ type, positions, movementStrategy }) => {
-        positions.forEach(({ row, col }) => {
-          const player = isWhite ? whitePlayer : blackPlayer;
-          const pieceRow =
-            row + (type === PieceType.PAWN ? pawnRow - 1 : rowOffset);
-          const square = gameState.board[pieceRow][col];
-          const hasMoved =
-            type === PieceType.ROOK || type === PieceType.KING
-              ? false
-              : undefined;
-
-          const piece = createPiece(
-            player,
-            type,
-            color,
-            square,
-            movementStrategy,
-            true,
-            hasMoved,
-          );
-
-          newBoard[pieceRow][col].piece = piece;
-          const playerPieces = newPiecesByPlayer.get(player.id) || [];
-          newPiecesByPlayer.set(player.id, [...playerPieces, piece]);
-        });
-      });
-    });
+        result = initializePieces(
+          result.board,
+          result.piecesByPlayer,
+          blackPositions,
+          blackPlayer,
+          PlayerColor.BLACK,
+          type,
+          movementStrategy,
+        );
+      },
+    );
 
     setGameState((prev) => ({
       ...prev,
-      board: newBoard,
-      piecesByPlayer: newPiecesByPlayer,
+      board: result.board,
+      piecesByPlayer: result.piecesByPlayer,
     }));
   };
 

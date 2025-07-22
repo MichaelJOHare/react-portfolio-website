@@ -32,7 +32,7 @@ export type Piece = {
   currentSquare: Square;
   movementStrategy: MovementStrategy;
   isAlive: boolean;
-  hasMoved?: boolean;
+  firstMoveNumber: number;
   wasPromoted?: boolean;
 };
 
@@ -43,6 +43,24 @@ export enum PieceType {
   BISHOP = "bishop",
   QUEEN = "queen",
   KING = "king",
+}
+
+export enum PieceColumn {
+  Q_ROOK = 0,
+  K_ROOK = 7,
+  Q_KNIGHT = 1,
+  K_KNIGHT = 6,
+  Q_BISHOP = 2,
+  K_BISHOP = 5,
+  QUEEN = 3,
+  KING = 4,
+}
+
+export enum PieceRow {
+  W_MAJOR = 7,
+  W_MINOR = 6,
+  B_MAJOR = 0,
+  B_MINOR = 1,
 }
 
 export interface MovementStrategy {
@@ -78,6 +96,8 @@ export enum MoveType {
   PROMO = "Promotion",
 }
 
+export const NOT_MOVED = -1;
+
 export type MoveHistory = {
   move: Move;
   causedCheck: boolean;
@@ -98,6 +118,19 @@ export enum StockfishVersion {
 
 export const STOCKFISH_STRENGTH_LEVELS = [1, 2, 3, 4, 5, 6, 7, 8];
 export const NO_SELECTION = -1;
+
+export enum EngineStrength {
+  NONE = -1,
+  LEVEL_1 = 1,
+  LEVEL_2 = 2,
+  LEVEL_3 = 3,
+  LEVEL_4 = 4,
+  LEVEL_5 = 5,
+  LEVEL_6 = 6,
+  LEVEL_7 = 7,
+  LEVEL_8 = 8,
+}
+
 export enum ColorChoice {
   WHITE = 0,
   BLACK = 2,

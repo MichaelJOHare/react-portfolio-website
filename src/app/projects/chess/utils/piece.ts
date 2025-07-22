@@ -5,6 +5,7 @@ import {
   Square,
   MovementStrategy,
   Piece,
+  NOT_MOVED,
 } from "../types";
 import {
   bishopMovementStrategy,
@@ -22,7 +23,7 @@ export const createPiece = (
   currentSquare: Square,
   movementStrategy: MovementStrategy,
   isAlive: boolean,
-  hasMoved?: boolean,
+  firstMoveNumber: number,
   wasPromoted?: boolean,
 ): Piece => ({
   id: `${color}_${type}_${currentSquare.row}_${currentSquare.col}`,
@@ -32,14 +33,51 @@ export const createPiece = (
   currentSquare,
   movementStrategy,
   isAlive,
-  hasMoved,
+  firstMoveNumber,
   wasPromoted,
 });
+
+export const initializePieces = (
+  board: Square[][],
+  piecesByPlayer: Map<string, Piece[]>,
+  positions: Square[],
+  player: Player,
+  color: PlayerColor,
+  type: PieceType,
+  movementStrategy: any,
+) => {
+  const newBoard = board.map((row) => row.map((square) => ({ ...square })));
+  const newPiecesByPlayer = new Map(piecesByPlayer);
+
+  positions.forEach(({ row, col }) => {
+    const square = newBoard[row][col];
+
+    const piece = createPiece(
+      player,
+      type,
+      color,
+      square,
+      movementStrategy,
+      true,
+      NOT_MOVED,
+    );
+
+    newBoard[row][col].piece = piece;
+    const playerPieces = newPiecesByPlayer.get(player.id) || [];
+    newPiecesByPlayer.set(player.id, [...playerPieces, piece]);
+  });
+
+  return { board: newBoard, piecesByPlayer: newPiecesByPlayer };
+};
 
 export const clonePiece = (piece: Piece, currentSquare: Square): Piece => ({
   ...piece,
   currentSquare,
 });
+
+export const havePiecesMoved = (pieces: Piece[]): boolean => {
+  return pieces.some((piece) => piece.firstMoveNumber !== NOT_MOVED);
+};
 
 export const getMovementStrategyFromType = (
   pieceType: PieceType,

@@ -4,6 +4,7 @@ import {
   createStandardMove,
   createCastlingMove,
   getPieceAt,
+  havePiecesMoved,
 } from "../index";
 
 export const kingMovementStrategy: MovementStrategy = (board, piece) => {
@@ -38,8 +39,12 @@ export const kingMovementStrategy: MovementStrategy = (board, piece) => {
       king.currentSquare.row,
       rookPositions.queenSideRookCol,
     );
+    const kingRookAndKingMoved =
+      kingSideRook && havePiecesMoved([king, kingSideRook]);
+    const queenRookAndKingMoved =
+      queenSideRook && havePiecesMoved([king, queenSideRook]);
 
-    if (kingSideRook && !kingSideRook.hasMoved && !king.hasMoved) {
+    if (kingSideRook && !kingRookAndKingMoved) {
       legalMoves.push(
         createCastlingMove(
           king,
@@ -60,7 +65,7 @@ export const kingMovementStrategy: MovementStrategy = (board, piece) => {
       );
     }
 
-    if (queenSideRook && !queenSideRook.hasMoved && !king.hasMoved) {
+    if (queenSideRook && !queenRookAndKingMoved) {
       legalMoves.push(
         createCastlingMove(
           king,

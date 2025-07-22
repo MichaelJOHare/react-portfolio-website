@@ -6,10 +6,17 @@ import {
   Square,
   Piece,
   GameState,
+  PieceColumn,
+  PieceRow,
+  NOT_MOVED,
 } from "../types";
+import {
+  createPiece,
+  getMovementStrategyFromType,
+  havePiecesMoved,
+} from "./piece";
 import { getPieceAt, defaultBoard } from "./board";
 import { createSquare, squareToString } from "./square";
-import { createPiece, getMovementStrategyFromType } from "./piece";
 
 export const INITIAL_FEN = `rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1`;
 
@@ -51,7 +58,6 @@ export const toFEN = (
   };
   const epTarget = getEnPassantTarget(moveHistory);
 
-  //  piece placement
   for (let fenRank = 0; fenRank < 8; fenRank++) {
     let emptySquares = 0;
 
@@ -98,12 +104,12 @@ const generateCastlingAvailability = (board: Square[][]) => {
     kingSideRookColumn: number,
     isWhite: boolean,
   ) => {
-    const king = board[majorPieceRow][4].piece;
-    if (king && king.type === PieceType.KING && !king.hasMoved) {
+    const king = board[majorPieceRow][PieceColumn.KING].piece;
+    if (king && king.type === PieceType.KING && !havePiecesMoved([king])) {
       const rookPositions = [kingSideRookColumn, queenSideRookColumn];
       for (const position of rookPositions) {
         const rook = board[majorPieceRow][position].piece;
-        if (rook && rook.type === PieceType.ROOK && !rook.hasMoved) {
+        if (rook && rook.type === PieceType.ROOK && !havePiecesMoved([rook])) {
           castlingAvailability += isWhite
             ? position === kingSideRookColumn
               ? "K"
@@ -116,14 +122,15 @@ const generateCastlingAvailability = (board: Square[][]) => {
     }
   };
 
-  checkSide(7, 0, 7, true);
+  checkSide(PieceRow.W_MAJOR, PieceColumn.Q_ROOK, PieceColumn.K_ROOK, true);
 
-  checkSide(0, 0, 7, false);
+  checkSide(PieceRow.B_MAJOR, PieceColumn.Q_ROOK, PieceColumn.K_ROOK, false);
 
   return castlingAvailability || "-";
 };
 
-// at some poinnt, implement en passant target square
+// at some poinnt, implement en passant target square for stockfish
+// really only matters for the initial state after pasting FEN - afterwards it gets updated in toFEN
 export const fromFEN = (
   fen: string,
   whitePlayer: Player,
@@ -242,21 +249,34 @@ export const fromFEN = (
             color === PlayerColor.WHITE ? whitePlayer : blackPlayer;
           const square = board[rankIndex][fileIndex];
 
-          let hasMoved: boolean | undefined = undefined;
+          const HAS_MOVED = -2;
+          let firstMoveNumber: number = NOT_MOVED;
           if (pieceType === PieceType.KING || pieceType === PieceType.ROOK) {
             if (pieceType === PieceType.KING) {
               const kingSide = color === PlayerColor.WHITE ? "K" : "k";
               const queenSide = color === PlayerColor.WHITE ? "Q" : "q";
-              hasMoved = !(
-                castling.includes(kingSide) || castling.includes(queenSide)
-              );
+              const hasCastlingRights =
+                castling.includes(kingSide) || castling.includes(queenSide);
+              firstMoveNumber = hasCastlingRights ? NOT_MOVED : 1;
             } else if (pieceType === PieceType.ROOK) {
               if (color === PlayerColor.WHITE) {
-                if (fileIndex === 0) hasMoved = !castling.includes("Q");
-                if (fileIndex === 7) hasMoved = !castling.includes("K");
+                if (fileIndex === 0)
+                  firstMoveNumber = castling.includes("Q")
+                    ? NOT_MOVED
+                    : HAS_MOVED;
+                if (fileIndex === 7)
+                  firstMoveNumber = castling.includes("K")
+                    ? NOT_MOVED
+                    : HAS_MOVED;
               } else {
-                if (fileIndex === 0) hasMoved = !castling.includes("q");
-                if (fileIndex === 7) hasMoved = !castling.includes("k");
+                if (fileIndex === 0)
+                  firstMoveNumber = castling.includes("q")
+                    ? NOT_MOVED
+                    : HAS_MOVED;
+                if (fileIndex === 7)
+                  firstMoveNumber = castling.includes("k")
+                    ? NOT_MOVED
+                    : HAS_MOVED;
               }
             }
           }
@@ -275,7 +295,7 @@ export const fromFEN = (
             square,
             movementStrategy,
             true,
-            hasMoved,
+            firstMoveNumber,
           );
 
           board[rankIndex][fileIndex].piece = piece;

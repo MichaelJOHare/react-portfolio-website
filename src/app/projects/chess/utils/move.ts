@@ -8,6 +8,7 @@ import {
   PieceType,
   Square,
   PlayerColor,
+  NOT_MOVED,
 } from "../types";
 import {
   isAttackedByOpponent,
@@ -97,13 +98,14 @@ export const createPromotionMove = (
 export const executeStandardMove = (
   move: Move,
   board: Square[][],
+  moveNumber: number,
   capturedPiece: Piece | undefined,
 ): Piece[] => {
   const piecesToUpdate: Piece[] = [];
   const updatedPiece = {
     ...move.piece,
     currentSquare: move.to,
-    hasMoved: true,
+    firstMoveNumber: moveNumber * 2,
   };
   board[move.from.row][move.from.col].piece = undefined;
   if (updatedPiece) {
@@ -149,17 +151,21 @@ export const executeEnPassantMove = (
   return piecesToUpdate;
 };
 
-export const executeCastlingMove = (move: Move, board: Square[][]): Piece[] => {
+export const executeCastlingMove = (
+  move: Move,
+  board: Square[][],
+  moveNumber: number,
+): Piece[] => {
   const castlingMove = move as CastlingMove;
   const updatedKing = {
     ...castlingMove.piece,
     currentSquare: castlingMove.kingTo,
-    hasMoved: true,
+    firstMoveNumber: moveNumber * 2,
   };
   const updatedRook = {
     ...castlingMove.rook,
     currentSquare: castlingMove.rookTo,
-    hasMoved: true,
+    firstMoveNumber: moveNumber * 2,
   };
 
   board[castlingMove.kingFrom.row][castlingMove.kingFrom.col].piece = undefined;
@@ -212,15 +218,20 @@ export const executePromoMove = (
 export const undoStandardMove = (
   move: Move,
   board: Square[][],
+  moveNumber: number,
   capturedPiece: Piece | undefined,
 ): Piece[] => {
   const piecesToUpdate: Piece[] = [];
+  const updatedFirstMoveNumber =
+    moveNumber * 2 === move.piece.firstMoveNumber
+      ? NOT_MOVED
+      : move.piece.firstMoveNumber;
 
   const updatedPiece = {
     ...move.piece,
     currentSquare: move.from,
-    hasMoved: false, // needs to check if hasMoved was set to true on last move only, if not then keep it set to true
-  }; //                 probably make hasMoved an object that holds start and end square to check here
+    firstMoveNumber: updatedFirstMoveNumber,
+  };
 
   board[move.from.row][move.from.col].piece = updatedPiece;
   board[move.to.row][move.to.col].piece = undefined;
@@ -277,12 +288,12 @@ export const undoCastlingMove = (move: Move, board: Square[][]): Piece[] => {
   const updatedKing = {
     ...castlingMove.piece,
     currentSquare: castlingMove.kingFrom,
-    hasMoved: false, // undoing castle move means it was legal
-  };
+    firstMoveNumber: NOT_MOVED, // undoing castle move means it was legal at time of execution
+  }; //                                  -can reset first move number safely
   const updatedRook = {
     ...castlingMove.rook,
     currentSquare: castlingMove.rookFrom,
-    hasMoved: false,
+    firstMoveNumber: NOT_MOVED,
   };
 
   board[castlingMove.kingTo.row][castlingMove.kingTo.col].piece = undefined;
@@ -358,10 +369,15 @@ export const executeMoveByType = (
 
   switch (move.type) {
     case MoveType.STNDRD:
-      updatedPieces = executeStandardMove(move, board, move.capturedPiece);
+      updatedPieces = executeStandardMove(
+        move,
+        board,
+        fullMoveNumber,
+        move.capturedPiece,
+      );
       break;
     case MoveType.CASTLE:
-      updatedPieces = executeCastlingMove(move, board);
+      updatedPieces = executeCastlingMove(move, board, fullMoveNumber);
       break;
     case MoveType.EP:
       updatedPieces = executeEnPassantMove(move, board, move.capturedPiece);
@@ -406,7 +422,12 @@ export const undoMoveByType = (
 
   switch (move.type) {
     case MoveType.STNDRD:
-      updatedPieces = undoStandardMove(move, board, move.capturedPiece);
+      updatedPieces = undoStandardMove(
+        move,
+        board,
+        fullMoveNumber,
+        move.capturedPiece,
+      );
       break;
     case MoveType.CASTLE:
       updatedPieces = undoCastlingMove(move, board);

@@ -5,6 +5,8 @@ import {
   MovementStrategy,
   Move,
   PlayerColor,
+  PieceRow,
+  PieceColumn,
 } from "../types";
 import { createSquare } from "./square";
 import {
@@ -18,7 +20,8 @@ import {
 
 type PieceSetup = {
   type: PieceType;
-  positions: Square[];
+  whitePositions: Square[];
+  blackPositions: Square[];
   movementStrategy: MovementStrategy;
 };
 
@@ -34,41 +37,62 @@ export const cloneBoard = (board: Square[][]) =>
 export const setupPieces = (): PieceSetup[] => [
   {
     type: PieceType.ROOK,
-    positions: [
-      { row: 0, col: 0 },
-      { row: 0, col: 7 },
+    whitePositions: [
+      { row: PieceRow.W_MAJOR, col: PieceColumn.Q_ROOK },
+      { row: PieceRow.W_MAJOR, col: PieceColumn.K_ROOK },
+    ],
+    blackPositions: [
+      { row: PieceRow.B_MAJOR, col: PieceColumn.Q_ROOK },
+      { row: PieceRow.B_MAJOR, col: PieceColumn.K_ROOK },
     ],
     movementStrategy: rookMovementStrategy,
   },
   {
     type: PieceType.KNIGHT,
-    positions: [
-      { row: 0, col: 1 },
-      { row: 0, col: 6 },
+    whitePositions: [
+      { row: PieceRow.W_MAJOR, col: PieceColumn.Q_KNIGHT },
+      { row: PieceRow.W_MAJOR, col: PieceColumn.K_KNIGHT },
+    ],
+    blackPositions: [
+      { row: PieceRow.B_MAJOR, col: PieceColumn.Q_KNIGHT },
+      { row: PieceRow.B_MAJOR, col: PieceColumn.K_KNIGHT },
     ],
     movementStrategy: knightMovementStrategy,
   },
   {
     type: PieceType.BISHOP,
-    positions: [
-      { row: 0, col: 2 },
-      { row: 0, col: 5 },
+    whitePositions: [
+      { row: PieceRow.W_MAJOR, col: PieceColumn.Q_BISHOP },
+      { row: PieceRow.W_MAJOR, col: PieceColumn.K_BISHOP },
+    ],
+    blackPositions: [
+      { row: PieceRow.B_MAJOR, col: PieceColumn.Q_BISHOP },
+      { row: PieceRow.B_MAJOR, col: PieceColumn.K_BISHOP },
     ],
     movementStrategy: bishopMovementStrategy,
   },
   {
     type: PieceType.QUEEN,
-    positions: [{ row: 0, col: 3 }],
+    whitePositions: [{ row: PieceRow.W_MAJOR, col: PieceColumn.QUEEN }],
+    blackPositions: [{ row: PieceRow.B_MAJOR, col: PieceColumn.QUEEN }],
     movementStrategy: queenMovementStrategy,
   },
   {
     type: PieceType.KING,
-    positions: [{ row: 0, col: 4 }],
+    whitePositions: [{ row: PieceRow.W_MAJOR, col: PieceColumn.KING }],
+    blackPositions: [{ row: PieceRow.B_MAJOR, col: PieceColumn.KING }],
     movementStrategy: kingMovementStrategy,
   },
   {
     type: PieceType.PAWN,
-    positions: Array.from({ length: 8 }, (_, col) => ({ row: 1, col })),
+    whitePositions: Array.from({ length: 8 }, (_, col) => ({
+      row: PieceRow.W_MINOR,
+      col,
+    })),
+    blackPositions: Array.from({ length: 8 }, (_, col) => ({
+      row: PieceRow.B_MINOR,
+      col,
+    })),
     movementStrategy: pawnMovementStrategy,
   },
 ];
