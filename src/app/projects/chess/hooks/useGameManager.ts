@@ -1,5 +1,16 @@
 import { useState } from "react";
 import {
+  createPlayer,
+  defaultBoard,
+  setupPieces,
+  cloneBoard,
+  getLegalMovesFor,
+  loadGameStateFromFEN,
+  initializePiecesByPlayer,
+  executePlayerMove,
+  undoRedoMoves,
+} from "../utils";
+import {
   Piece,
   PlayerColor,
   PlayerType,
@@ -9,20 +20,6 @@ import {
   MoveHistory,
   GameState,
 } from "../types";
-import {
-  createPlayer,
-  defaultBoard,
-  setupPieces,
-  cloneBoard,
-  undoMoveByType,
-  executeMoveByType,
-  getCheckStatus,
-  getLegalMovesFor,
-  updatePiecesByPlayer,
-  loadGameStateFromFEN,
-  createFreshGameState,
-  initializePieces,
-} from "../utils";
 
 export const useGameManager = () => {
   const [gameState, setGameState] = useState<GameState>({
@@ -44,16 +41,16 @@ export const useGameManager = () => {
 
   const initializeBoard = () => {
     const setup = setupPieces();
+    const whitePlayer = gameState.players[0];
+    const blackPlayer = gameState.players[1];
     let result = {
       board: cloneBoard(gameState.board),
       piecesByPlayer: new Map<string, Piece[]>(),
     };
-    const whitePlayer = gameState.players[0];
-    const blackPlayer = gameState.players[1];
 
     setup.forEach(
       ({ type, whitePositions, blackPositions, movementStrategy }) => {
-        result = initializePieces(
+        result = initializePiecesByPlayer(
           result.board,
           result.piecesByPlayer,
           whitePositions,
@@ -63,7 +60,7 @@ export const useGameManager = () => {
           movementStrategy,
         );
 
-        result = initializePieces(
+        result = initializePiecesByPlayer(
           result.board,
           result.piecesByPlayer,
           blackPositions,
@@ -95,102 +92,6 @@ export const useGameManager = () => {
     );
   };
 
-  const replayMoves = (count: number, isUndo: boolean) => {
-    if (count <= 0) return;
-
-    const {
-      board,
-      players,
-      currentPlayerIndex,
-      moveHistory,
-      undoneMoveHistory,
-      capturedPieces,
-      piecesByPlayer,
-    } = gameState;
-    let { halfMoveClock, fullMoveNumber } = gameState;
-
-    const boardCopy = cloneBoard(board);
-    const newMoveHistory = [...moveHistory];
-    const newUndoneMoves = [...undoneMoveHistory];
-    let newCaptured = [...capturedPieces];
-    let newPiecesByPlayer = new Map(piecesByPlayer);
-    let updatedCurrentPlayerIndex = currentPlayerIndex;
-
-    for (let i = 0; i < count; i++) {
-      if (isUndo) {
-        const lastRecord = newMoveHistory.pop();
-        if (!lastRecord) break;
-
-        const result = undoMoveByType(
-          lastRecord.move,
-          boardCopy,
-          newCaptured,
-          halfMoveClock,
-          fullMoveNumber,
-        );
-
-        newCaptured = result.capturedPieces;
-        newPiecesByPlayer = updatePiecesByPlayer(
-          result.updatedPieces,
-          newPiecesByPlayer,
-        );
-        halfMoveClock = result.newHalfMoveClock;
-        fullMoveNumber = result.newFullMoveNumber;
-
-        newUndoneMoves.push(lastRecord);
-      } else {
-        const lastUndone = newUndoneMoves.pop();
-        if (!lastUndone) break;
-
-        const { move, causedCheck, causedCheckMate } = lastUndone;
-
-        const result = executeMoveByType(
-          move,
-          boardCopy,
-          halfMoveClock,
-          fullMoveNumber,
-        );
-
-        newCaptured = [...newCaptured, ...result.capturedPieces];
-        newPiecesByPlayer = updatePiecesByPlayer(
-          result.updatedPieces,
-          newPiecesByPlayer,
-        );
-        newMoveHistory.push({
-          move,
-          causedCheck,
-          causedCheckMate,
-        });
-
-        halfMoveClock = result.newHalfMoveClock;
-        fullMoveNumber = result.newFullMoveNumber;
-      }
-      updatedCurrentPlayerIndex = 1 - updatedCurrentPlayerIndex;
-    }
-
-    const { isKingInCheck, kingSquare } = getCheckStatus(
-      boardCopy,
-      players[updatedCurrentPlayerIndex],
-      players[1 - updatedCurrentPlayerIndex],
-      newPiecesByPlayer,
-      newMoveHistory,
-    );
-
-    setGameState((prev) => ({
-      ...prev,
-      board: boardCopy,
-      moveHistory: newMoveHistory,
-      undoneMoveHistory: newUndoneMoves,
-      capturedPieces: newCaptured,
-      piecesByPlayer: newPiecesByPlayer,
-      currentPlayerIndex: updatedCurrentPlayerIndex,
-      halfMoveClock,
-      fullMoveNumber,
-      isKingInCheck,
-      kingSquare,
-    }));
-  };
-
   const executeMove = (
     startRow: number,
     startCol: number,
@@ -200,19 +101,9 @@ export const useGameManager = () => {
     promotionType?: PieceType,
     remainingUndoneMoves?: MoveHistory[],
   ) => {
-    const {
-      board,
-      piecesByPlayer,
-      players,
-      currentPlayerIndex,
-      halfMoveClock,
-      fullMoveNumber,
-      moveHistory,
-    } = gameState;
-
+    const { board } = gameState;
     const piece = board[startRow][startCol].piece;
     if (!piece) return;
-
     const validMove = playerMoves.find(
       (move) =>
         move.piece.id === piece.id &&
@@ -224,93 +115,46 @@ export const useGameManager = () => {
           ? (move as PromotionMove).promotionType === promotionType
           : true),
     );
-
     if (!validMove) return;
-    const player = players[currentPlayerIndex];
-    const opponent = players[1 - currentPlayerIndex];
-    const newBoard = cloneBoard(board);
-    const newPiecesByPlayer = new Map(piecesByPlayer);
-
-    const {
-      updatedPieces,
-      capturedPieces,
-      newHalfMoveClock,
-      newFullMoveNumber,
-    } = executeMoveByType(validMove, newBoard, halfMoveClock, fullMoveNumber);
-
-    const updatedPiecesByPlayer = updatePiecesByPlayer(
-      updatedPieces,
-      newPiecesByPlayer,
+    const updatedState = executePlayerMove(
+      gameState,
+      validMove,
+      remainingUndoneMoves,
     );
-
-    const tempMoveHistory = [
-      ...moveHistory,
-      {
-        move: validMove,
-        causedCheck: false,
-        causedCheckMate: false,
-      },
-    ];
-    const { isKingInCheck, kingSquare } = getCheckStatus(
-      newBoard,
-      opponent,
-      player,
-      updatedPiecesByPlayer,
-      tempMoveHistory,
-    );
-
-    const moves = getLegalMovesFor(
-      opponent,
-      player,
-      newBoard,
-      updatedPiecesByPlayer,
-      tempMoveHistory,
-    );
-
-    const causedCheckMate = isKingInCheck && moves.length === 0;
-    const causedCheck = isKingInCheck && !causedCheckMate;
-
-    const updatedMoveHistory = [...moveHistory];
-    updatedMoveHistory.push({
-      move: validMove,
-      causedCheck,
-      causedCheckMate,
-    });
 
     setGameState((prev) => ({
       ...prev,
-      board: newBoard,
-      piecesByPlayer: updatedPiecesByPlayer,
-      currentPlayerIndex: prev.currentPlayerIndex === 0 ? 1 : 0,
-      moveHistory: updatedMoveHistory,
-      undoneMoveHistory: remainingUndoneMoves ? remainingUndoneMoves : [],
-      halfMoveClock: newHalfMoveClock,
-      fullMoveNumber: newFullMoveNumber,
-      capturedPieces: [...prev.capturedPieces, ...capturedPieces],
-      isKingInCheck,
-      kingSquare,
+      ...updatedState,
+    }));
+  };
+
+  const replayMoves = (count: number, isUndo: boolean) => {
+    if (count <= 0) return;
+    const updatedState = undoRedoMoves(gameState, count, isUndo);
+    setGameState((prev) => ({
+      ...prev,
+      ...updatedState,
     }));
   };
 
   const loadFromFEN = (fenString: string) => {
-    try {
-      const { newGameState, isValid } = loadGameStateFromFEN(
-        fenString,
-        gameState,
-      );
+    const newGameState = loadGameStateFromFEN(fenString, gameState);
+    if (newGameState) {
+      const freshState = {
+        ...newGameState,
+        moveHistory: [],
+        undoneMoveHistory: [],
+        capturedPieces: [],
+      };
 
-      if (isValid && newGameState) {
-        const freshState = createFreshGameState(newGameState);
-        setGameState((prev) => ({
-          ...prev,
-          ...freshState,
-        }));
-      }
-
-      return isValid;
-    } catch {
-      return false;
+      setGameState((prev) => ({
+        ...prev,
+        ...freshState,
+      }));
+      return true;
     }
+
+    return false;
   };
 
   return {

@@ -36,11 +36,13 @@ export const usePromotionHandler = (
 
   const setPromotionDetails = (move: Move) => {
     stockfishHandler.stopEngineThinking();
+    highlighter.clearStockfishBestMoveArrow(); // might race against engine response
     highlighter.addPreviousMoveSquares(move.from, move.to);
     const squaresToHide = getSquaresToHideDuringPromotion(
       move,
       move.piece.color,
     );
+
     setPromotionPanelState({
       isShown: true,
       promotionSquare: move.to,

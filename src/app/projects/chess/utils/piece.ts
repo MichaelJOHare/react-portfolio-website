@@ -37,7 +37,7 @@ export const createPiece = (
   wasPromoted,
 });
 
-export const initializePieces = (
+export const initializePiecesByPlayer = (
   board: Square[][],
   piecesByPlayer: Map<string, Piece[]>,
   positions: Square[],
@@ -68,6 +68,22 @@ export const initializePieces = (
   });
 
   return { board: newBoard, piecesByPlayer: newPiecesByPlayer };
+};
+
+export const updatePiecesByPlayer = (
+  updatedPieces: Piece[],
+  base: Map<string, Piece[]>,
+) => {
+  const updatedPiecesByPlayer = new Map(base);
+  updatedPieces.forEach((updatedPiece) => {
+    const playerPieces =
+      updatedPiecesByPlayer.get(updatedPiece.player.id) || [];
+    const updatedPlayerPieces = playerPieces.map((p) =>
+      p.id === updatedPiece.id ? updatedPiece : p,
+    );
+    updatedPiecesByPlayer.set(updatedPiece.player.id, updatedPlayerPieces);
+  });
+  return updatedPiecesByPlayer;
 };
 
 export const clonePiece = (piece: Piece, currentSquare: Square): Piece => ({

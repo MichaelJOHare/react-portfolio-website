@@ -1,3 +1,4 @@
+import { pawnMovementStrategy } from "./strategies";
 import {
   Move,
   EnPassantMove,
@@ -15,8 +16,8 @@ import {
   isEmpty,
   getMovementStrategyFromType,
   createSquare,
+  updatePiecesByPlayer,
 } from ".";
-import { pawnMovementStrategy } from "./strategies";
 
 /*
  ***** MOVE CREATION *****
@@ -133,6 +134,7 @@ export const executeEnPassantMove = (
     ...enPassantMove.piece,
     currentSquare: enPassantMove.to,
   };
+
   board[enPassantMove.from.row][enPassantMove.from.col].piece = undefined;
   if (updatedPawn) {
     board[enPassantMove.to.row][enPassantMove.to.col].piece = updatedPawn;
@@ -185,6 +187,7 @@ export const executePromoMove = (
   const piecesToUpdate: Piece[] = [];
   const promotionMove = move as PromotionMove;
   const moveStrat = getMovementStrategyFromType(promotionMove.promotionType);
+
   const promotedPawn = moveStrat && {
     ...promotionMove.piece,
     currentSquare: promotionMove.to,
@@ -192,6 +195,7 @@ export const executePromoMove = (
     movementStrategy: moveStrat,
     wasPromoted: true,
   };
+
   board[promotionMove.from.row][promotionMove.from.col].piece = undefined;
   if (promotedPawn) {
     board[move.to.row][move.to.col].piece = promotedPawn;
@@ -273,9 +277,11 @@ export const undoEnPassantMove = (
       isAlive: true,
       currentSquare: enPassantMove.capturedPieceSquare,
     };
+
     board[enPassantMove.capturedPieceSquare.row][
       enPassantMove.capturedPieceSquare.col
     ].piece = revivedPiece;
+
     piecesToUpdate.push(revivedPiece);
   }
 
@@ -289,7 +295,7 @@ export const undoCastlingMove = (move: Move, board: Square[][]): Piece[] => {
     ...castlingMove.piece,
     currentSquare: castlingMove.kingFrom,
     firstMoveNumber: NOT_MOVED, // undoing castle move means it was legal at time of execution
-  }; //                                  -can reset first move number safely
+  }; //                                  -can reset firstMoveNumber number safely
   const updatedRook = {
     ...castlingMove.rook,
     currentSquare: castlingMove.rookFrom,
@@ -514,4 +520,36 @@ export const isValidCastlingMove = (
 
 /*
  ***** CASTLING MOVE VALIDATION *****
+ */
+
+/*
+ ***** ROUTE SINGLE MOVE *****
+ */
+
+export const applyMove = (
+  move: Move,
+  board: Square[][],
+  piecesByPlayer: Map<string, Piece[]>,
+  capturedPieces: Piece[],
+  halfMoveClock: number,
+  fullMoveNumber: number,
+  isUndo: boolean,
+) => {
+  const result = isUndo
+    ? undoMoveByType(move, board, capturedPieces, halfMoveClock, fullMoveNumber)
+    : executeMoveByType(move, board, halfMoveClock, fullMoveNumber);
+
+  return {
+    updatedPiecesByPlayer: updatePiecesByPlayer(
+      result.updatedPieces,
+      piecesByPlayer,
+    ),
+    capturedPieces: result.capturedPieces,
+    newHalfMoveClock: result.newHalfMoveClock,
+    newFullMoveNumber: result.newFullMoveNumber,
+  };
+};
+
+/*
+ ***** ROUTE SINGLE MOVE *****
  */

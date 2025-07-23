@@ -17,7 +17,25 @@ import {
   getConfigFromLevel,
 } from "../utils/stockfish";
 
-type EngineStatus = "idle" | "loaded" | "configured" | "thinking" | "ready";
+type EngineStatus =
+  | "idle"
+  | "loaded"
+  | "configured"
+  | "thinking"
+  | "ready"
+  | "interrupted"
+  | "stopped";
+
+type EngineState = {
+  status: EngineStatus;
+  depth: number;
+  lastDepthUpdate: number;
+  lastArrowUpdate: number;
+};
+type EngineOptions = {
+  colorChoice: ColorChoice;
+  strengthLevel: number;
+};
 
 const IS_SYSTEM_MESSAGE = /^(?:(?:uci|ready)ok$|option name)/;
 const INFORMS_CURRENT_MOVE = /pv (\w{4})/;
@@ -26,27 +44,28 @@ const INFORMS_DEPTH = /^info .*\bdepth (\d+) .*\bnps (\d+)/;
 const INFORMS_WDL = /wdl (\d+) (\d+) (\d+)/;
 const INFORMS_MATE = /score mate (\-?\d+)/;
 
+const DEFAULT_DEPTH = 24;
+
 export const useStockfishHandler = (
   gameManager: GameManager,
   highlighter: Highlighter,
   colorChoice: number,
   strengthLevel: number,
 ) => {
-  const workerRef = useRef<Worker | null>(null);
-  const gmRef = useRef(gameManager);
-  const engineStatusRef = useRef<EngineStatus>("idle");
-  const depthRef = useRef<number>(24);
-  const wasInterruptedRef = useRef(false);
-  const wasStoppedRef = useRef(false);
-  const lastDepthUpdateRef = useRef<number>(0);
-  const lastArrowUpdateRef = useRef<number>(0);
   const [evalCentipawn, setEvalCentipawn] = useState(50);
   const [depthPercentage, setDepthPercentage] = useState(0);
-  const defaultDepth = 24;
-  const engineOptionsRef = useRef<{
-    colorChoice: ColorChoice;
-    strengthLevel: number;
-  }>({ colorChoice, strengthLevel });
+  const workerRef = useRef<Worker | null>(null);
+  const gmRef = useRef(gameManager);
+  const engineOptionsRef = useRef<EngineOptions>({
+    colorChoice,
+    strengthLevel,
+  });
+  const engineStateRef = useRef<EngineState>({
+    status: "idle",
+    depth: DEFAULT_DEPTH,
+    lastDepthUpdate: 0,
+    lastArrowUpdate: 0,
+  });
 
   const debouncedSetEvalCentipawn = useMemo(
     () => debounce((val: number) => setEvalCentipawn(val), 50),
@@ -68,11 +87,28 @@ export const useStockfishHandler = (
     workerRef.current?.postMessage(cmd);
   };
 
+  const interruptEngineThinking = useCallback(() => {
+    engineStateRef.current.status = "interrupted";
+    sendCommand("stop");
+    sendCommand("isready");
+  }, []);
+
+  const stopEngineThinking = useCallback(() => {
+    engineStateRef.current.status = "stopped";
+    sendCommand("stop");
+  }, []);
+
+  const terminateWorker = useCallback(() => {
+    workerRef.current?.terminate();
+    workerRef.current = null;
+    engineStateRef.current.status = "idle";
+  }, []);
+
   const configureEngine = useCallback((version: StockfishVersion) => {
     const { strengthLevel } = engineOptionsRef.current;
     const { skill, depth } = getConfigFromLevel(strengthLevel);
     const threads = calculateThreadsForNNUE();
-    depthRef.current = depth;
+    engineStateRef.current.depth = depth;
     sendCommand(`setoption name Skill Level value ${skill}`);
     sendCommand(`setoption name Threads value ${threads}`);
     if (version === StockfishVersion.SF16) {
@@ -85,7 +121,7 @@ export const useStockfishHandler = (
   }, []);
 
   const requestStockfishMove = useCallback(() => {
-    if (engineStatusRef.current !== "ready") return;
+    if (engineStateRef.current.status !== "ready") return;
 
     const {
       board,
@@ -107,55 +143,9 @@ export const useStockfishHandler = (
     );
 
     sendCommand(`position fen ${fen}`);
-    sendCommand(`go depth ${depthRef.current}`);
-    engineStatusRef.current = "thinking";
+    sendCommand(`go depth ${engineStateRef.current.depth}`);
+    engineStateRef.current.status = "thinking";
   }, []);
-
-  const interruptEngineThinking = useCallback(() => {
-    wasInterruptedRef.current = true;
-    sendCommand("stop");
-    sendCommand("isready");
-  }, []);
-
-  const stopEngineThinking = useCallback(() => {
-    wasStoppedRef.current = true;
-    sendCommand("stop");
-  }, []);
-
-  const terminateWorker = useCallback(() => {
-    workerRef.current?.terminate();
-    workerRef.current = null;
-    engineStatusRef.current = "idle";
-  }, []);
-
-  const handleDepthMessage = useCallback(
-    (line: string) => {
-      const { colorChoice, strengthLevel } = engineOptionsRef.current;
-      const isPlaying =
-        colorChoice !== ColorChoice.NONE && strengthLevel !== NO_SELECTION;
-      const currentDepth = parseInt(line.match(INFORMS_DEPTH)![1], 10);
-      const currentTime = Date.now();
-      const percent = (currentDepth / defaultDepth) * 100;
-      setDepthPercentage(percent);
-
-      if (
-        currentDepth === 1 ||
-        (currentDepth - lastDepthUpdateRef.current >= 3 &&
-          currentTime - lastArrowUpdateRef.current >= 3000)
-      ) {
-        const moveData = line.match(INFORMS_CURRENT_MOVE);
-        if (moveData) {
-          const from = moveData[1].substring(0, 2);
-          const to = moveData[1].substring(2, 4);
-          lastDepthUpdateRef.current = currentDepth;
-          lastArrowUpdateRef.current = currentTime;
-
-          if (!isPlaying) debouncedAddStockfishArrow(from, to);
-        }
-      }
-    },
-    [debouncedAddStockfishArrow],
-  );
 
   const handleBestMove = useCallback(
     (line: string) => {
@@ -165,16 +155,13 @@ export const useStockfishHandler = (
       const [, from, to, promotion] = line.match(FOUND_BEST_MOVE)!;
       const promotionType = determinePromotionType(promotion);
 
-      if (wasStoppedRef.current) {
-        wasStoppedRef.current = false;
-        engineStatusRef.current = "ready";
-        highlighter.clearStockfishBestMoveArrow();
+      if (engineStateRef.current.status === "stopped") {
+        engineStateRef.current.status = "ready";
         return;
       }
 
-      if (wasInterruptedRef.current) {
-        wasInterruptedRef.current = false;
-        engineStatusRef.current = "ready";
+      if (engineStateRef.current.status === "interrupted") {
+        engineStateRef.current.status = "ready";
         requestStockfishMove();
         return;
       }
@@ -182,7 +169,8 @@ export const useStockfishHandler = (
       if (isPlaying) {
         const legalMoves = gmRef.current.getLegalMoves();
         const players = gmRef.current.players;
-        const currentPlayer = players[gmRef.current.currentPlayerIndex];
+        const currentPlayerIndex = gmRef.current.currentPlayerIndex;
+        const currentPlayer = players[currentPlayerIndex];
 
         const fromSq = convertNotationToSquare(from);
         const toSq = convertNotationToSquare(to);
@@ -207,9 +195,38 @@ export const useStockfishHandler = (
         debouncedAddStockfishArrow(from, to);
       }
 
-      engineStatusRef.current = "ready";
+      engineStateRef.current.status = "ready";
     },
     [requestStockfishMove, debouncedAddStockfishArrow, highlighter],
+  );
+
+  const handleDepthMessage = useCallback(
+    (line: string) => {
+      const { colorChoice, strengthLevel } = engineOptionsRef.current;
+      const isPlaying =
+        colorChoice !== ColorChoice.NONE && strengthLevel !== NO_SELECTION;
+      const currentDepth = parseInt(line.match(INFORMS_DEPTH)![1], 10);
+      const currentTime = Date.now();
+      const percent = (currentDepth / DEFAULT_DEPTH) * 100;
+      setDepthPercentage(percent);
+
+      if (
+        currentDepth === 1 ||
+        (currentDepth - engineStateRef.current.lastDepthUpdate >= 3 &&
+          currentTime - engineStateRef.current.lastArrowUpdate >= 3000)
+      ) {
+        const moveData = line.match(INFORMS_CURRENT_MOVE);
+        if (moveData) {
+          const from = moveData[1].substring(0, 2);
+          const to = moveData[1].substring(2, 4);
+          engineStateRef.current.lastDepthUpdate = currentDepth;
+          engineStateRef.current.lastArrowUpdate = currentTime;
+
+          if (!isPlaying) debouncedAddStockfishArrow(from, to);
+        }
+      }
+    },
+    [debouncedAddStockfishArrow],
   );
 
   const handleWDLMessage = useCallback(
@@ -279,23 +296,22 @@ export const useStockfishHandler = (
           sendCommand("uci");
         } else if (msg.data === "uciok") {
           sendCommand("isready");
-          engineStatusRef.current = "loaded";
+          engineStateRef.current.status = "loaded";
         } else if (msg.data === "readyok") {
-          if (engineStatusRef.current === "loaded") {
+          if (engineStateRef.current.status === "loaded") {
             configureEngine(scriptUrl);
-            engineStatusRef.current = "configured";
+            engineStateRef.current.status = "configured";
             return;
           }
 
-          if (wasInterruptedRef.current) {
-            wasInterruptedRef.current = false;
-            engineStatusRef.current = "ready";
+          if (engineStateRef.current.status === "interrupted") {
+            engineStateRef.current.status = "ready";
             requestStockfishMove();
             return;
           }
 
-          if (engineStatusRef.current === "configured") {
-            engineStatusRef.current = "ready";
+          if (engineStateRef.current.status === "configured") {
+            engineStateRef.current.status = "ready";
             requestStockfishMove();
           }
         } else {
