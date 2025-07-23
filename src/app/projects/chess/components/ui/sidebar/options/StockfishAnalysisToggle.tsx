@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useGame } from "../../../context/GameContext";
+import { useGame } from "@/app/projects/chess/context/GameContext";
 import StockfishOptionsIcon from "@/assets/icons/stockfish-options-icon.svg";
 
 type SfAnalysisProps = {

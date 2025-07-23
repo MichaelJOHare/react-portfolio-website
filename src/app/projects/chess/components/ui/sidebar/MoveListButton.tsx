@@ -5,12 +5,14 @@ export const MoveListButton = ({
   move,
   record,
   isActive,
+  isUndone = false,
   isWhite,
   onClick,
 }: {
   move: Move;
   record: MoveHistory;
   isActive: boolean;
+  isUndone?: boolean;
   isWhite: boolean;
   onClick: () => void;
 }) => {
@@ -29,7 +31,7 @@ export const MoveListButton = ({
         isActive
           ? `border border-stone-700 bg-zinc-200 dark:border-stone-200 dark:bg-slate-600`
           : ""
-      } ${isWhite ? "mr-1" : "ml-1 pl-2"}`}
+      } ${isUndone ? "opacity-50" : ""} ${isWhite ? "mr-1" : "ml-1 pl-2"}`}
       onClick={onClick}
     >
       {move.piece.type !== PieceType.PAWN && (

@@ -2,15 +2,15 @@ import { emptyArrow } from "../hooks/useHighlighter";
 import {
   ArrowProps,
   ChessEngineMove,
-  NO_SELECTION,
   Piece,
   PieceType,
   Square,
+  StrengthLevel,
 } from "../types";
 import { createSquare, getSquareFromNotation } from "./square";
 
 export const getConfigFromLevel = (uiLevel: number) => {
-  if (uiLevel === NO_SELECTION) {
+  if (uiLevel === StrengthLevel.NONE) {
     return { skill: 20, depth: 24 };
   }
 

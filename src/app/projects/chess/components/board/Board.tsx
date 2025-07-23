@@ -26,9 +26,24 @@ export const Board = () => {
     onMouseMove,
     onMouseUp,
   } = highlighter;
+
   const stockfishArrow = getStockfishArrow(
     highlightedSquares.stockfishBestMove,
   );
+
+  const shouldShowStockfishArrow = () =>
+    highlightedSquares.stockfishBestMove && stockfishEnabled;
+
+  const parseSquareId = (id: string): Square => {
+    const [row, col] = id.split("-").map(Number);
+    return { row, col };
+  };
+
+  const isSquareToHide = (square: Square) => {
+    return promotionHandler.squaresToHide.find(
+      (s) => s.row === square.row && s.col === square.col,
+    );
+  };
 
   const onDragStart = (event: DragStartEvent) => {
     const { row, col } = parseSquareId(event.active.id as string);
@@ -45,18 +60,10 @@ export const Board = () => {
     handleDragEnd(start, end);
   };
 
-  const shouldShowStockfishArrow = () =>
-    highlightedSquares.stockfishBestMove && stockfishEnabled;
-
-  const parseSquareId = (id: string): Square => {
-    const [row, col] = id.split("-").map(Number);
-    return { row, col };
-  };
-
-  const isSquareToHide = (square: Square) => {
-    return promotionHandler.squaresToHide.find(
-      (s) => s.row === square.row && s.col === square.col,
-    );
+  const preventContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
   };
 
   return (
@@ -69,9 +76,7 @@ export const Board = () => {
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
         onContextMenu={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          e.nativeEvent.stopImmediatePropagation();
+          preventContextMenu(e);
         }}
       >
         {promotionHandler.isShown && (

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { toFEN } from "../../../utils/FEN";
-import { StockfishOptionsModal } from "./StockfishOptionsModal";
+import { StockfishOptionsModal } from "./options/StockfishOptionsModal";
 import { useGame } from "../../../context/GameContext";
 import { SidebarButton } from "./SidebarButton";
 import { MoveList } from "./MoveList";

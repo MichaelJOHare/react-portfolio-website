@@ -13,7 +13,7 @@ export const ChessUIContainer = () => {
           stockfishEnabled
             ? "desktop-md:w-[30vmin] mr-6 w-[90vmin]"
             : "desktop-md:w-[33vmin] desktop-md:pl-6 w-[93vmin]"
-        } limitedHeight:w-[90vmin] limitedHeight:h-auto 2xl:w-[50vmin]`}
+        } limitedHeight:w-[90vmin] limitedHeight:h-auto desktop-w-h-breakpoint:w-[33vmin] 2xl:w-[50vmin]`}
       >
         <div className="desktop-md:pt-2 desktop-md:pb-0 desktop-md:h-[10vmin] desktop-md:order-last limitedHeight:pt-0 limitedHeight:pb-2 limitedHeight:h-[20vmin] limitedHeight:order-0 flex h-[15vmin] w-full justify-between pb-2">
           <UndoRedoButton direction={"left"} />

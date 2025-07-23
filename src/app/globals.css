@@ -10,6 +10,7 @@
   --text-2xs--line-height: 0.975rem;
 
   --breakpoint-desktop-md: 85rem;
+  --breakpoint-desktop-lg: 100rem;
 
   --color-darkSquare: #b58863;
   --color-lightSquare: #f0d9b5;
@@ -24,3 +25,4 @@
 @custom-variant progress-filled (&::-webkit-progress-bar, &);
 @custom-variant progress-unfilled (&::-webkit-progress-value, &::-moz-progress-bar);
 @custom-variant limitedHeight (@media (max-height: 900px));
+@custom-variant desktop-w-h-breakpoint (@media (min-width: 85rem) and (min-height: 81.25rem) and (max-width: 100rem));

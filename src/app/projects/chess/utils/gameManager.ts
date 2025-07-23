@@ -59,15 +59,13 @@ export const loadGameStateFromFEN = (
   };
 };
 
-export const copyGameState = (gameState: GameState) => ({
-  boardCopy: cloneBoard(gameState.board),
-  newMoveHistory: [...gameState.moveHistory],
-  newUndoneMoves: [...gameState.undoneMoveHistory],
-  newCaptured: [...gameState.capturedPieces],
-  newPiecesByPlayer: new Map(gameState.piecesByPlayer),
-  currentPlayerIndex: gameState.currentPlayerIndex,
-  halfMoveClock: gameState.halfMoveClock,
-  fullMoveNumber: gameState.fullMoveNumber,
+export const copyGameState = (gameState: GameState): GameState => ({
+  ...gameState,
+  board: cloneBoard(gameState.board),
+  moveHistory: [...gameState.moveHistory],
+  undoneMoveHistory: [...gameState.undoneMoveHistory],
+  capturedPieces: [...gameState.capturedPieces],
+  piecesByPlayer: new Map(gameState.piecesByPlayer),
 });
 
 export const getGameStatus = (
@@ -108,10 +106,10 @@ export const undoRedoMoves = (
   isUndo: boolean,
 ) => {
   const gameStateCopy = copyGameState(gameState);
-  const { boardCopy, newMoveHistory, newUndoneMoves } = gameStateCopy;
+  const { board, moveHistory, undoneMoveHistory } = gameStateCopy;
   let {
-    newCaptured,
-    newPiecesByPlayer,
+    capturedPieces,
+    piecesByPlayer,
     currentPlayerIndex,
     halfMoveClock,
     fullMoveNumber,
@@ -119,46 +117,46 @@ export const undoRedoMoves = (
 
   for (let i = 0; i < count; i++) {
     if (isUndo) {
-      const lastRecord = newMoveHistory.pop();
+      const lastRecord = moveHistory.pop();
       if (!lastRecord) break;
 
       const result = applyMove(
         lastRecord.move,
-        boardCopy,
-        newPiecesByPlayer,
-        newCaptured,
+        board,
+        piecesByPlayer,
+        capturedPieces,
         halfMoveClock,
         fullMoveNumber,
         true,
       );
 
-      newCaptured = result.capturedPieces;
-      newPiecesByPlayer = result.updatedPiecesByPlayer;
+      capturedPieces = result.capturedPieces;
+      piecesByPlayer = result.updatedPiecesByPlayer;
       halfMoveClock = result.newHalfMoveClock;
       fullMoveNumber = result.newFullMoveNumber;
 
-      newUndoneMoves.push(lastRecord);
+      undoneMoveHistory.push(lastRecord);
     } else {
-      const lastUndone = newUndoneMoves.pop();
+      const lastUndone = undoneMoveHistory.pop();
       if (!lastUndone) break;
       const { move, causedCheck, causedCheckMate } = lastUndone;
 
       const result = applyMove(
         move,
-        boardCopy,
-        newPiecesByPlayer,
-        newCaptured,
+        board,
+        piecesByPlayer,
+        capturedPieces,
         halfMoveClock,
         fullMoveNumber,
         false,
       );
 
-      newCaptured = [...newCaptured, ...result.capturedPieces];
-      newPiecesByPlayer = result.updatedPiecesByPlayer;
+      capturedPieces = [...capturedPieces, ...result.capturedPieces];
+      piecesByPlayer = result.updatedPiecesByPlayer;
       halfMoveClock = result.newHalfMoveClock;
       fullMoveNumber = result.newFullMoveNumber;
 
-      newMoveHistory.push({
+      moveHistory.push({
         move,
         causedCheck,
         causedCheckMate,
@@ -168,19 +166,19 @@ export const undoRedoMoves = (
   }
 
   const gameStatus = getGameStatus(
-    boardCopy,
+    board,
     gameState.players[currentPlayerIndex],
     gameState.players[1 - currentPlayerIndex],
-    newPiecesByPlayer,
-    newMoveHistory,
+    piecesByPlayer,
+    moveHistory,
   );
 
   return {
-    board: boardCopy,
-    moveHistory: newMoveHistory,
-    undoneMoveHistory: newUndoneMoves,
-    capturedPieces: newCaptured,
-    piecesByPlayer: newPiecesByPlayer,
+    board,
+    moveHistory,
+    undoneMoveHistory,
+    capturedPieces,
+    piecesByPlayer,
     currentPlayerIndex,
     halfMoveClock,
     fullMoveNumber,

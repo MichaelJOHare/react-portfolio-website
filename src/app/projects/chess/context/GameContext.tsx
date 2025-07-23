@@ -6,12 +6,13 @@ import { usePromotionHandler } from "../hooks/usePromotionHandler";
 import { useStockfishHandler } from "../hooks/useStockfishHandler";
 import {
   ColorChoice,
+  EngineOptions,
   GameManager,
   Highlighter,
-  NO_SELECTION,
   PieceSelector,
   PromotionHandler,
   StockfishHandler,
+  StrengthLevel,
 } from "../types";
 
 interface Props {
@@ -29,10 +30,8 @@ type GameContextType = {
   toggleFlipBoard: () => void;
   stockfishEnabled: boolean;
   setStockfishEnabled: (val: boolean) => void;
-  colorChoice: ColorChoice;
-  strengthLevel: number;
-  setColorChoice: (val: ColorChoice) => void;
-  setStrengthLevel: (val: number) => void;
+  engineOptions: EngineOptions;
+  setEngineOptions: (val: EngineOptions) => void;
   onResetGame: () => void;
 };
 
@@ -41,15 +40,16 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 export const GameProvider = ({ children, onResetGame }: Props) => {
   const [isBoardFlipped, setIsBoardFlipped] = useState(false);
   const [stockfishEnabled, setStockfishEnabled] = useState(false);
-  const [strengthLevel, setStrengthLevel] = useState(NO_SELECTION);
-  const [colorChoice, setColorChoice] = useState(ColorChoice.NONE);
+  const [engineOptions, setEngineOptions] = useState<EngineOptions>({
+    strengthLevel: StrengthLevel.NONE,
+    colorChoice: ColorChoice.NONE,
+  });
   const gameManager = useGameManager();
   const highlighter = useHighlighter(isBoardFlipped);
   const stockfishHandler = useStockfishHandler(
     gameManager,
     highlighter,
-    colorChoice,
-    strengthLevel,
+    engineOptions,
   );
   const promotionHandler = usePromotionHandler(
     gameManager,
@@ -85,10 +85,8 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
         toggleFlipBoard,
         stockfishEnabled,
         setStockfishEnabled,
-        colorChoice,
-        strengthLevel,
-        setColorChoice,
-        setStrengthLevel,
+        engineOptions,
+        setEngineOptions,
         onResetGame,
       }}
     >

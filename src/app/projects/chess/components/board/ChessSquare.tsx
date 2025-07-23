@@ -10,9 +10,6 @@ type SquareProps = {
 
 export const ChessSquare = ({ square, children }: SquareProps) => {
   const { gameManager, highlighter, pieceSelector, isBoardFlipped } = useGame();
-  const { isOver, setNodeRef } = useDroppable({
-    id: `${square.row}-${square.col}`,
-  });
   const { isKingInCheck, kingSquare } = gameManager;
   const { highlightedSquares } = highlighter;
   const { validMoves } = pieceSelector;
@@ -23,6 +20,9 @@ export const ChessSquare = ({ square, children }: SquareProps) => {
   const isLabeledRow = (isBoardFlipped ? 7 - square.row : square.row) === 7;
   const columnLabel = 8 - square.row;
   const rowLabel = String.fromCharCode(97 + square.col);
+  const { isOver, setNodeRef } = useDroppable({
+    id: `${square.row}-${square.col}`,
+  });
 
   const validMoveSet = useMemo(() => {
     return new Set(validMoves.map((m) => `${m.row}-${m.col}`));

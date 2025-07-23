@@ -24,6 +24,7 @@ export type Square = {
   piece?: Piece;
 };
 
+export const NOT_MOVED = -1;
 export type Piece = {
   id: string;
   player: Player;
@@ -83,61 +84,6 @@ export enum PlayerType {
   COMPUTER = "Computer",
 }
 
-export type PromotionPanelState = {
-  promotionSquare: Square | undefined;
-  promotionColor: PlayerColor | undefined;
-  promotingPawn: Piece | undefined;
-};
-
-export enum MoveType {
-  STNDRD = "Standard",
-  CASTLE = "Castling",
-  EP = "EnPassant",
-  PROMO = "Promotion",
-}
-
-export const NOT_MOVED = -1;
-
-export type MoveHistory = {
-  move: Move;
-  causedCheck: boolean;
-  causedCheckMate: boolean;
-};
-
-export type ChessEngineMove = {
-  from: string;
-  to: string;
-  promotion?: string;
-} | null;
-
-export enum StockfishVersion {
-  SF16 = "sf-16",
-  SF17 = "sf-17",
-  NONE = "0",
-}
-
-export const STOCKFISH_STRENGTH_LEVELS = [1, 2, 3, 4, 5, 6, 7, 8];
-export const NO_SELECTION = -1;
-
-export enum EngineStrength {
-  NONE = -1,
-  LEVEL_1 = 1,
-  LEVEL_2 = 2,
-  LEVEL_3 = 3,
-  LEVEL_4 = 4,
-  LEVEL_5 = 5,
-  LEVEL_6 = 6,
-  LEVEL_7 = 7,
-  LEVEL_8 = 8,
-}
-
-export enum ColorChoice {
-  WHITE = 0,
-  BLACK = 2,
-  RANDOM = 1,
-  NONE = -1,
-}
-
 export interface Move {
   type: MoveType;
   from: Square;
@@ -145,6 +91,13 @@ export interface Move {
   piece: Piece;
   capturedPiece?: Piece;
   isPromotion?: boolean;
+}
+
+export enum MoveType {
+  STNDRD = "Standard",
+  CASTLE = "Castling",
+  EP = "EnPassant",
+  PROMO = "Promotion",
 }
 
 export interface CastlingMove extends Move {
@@ -161,6 +114,56 @@ export interface EnPassantMove extends Move {
 
 export interface PromotionMove extends Move {
   promotionType: PieceType;
+}
+
+export type MoveHistory = {
+  move: Move;
+  causedCheck: boolean;
+  causedCheckMate: boolean;
+};
+
+export type PromotionPanel = {
+  promotionSquare: Square | undefined;
+  promotionColor: PlayerColor | undefined;
+  promotingPawn: Piece | undefined;
+};
+
+export type ChessEngineMove = {
+  from: string;
+  to: string;
+  promotion?: string;
+} | null;
+
+export type EngineOptions = {
+  colorChoice: ColorChoice;
+  strengthLevel: StrengthLevel;
+};
+
+export enum StockfishVersion {
+  SF16 = "sf-16",
+  SF17 = "sf-17",
+  NONE = "0",
+}
+
+export const DEFAULT_DEPTH = 24;
+export const MAX_STRENGTH = 20;
+export enum StrengthLevel {
+  NONE = -1,
+  L1 = 1,
+  L2 = 2,
+  L3 = 3,
+  L4 = 4,
+  L5 = 5,
+  L6 = 6,
+  L7 = 7,
+  L8 = 8,
+}
+
+export enum ColorChoice {
+  WHITE = 0,
+  RANDOM = 1,
+  BLACK = 2,
+  NONE = -1,
 }
 
 export type ArrowProps = {

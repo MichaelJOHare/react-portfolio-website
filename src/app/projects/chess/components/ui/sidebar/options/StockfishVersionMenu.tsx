@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { StockfishVersion } from "@/app/projects/chess/types";
 import DropdownArrow from "@/assets/icons/drop-down-arrow.svg";
-import { StockfishVersion } from "../../../types";
 
 type VersionMenuProps = {
   version: StockfishVersion;
@@ -32,7 +32,7 @@ export const StockfishVersionMenu = ({
   };
 
   return (
-    <div ref={menuRef} className="relative inline-block text-left">
+    <div className="relative inline-block text-left">
       <div className="flex justify-center">
         {/* put green circle next to currently selected version */}
         <button
@@ -58,24 +58,26 @@ export const StockfishVersionMenu = ({
           aria-orientation="vertical"
           aria-labelledby="menu-button"
         >
-          <div className="py-1" role="none">
+          <div ref={menuRef} className="py-1" role="none">
             <button
               onClick={() => handleSelectVersion(StockfishVersion.SF16)}
-              className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-neutral-300"
+              className="block w-full px-4 py-2 text-left text-sm text-gray-700 select-none hover:bg-neutral-300"
               role="menuitem"
             >
               {`${
                 version === "sf-16" ? "✓ Stockfish 16.1 " : "Stockfish 16.1 "
               }`}
-              <span className="float-right text-gray-500">7MB</span>
+              <span className="float-right text-gray-500 select-none">7MB</span>
             </button>
             <button
               onClick={() => handleSelectVersion(StockfishVersion.SF17)}
-              className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-neutral-300"
+              className="block w-full px-4 py-2 text-left text-sm text-gray-700 select-none hover:bg-neutral-300"
               role="menuitem"
             >
               {`${version === "sf-17" ? "✓ Stockfish 17 " : "Stockfish 17 "}`}
-              <span className="float-right text-gray-500">79MB</span>
+              <span className="float-right text-gray-500 select-none">
+                79MB
+              </span>
             </button>
           </div>
         </div>

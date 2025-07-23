@@ -3,12 +3,13 @@ import debounce from "lodash.debounce";
 import { toFEN } from "../utils/FEN";
 import {
   ColorChoice,
+  EngineOptions,
   GameManager,
   Highlighter,
-  NO_SELECTION,
   PlayerColor,
   PlayerType,
   StockfishVersion,
+  StrengthLevel,
 } from "../types";
 import {
   calculateThreadsForNNUE,
@@ -32,10 +33,6 @@ type EngineState = {
   lastDepthUpdate: number;
   lastArrowUpdate: number;
 };
-type EngineOptions = {
-  colorChoice: ColorChoice;
-  strengthLevel: number;
-};
 
 const IS_SYSTEM_MESSAGE = /^(?:(?:uci|ready)ok$|option name)/;
 const INFORMS_CURRENT_MOVE = /pv (\w{4})/;
@@ -49,17 +46,13 @@ const DEFAULT_DEPTH = 24;
 export const useStockfishHandler = (
   gameManager: GameManager,
   highlighter: Highlighter,
-  colorChoice: number,
-  strengthLevel: number,
+  engineOptions: EngineOptions,
 ) => {
   const [evalCentipawn, setEvalCentipawn] = useState(50);
   const [depthPercentage, setDepthPercentage] = useState(0);
   const workerRef = useRef<Worker | null>(null);
-  const gmRef = useRef(gameManager);
-  const engineOptionsRef = useRef<EngineOptions>({
-    colorChoice,
-    strengthLevel,
-  });
+  const gmRef = useRef<GameManager>(gameManager);
+  const engineOptionsRef = useRef<EngineOptions>(engineOptions);
   const engineStateRef = useRef<EngineState>({
     status: "idle",
     depth: DEFAULT_DEPTH,
@@ -81,6 +74,13 @@ export const useStockfishHandler = (
 
   const isRunning = () => {
     return workerRef.current !== null;
+  };
+
+  const isPlaying = () => {
+    const { colorChoice, strengthLevel } = engineOptionsRef.current;
+    return (
+      colorChoice !== ColorChoice.NONE && strengthLevel !== StrengthLevel.NONE
+    );
   };
 
   const sendCommand = (cmd: string) => {
@@ -107,8 +107,8 @@ export const useStockfishHandler = (
   const configureEngine = useCallback((version: StockfishVersion) => {
     const { strengthLevel } = engineOptionsRef.current;
     const { skill, depth } = getConfigFromLevel(strengthLevel);
-    const threads = calculateThreadsForNNUE();
     engineStateRef.current.depth = depth;
+    const threads = calculateThreadsForNNUE();
     sendCommand(`setoption name Skill Level value ${skill}`);
     sendCommand(`setoption name Threads value ${threads}`);
     if (version === StockfishVersion.SF16) {
@@ -149,9 +149,7 @@ export const useStockfishHandler = (
 
   const handleBestMove = useCallback(
     (line: string) => {
-      const { colorChoice, strengthLevel } = engineOptionsRef.current;
-      const isPlaying =
-        colorChoice !== ColorChoice.NONE && strengthLevel !== NO_SELECTION;
+      const playing = isPlaying();
       const [, from, to, promotion] = line.match(FOUND_BEST_MOVE)!;
       const promotionType = determinePromotionType(promotion);
 
@@ -166,7 +164,7 @@ export const useStockfishHandler = (
         return;
       }
 
-      if (isPlaying) {
+      if (playing) {
         const legalMoves = gmRef.current.getLegalMoves();
         const players = gmRef.current.players;
         const currentPlayerIndex = gmRef.current.currentPlayerIndex;
@@ -178,7 +176,9 @@ export const useStockfishHandler = (
         const isEngineTurn = currentPlayer.type === PlayerType.COMPUTER;
 
         if (fromSq && toSq && isEngineTurn) {
-          const delay = Math.random() * (1400 - 600) + 600;
+          const minDelay = 600;
+          const maxDelay = 1400;
+          const delay = Math.random() * (maxDelay - minDelay) + minDelay;
           setTimeout(() => {
             gmRef.current.executeMove(
               fromSq.row,
@@ -202,9 +202,7 @@ export const useStockfishHandler = (
 
   const handleDepthMessage = useCallback(
     (line: string) => {
-      const { colorChoice, strengthLevel } = engineOptionsRef.current;
-      const isPlaying =
-        colorChoice !== ColorChoice.NONE && strengthLevel !== NO_SELECTION;
+      const playing = isPlaying();
       const currentDepth = parseInt(line.match(INFORMS_DEPTH)![1], 10);
       const currentTime = Date.now();
       const percent = (currentDepth / DEFAULT_DEPTH) * 100;
@@ -222,7 +220,7 @@ export const useStockfishHandler = (
           engineStateRef.current.lastDepthUpdate = currentDepth;
           engineStateRef.current.lastArrowUpdate = currentTime;
 
-          if (!isPlaying) debouncedAddStockfishArrow(from, to);
+          if (!playing) debouncedAddStockfishArrow(from, to);
         }
       }
     },
@@ -334,8 +332,8 @@ export const useStockfishHandler = (
   }, [gameManager]);
 
   useEffect(() => {
-    engineOptionsRef.current = { colorChoice, strengthLevel };
-  }, [colorChoice, strengthLevel]);
+    engineOptionsRef.current = engineOptions;
+  }, [engineOptions]);
 
   /* USE EFFECTS FOR UPDATING USEREFs THAT HAVE EXTERNAL DEPENDENCIES */
 

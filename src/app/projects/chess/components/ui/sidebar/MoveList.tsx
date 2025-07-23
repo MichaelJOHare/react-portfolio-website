@@ -1,5 +1,5 @@
 import { useGame } from "../../../context/GameContext";
-import { ColorChoice, NO_SELECTION } from "../../../types";
+import { ColorChoice, StrengthLevel } from "../../../types";
 import { MoveListButton } from "./MoveListButton";
 
 export const MoveList = () => {
@@ -9,20 +9,21 @@ export const MoveList = () => {
     pieceSelector,
     promotionHandler,
     stockfishHandler,
-    colorChoice,
-    strengthLevel,
+    engineOptions,
   } = useGame();
   const {
     undoPreviousMoveSquares,
     clearStockfishBestMoveArrow,
     clearDrawnHighlights,
+    addPreviousMoveSquares,
   } = highlighter;
-  const { replayMoves, moveHistory } = gameManager;
+  const { replayMoves, moveHistory, undoneMoveHistory } = gameManager;
   const { deselectPiece } = pieceSelector;
   const { clearPromotionDetails, isShown } = promotionHandler;
   const { interruptEngineThinking } = stockfishHandler;
   const isPlayingVsComputer =
-    colorChoice !== ColorChoice.NONE && strengthLevel !== NO_SELECTION;
+    engineOptions.colorChoice !== ColorChoice.NONE &&
+    engineOptions.strengthLevel !== StrengthLevel.NONE;
 
   const clearUI = () => {
     interruptEngineThinking();
@@ -33,21 +34,39 @@ export const MoveList = () => {
   };
 
   const onMoveClick = (index: number) => {
-    // eventually change this to visually undo moves to show board state at time of move that was clicked and prevent moving pieces
+    // eventually change this to visually undo moves to show board state at time of move that was clicked
+    // and prevent moving pieces when playing against computer
     const increment = isShown ? 1 : 0;
     if (!isPlayingVsComputer) {
       clearUI();
-      const movesToUndo = moveHistory.length - index - 1;
-      if (movesToUndo > 0) {
-        replayMoves(movesToUndo, true);
+
+      if (index < moveHistory.length) {
+        const movesToUndo = moveHistory.length - index - 1;
+        if (movesToUndo > 0) {
+          replayMoves(movesToUndo, true);
+        }
+        undoPreviousMoveSquares(movesToUndo + increment);
+      } else {
+        const currentPosition = moveHistory.length;
+        const targetPosition = index + 1;
+        const movesToRedo = targetPosition - currentPosition;
+        if (movesToRedo > 0) {
+          replayMoves(movesToRedo, false);
+          const redoMoves = undoneMoveHistory.slice(-movesToRedo).reverse();
+          redoMoves.forEach(({ move }) => {
+            addPreviousMoveSquares(move.from, move.to);
+          });
+        }
       }
-      undoPreviousMoveSquares(movesToUndo + increment);
     }
   };
 
+  const allMoves = [...moveHistory, ...undoneMoveHistory.slice().reverse()];
+  const currentMoveIndex = moveHistory.length - 1;
+
   const moveRows = [];
-  for (let i = 0; i < moveHistory.length; i += 2) {
-    moveRows.push([moveHistory[i], moveHistory[i + 1]]);
+  for (let i = 0; i < allMoves.length; i += 2) {
+    moveRows.push([allMoves[i], allMoves[i + 1]]);
   }
 
   return (
@@ -56,6 +75,8 @@ export const MoveList = () => {
         {moveRows.map(([whiteRecord, blackRecord], rowIndex) => {
           const whiteIndex = rowIndex * 2;
           const blackIndex = whiteIndex + 1;
+          const isWhiteUndone = whiteIndex > currentMoveIndex;
+          const isBlackUndone = blackIndex > currentMoveIndex;
 
           return (
             <li
@@ -68,7 +89,8 @@ export const MoveList = () => {
                 <MoveListButton
                   move={whiteRecord.move}
                   record={whiteRecord}
-                  isActive={whiteIndex === moveHistory.length - 1}
+                  isActive={whiteIndex === currentMoveIndex}
+                  isUndone={isWhiteUndone}
                   isWhite={true}
                   onClick={() => onMoveClick(whiteIndex)}
                 />
@@ -78,7 +100,8 @@ export const MoveList = () => {
                 <MoveListButton
                   move={blackRecord.move}
                   record={blackRecord}
-                  isActive={blackIndex === moveHistory.length - 1}
+                  isActive={blackIndex === currentMoveIndex}
+                  isUndone={isBlackUndone}
                   isWhite={false}
                   onClick={() => onMoveClick(blackIndex)}
                 />
