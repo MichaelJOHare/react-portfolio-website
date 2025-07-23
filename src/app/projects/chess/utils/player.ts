@@ -1,13 +1,11 @@
 import { isKingInCheck } from "./board";
-import { simulateMove } from "./gameManager";
-import { isValidCastlingMove } from "./move";
+import { isValidCastlingMove, simulateMove } from "./move";
 import {
   CastlingMove,
   Move,
   MoveHistory,
   MoveType,
   Piece,
-  PieceType,
   Player,
   PlayerColor,
   PlayerType,
@@ -80,33 +78,6 @@ export const getLegalMovesFor = (
   });
 
   return legalMoves;
-};
-
-export const getCheckStatus = (
-  player: Player,
-  opponent: Player,
-  board: Square[][],
-  piecesByPlayer: Map<string, Piece[]>,
-  moveHistory: MoveHistory[],
-): { isKingInCheck: boolean; kingSquare?: Square } => {
-  const playersKing = piecesByPlayer
-    .get(player.id)
-    ?.find((piece) => piece.type === PieceType.KING);
-
-  if (!playersKing) return { isKingInCheck: false };
-
-  const opponentMoves = getPlayerMoves(
-    opponent,
-    board,
-    piecesByPlayer,
-    moveHistory,
-  );
-  const kingInCheck = isKingInCheck(opponentMoves);
-
-  return {
-    isKingInCheck: kingInCheck,
-    kingSquare: kingInCheck ? playersKing.currentSquare : undefined,
-  };
 };
 
 export const isComputerPlaying = (player1: Player, player2: Player) => {

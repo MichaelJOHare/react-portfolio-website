@@ -523,8 +523,27 @@ export const isValidCastlingMove = (
  */
 
 /*
- ***** ROUTE SINGLE MOVE *****
+ ***** SIMULATE AND ROUTE SINGLE MOVE *****
  */
+
+export const simulateMove = (move: Move, board: Square[][]) => {
+  const tempBoard = board.map((row) =>
+    row.map((square) => ({
+      ...square,
+      piece: square.piece ? { ...square.piece } : undefined,
+    })),
+  );
+
+  const { piece, from, to, capturedPiece } = move;
+  const tempCaptured = capturedPiece
+    ? { ...capturedPiece, isAlive: false }
+    : undefined;
+
+  tempBoard[to.row][to.col].piece = { ...piece };
+  tempBoard[from.row][from.col].piece = undefined;
+
+  return { tempBoard, capturedPiece: tempCaptured };
+};
 
 export const applyMove = (
   move: Move,
@@ -551,5 +570,5 @@ export const applyMove = (
 };
 
 /*
- ***** ROUTE SINGLE MOVE *****
+ ***** SIMULATE AND ROUTE SINGLE MOVE *****
  */

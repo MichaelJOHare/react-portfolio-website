@@ -1,26 +1,24 @@
 import { fromFEN } from "./FEN";
-import { getCheckStatus, getLegalMovesFor } from "./player";
-import { GameState, Move, Square, Piece, Player, MoveHistory } from "../types";
-import { applyMove, cloneBoard } from "./index";
+import { getLegalMovesFor, getPlayerMoves } from "./player";
+import {
+  GameState,
+  Move,
+  Square,
+  Piece,
+  Player,
+  MoveHistory,
+  PieceType,
+} from "../types";
+import { applyMove, cloneBoard, isKingInCheck } from "./index";
 
-export const simulateMove = (move: Move, board: Square[][]) => {
-  const tempBoard = board.map((row) =>
-    row.map((square) => ({
-      ...square,
-      piece: square.piece ? { ...square.piece } : undefined,
-    })),
-  );
-
-  const { piece, from, to, capturedPiece } = move;
-  const tempCaptured = capturedPiece
-    ? { ...capturedPiece, isAlive: false }
-    : undefined;
-
-  tempBoard[to.row][to.col].piece = { ...piece };
-  tempBoard[from.row][from.col].piece = undefined;
-
-  return { tempBoard, capturedPiece: tempCaptured };
-};
+export const copyGameState = (gameState: GameState): GameState => ({
+  ...gameState,
+  board: cloneBoard(gameState.board),
+  moveHistory: [...gameState.moveHistory],
+  undoneMoveHistory: [...gameState.undoneMoveHistory],
+  capturedPieces: [...gameState.capturedPieces],
+  piecesByPlayer: new Map(gameState.piecesByPlayer),
+});
 
 export const loadGameStateFromFEN = (
   fenString: string,
@@ -44,8 +42,7 @@ export const loadGameStateFromFEN = (
     [],
   );
 
-  return {
-    ...currentGameState,
+  const updatedGameState = {
     board: result.board,
     piecesByPlayer: result.piecesByPlayer,
     currentPlayerIndex: result.currentPlayerIndex,
@@ -57,16 +54,39 @@ export const loadGameStateFromFEN = (
     undoneMoveHistory: [],
     capturedPieces: [],
   };
+
+  return {
+    ...currentGameState,
+    ...updatedGameState,
+  };
 };
 
-export const copyGameState = (gameState: GameState): GameState => ({
-  ...gameState,
-  board: cloneBoard(gameState.board),
-  moveHistory: [...gameState.moveHistory],
-  undoneMoveHistory: [...gameState.undoneMoveHistory],
-  capturedPieces: [...gameState.capturedPieces],
-  piecesByPlayer: new Map(gameState.piecesByPlayer),
-});
+export const getCheckStatus = (
+  player: Player,
+  opponent: Player,
+  board: Square[][],
+  piecesByPlayer: Map<string, Piece[]>,
+  moveHistory: MoveHistory[],
+): { isKingInCheck: boolean; kingSquare?: Square } => {
+  const playersKing = piecesByPlayer
+    .get(player.id)
+    ?.find((piece) => piece.type === PieceType.KING);
+
+  if (!playersKing) return { isKingInCheck: false };
+
+  const opponentMoves = getPlayerMoves(
+    opponent,
+    board,
+    piecesByPlayer,
+    moveHistory,
+  );
+  const kingInCheck = isKingInCheck(opponentMoves);
+
+  return {
+    isKingInCheck: kingInCheck,
+    kingSquare: kingInCheck ? playersKing.currentSquare : undefined,
+  };
+};
 
 export const getGameStatus = (
   board: Square[][],

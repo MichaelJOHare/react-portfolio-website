@@ -4,6 +4,7 @@ import { StockfishOptionsModal } from "./options/StockfishOptionsModal";
 import { useGame } from "../../../context/GameContext";
 import { SidebarButton } from "./SidebarButton";
 import { MoveList } from "./MoveList";
+import { getGameStatus } from "../../../utils";
 
 export const Sidebar = () => {
   const { gameManager, stockfishHandler, toggleFlipBoard, onResetGame } =
@@ -15,6 +16,7 @@ export const Sidebar = () => {
     halfMoveClock,
     fullMoveNumber,
     moveHistory,
+    piecesByPlayer,
     loadFromFEN,
   } = gameManager;
   const { terminateWorker } = stockfishHandler;
@@ -22,7 +24,11 @@ export const Sidebar = () => {
   const [showStockfishOptions, setShowStockfishOptions] = useState(false);
   const [fenValue, setFenValue] = useState("");
   const [fenStatus, setFenStatus] = useState<
-    "Valid" | "Invalid FEN string" | "Paste FEN string here"
+    | "Valid"
+    | "Valid Check"
+    | "Valid Checkmate"
+    | "Invalid FEN string"
+    | "Paste FEN string here"
   >("Paste FEN string here");
   const movesHistory = moveHistory.map((record) => record.move);
 
@@ -56,7 +62,23 @@ export const Sidebar = () => {
     }
 
     const success = loadFromFEN(fenString);
-    setFenStatus(success ? "Valid" : "Invalid FEN string");
+    const { causedCheck, causedCheckMate } = getGameStatus(
+      board,
+      players[currentPlayerIndex],
+      players[1 - currentPlayerIndex],
+      piecesByPlayer,
+      moveHistory,
+    );
+
+    if (!success) {
+      setFenStatus("Invalid FEN string");
+    } else if (causedCheckMate) {
+      setFenStatus("Valid Checkmate"); // fix this
+    } else if (causedCheck) {
+      setFenStatus("Valid Check");
+    } else {
+      setFenStatus("Valid");
+    }
   };
 
   useEffect(() => {
