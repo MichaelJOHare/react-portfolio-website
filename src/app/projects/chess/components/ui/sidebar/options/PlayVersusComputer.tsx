@@ -22,27 +22,33 @@ export const PlayVersusComputer = ({
   onPlayToggle,
 }: PlayVersusComputerProps) => {
   return (
-    <div className="flex flex-col">
+    <div className="flex h-full flex-col">
       <h2 className="self-center text-2xl font-medium select-none">
         Play Versus Computer
       </h2>
-      <h3 className="self-center pt-2 pb-1 text-xl font-bold select-none">
-        Strength level
-      </h3>
-      <StrengthLevelButtons
-        selectedValue={tempStrengthLevel}
-        isPlaying={isPlaying}
-        onChange={onStrengthLevelChange}
-      />
-      <h3 className="self-center pt-2 pb-1 text-xl font-bold select-none">
-        Choose Color
-      </h3>
-      <ColorChoiceButtons
-        selectedValue={tempColorChoice}
-        isPlaying={isPlaying}
-        onClick={onColorChoiceChange}
-      />
-      <div className="pt-2">
+      <div className="flex flex-1 flex-col justify-evenly">
+        <div className="flex flex-col">
+          <h3 className="self-center pb-2 text-xl font-bold select-none">
+            Strength level
+          </h3>
+          <StrengthLevelButtons
+            selectedValue={tempStrengthLevel}
+            isPlaying={isPlaying}
+            onChange={onStrengthLevelChange}
+          />
+        </div>
+        <div className="flex flex-col">
+          <h3 className="self-center pb-2 text-xl font-bold select-none">
+            Choose Color
+          </h3>
+          <ColorChoiceButtons
+            selectedValue={tempColorChoice}
+            isPlaying={isPlaying}
+            onClick={onColorChoiceChange}
+          />
+        </div>
+      </div>
+      <div className="mt-4">
         <button
           type="button"
           disabled={optionUnselected}

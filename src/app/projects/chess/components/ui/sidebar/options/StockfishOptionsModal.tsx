@@ -141,7 +141,7 @@ export const StockfishOptionsModal = ({
 
   return (
     <div
-      className={`desktop-md:mt-0 desktop-md:pb-0 absolute top-0 left-0 mt-2 flex size-full items-center justify-center pb-2 transition-opacity duration-200 ${
+      className={`desktop-md:mt-0 desktop-md:pb-0 mobile:min-h-148 absolute top-0 left-0 mt-2 flex size-full items-center justify-center pb-2 transition-opacity duration-200 ${
         isOpen ? "z-20 opacity-100" : "pointer-events-none z-0 opacity-0"
       }`}
     >
@@ -156,32 +156,33 @@ export const StockfishOptionsModal = ({
         </div>
         <div
           ref={menuRef}
-          className="flex h-full w-full flex-col rounded-lg bg-neutral-300 p-4 dark:bg-gray-700"
+          className="flex size-full flex-col rounded-lg bg-neutral-300 p-4 dark:bg-gray-700"
         >
-          <h1 className="flex self-center pb-4 text-3xl select-none">
-            Stockfish Options
-          </h1>
-          <div className="desktop-md:flex-col flex grow flex-col justify-around">
-            <div className="flex flex-col self-center pb-2">
-              <StockfishAnalysisToggle
-                onAnalysisToggle={handleAnalysisToggle}
-                disabled={isPlaying}
+          <div className="flex h-full flex-col pt-3">
+            <div className="flex h-1/4 flex-col justify-evenly">
+              <div className="flex flex-col self-center">
+                <StockfishAnalysisToggle
+                  onAnalysisToggle={handleAnalysisToggle}
+                  disabled={isPlaying}
+                />
+              </div>
+              <StockfishVersionMenu
+                version={version}
+                onVersionSelect={handleVersionSelect}
               />
             </div>
-            <StockfishVersionMenu
-              version={version}
-              onVersionSelect={handleVersionSelect}
-            />
-            <div className="mt-2 border-t dark:border-gray-300" />
-            <PlayVersusComputer
-              tempStrengthLevel={tempStrengthLevel}
-              tempColorChoice={tempColorChoice}
-              isPlaying={isPlaying}
-              optionUnselected={optionUnselected}
-              onStrengthLevelChange={setTempStrengthLevel}
-              onColorChoiceChange={setTempColorChoice}
-              onPlayToggle={handlePlayToggle}
-            />
+            <div className="my-2 border-t dark:border-gray-300" />
+            <div className="flex h-3/4 flex-col">
+              <PlayVersusComputer
+                tempStrengthLevel={tempStrengthLevel}
+                tempColorChoice={tempColorChoice}
+                isPlaying={isPlaying}
+                optionUnselected={optionUnselected}
+                onStrengthLevelChange={setTempStrengthLevel}
+                onColorChoiceChange={setTempColorChoice}
+                onPlayToggle={handlePlayToggle}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -32,7 +32,7 @@ export const StockfishVersionMenu = ({
   };
 
   return (
-    <div className="relative inline-block text-left">
+    <div className="relative inline-block pt-2 text-left">
       <div className="flex justify-center">
         {/* put green circle next to currently selected version */}
         <button

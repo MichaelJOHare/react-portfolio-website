@@ -136,10 +136,9 @@ export const Sidebar = () => {
         </div>
         <div className="flex min-h-0 flex-1 flex-col rounded-b-lg bg-neutral-100 px-4 py-2 dark:bg-gray-800">
           <div
-            className={`overflow-y-auto ${
+            className={`overflow-y-auto [scrollbar-gutter:stable] ${
               showFenTextArea ? "min-h-0 flex-1" : "h-full"
             }`}
-            style={{ scrollbarGutter: "stable" }}
           >
             <MoveList />
           </div>

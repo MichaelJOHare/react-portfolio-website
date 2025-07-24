@@ -20,7 +20,7 @@ export const PromotionPanel = () => {
 
   const calculatePosition = (square: Square): string => {
     const col = square.col;
-    const squareSizeInCSS = `calc(var(--size-chess-square) * ${col})`;
+    const squareSizeInCSS = `calc(var(--size-chess-square) * ${col})`; // i think i can just use the custom property directly
     return squareSizeInCSS;
   };
 
