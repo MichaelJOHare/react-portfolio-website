@@ -1,5 +1,9 @@
 import { Move, MoveHistory, PieceType } from "../../../types";
-import { getMoveDisplay, getPieceUnicode } from "../../../utils";
+import {
+  getFileFromCol,
+  getPieceUnicode,
+  squareToString,
+} from "../../../utils";
 
 export const MoveListButton = ({
   move,
@@ -16,13 +20,20 @@ export const MoveListButton = ({
   isWhite: boolean;
   onClick: () => void;
 }) => {
-  const display = getMoveDisplay(
-    move,
-    move.from,
-    move.to,
-    record.causedCheck,
-    record.causedCheckMate,
-  );
+  const isPawn = move.piece.type === PieceType.PAWN;
+  const captured = move.capturedPiece;
+
+  let display = "";
+
+  if (isPawn && captured) {
+    display += `${getFileFromCol(move.from.col)}×${squareToString(move.to)}`;
+  } else {
+    if (captured) display += "x";
+    display += squareToString(move.to);
+  }
+
+  if (record.causedCheck) display += "+";
+  if (record.causedCheckMate) display += "#";
 
   return (
     <button

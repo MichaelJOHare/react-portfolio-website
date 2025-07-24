@@ -1,5 +1,5 @@
 import { fromFEN } from "./FEN";
-import { getLegalMovesFor, getPlayerMoves } from "./player";
+import { getPlayerLegalMoves, getPlayerMoves } from "./player";
 import {
   GameState,
   Move,
@@ -103,7 +103,7 @@ export const getGameStatus = (
     moveHistory,
   );
 
-  const legalMoves = getLegalMovesFor(
+  const legalMoves = getPlayerLegalMoves(
     currentPlayer,
     opponent,
     board,

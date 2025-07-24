@@ -22,13 +22,9 @@ export const pawnMovementStrategy: MovementStrategy = (
 ) => {
   const legalMoves: Move[] = [];
   const { row, col } = piece.currentSquare;
-
   const direction = piece.color === PlayerColor.WHITE ? -1 : 1;
-
   const backRank = piece.color === PlayerColor.WHITE ? 0 : 7;
-
   const startingRow = piece.color === PlayerColor.WHITE ? 6 : 1;
-
   const rowBeforePromotionRow = piece.color === PlayerColor.WHITE ? 1 : 6;
 
   const addNormalMoves = (
@@ -125,9 +121,7 @@ export const pawnMovementStrategy: MovementStrategy = (
       return;
     }
     const enPassantStartingRow = piece.color === PlayerColor.WHITE ? 1 : 6;
-
     const enPassantEndRow = piece.color === PlayerColor.WHITE ? 3 : 4;
-
     const lastMove = moveHistory[moveHistory.length - 1];
 
     if (

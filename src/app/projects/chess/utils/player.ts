@@ -38,7 +38,7 @@ export const getPlayerMoves = (
   return playerMoves;
 };
 
-export const getLegalMovesFor = (
+export const getPlayerLegalMoves = (
   player: Player,
   opponent: Player,
   board: Square[][],

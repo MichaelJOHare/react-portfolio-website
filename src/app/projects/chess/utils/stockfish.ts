@@ -1,4 +1,5 @@
 import { emptyArrow } from "../hooks/useHighlighter";
+import { createSquare, getSquareFromNotation } from "./square";
 import {
   ArrowProps,
   ChessEngineMove,
@@ -7,7 +8,6 @@ import {
   Square,
   StrengthLevel,
 } from "../types";
-import { createSquare, getSquareFromNotation } from "./square";
 
 export const getConfigFromLevel = (uiLevel: number) => {
   if (uiLevel === StrengthLevel.NONE) {

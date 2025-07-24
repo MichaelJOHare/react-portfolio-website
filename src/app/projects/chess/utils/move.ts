@@ -294,8 +294,8 @@ export const undoCastlingMove = (move: Move, board: Square[][]): Piece[] => {
   const updatedKing = {
     ...castlingMove.piece,
     currentSquare: castlingMove.kingFrom,
-    firstMoveNumber: NOT_MOVED, // undoing castle move means it was legal at time of execution
-  }; //                                  -can reset firstMoveNumber number safely
+    firstMoveNumber: NOT_MOVED,
+  };
   const updatedRook = {
     ...castlingMove.rook,
     currentSquare: castlingMove.rookFrom,
