@@ -141,7 +141,7 @@ export const StockfishOptionsModal = ({
 
   return (
     <div
-      className={`desktop-md:h-full desktop-md:mt-0 desktop-md:pb-0 limitedHeight:h-auto absolute top-0 left-0 mt-2 flex w-full items-center justify-center pb-2 transition-opacity duration-200 ${
+      className={`desktop-md:mt-0 desktop-md:pb-0 absolute top-0 left-0 mt-2 flex size-full items-center justify-center pb-2 transition-opacity duration-200 ${
         isOpen ? "z-20 opacity-100" : "pointer-events-none z-0 opacity-0"
       }`}
     >
@@ -158,7 +158,7 @@ export const StockfishOptionsModal = ({
           ref={menuRef}
           className="flex h-full w-full flex-col rounded-lg bg-neutral-300 p-4 dark:bg-gray-700"
         >
-          <h1 className="limitedHeight:text-2xl flex self-center pb-4 text-2xl select-none 2xl:text-3xl">
+          <h1 className="flex self-center pb-4 text-3xl select-none">
             Stockfish Options
           </h1>
           <div className="desktop-md:flex-col flex grow flex-col justify-around">

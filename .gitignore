@@ -40,3 +40,6 @@ next-env.d.ts
 
 # profiler api
 /src/app/api/profiler-log/*
+
+# copilot instructions
+/.github/copilot-instructions.md

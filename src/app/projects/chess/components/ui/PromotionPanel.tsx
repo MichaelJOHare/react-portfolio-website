@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { PieceType, PlayerColor, Square } from "../../types";
 import { useGame } from "../../context/GameContext";
 
@@ -6,19 +5,6 @@ export const PromotionPanel = () => {
   const { isBoardFlipped, promotionHandler } = useGame();
   const { promotionSquare, promotingColor, onPromotionSelect } =
     promotionHandler;
-  const [isLargeScreen, setIsLargeScreen] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia(
-      "(min-width: 1024px) and (min-height: 900px)",
-    );
-    setIsLargeScreen(mediaQuery.matches);
-    const handleChange = (e: MediaQueryListEvent) =>
-      setIsLargeScreen(e.matches);
-
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
 
   if (!promotionSquare || !promotingColor) return null;
 
@@ -32,32 +18,21 @@ export const PromotionPanel = () => {
     promotionPieces = [...promotionPieces].reverse();
   }
 
-  const calculatePosition = (
-    square: Square,
-    isLargeScreen: boolean,
-  ): string => {
+  const calculatePosition = (square: Square): string => {
     const col = square.col;
-    const squareSize = isLargeScreen ? 70 : 90;
-    const squaresPerRow = 8;
-
-    return `${(squareSize / squaresPerRow) * col}vmin`;
+    const squareSizeInCSS = `calc(var(--size-chess-square) * ${col})`;
+    return squareSizeInCSS;
   };
 
-  const getTopOffset = (
-    index: number,
-    color: PlayerColor,
-    isLargeScreen: boolean,
-  ): string => {
+  const getTopOffset = (index: number, color: PlayerColor): string => {
     const isPlayerOnTop = color === PlayerColor.WHITE;
+    const topOfPromotionSquare = `calc(var(--size-chess-square) * ${promotionSquare.row})`;
 
-    const squareSize = isLargeScreen ? 8.75 : 11;
-    const topOfPromotionSquare = promotionSquare.row * squareSize;
-
-    const offset = isPlayerOnTop
-      ? topOfPromotionSquare + index * squareSize
-      : topOfPromotionSquare - (3 - index) * squareSize;
-
-    return `${offset}vmin`;
+    if (isPlayerOnTop) {
+      return `calc(${topOfPromotionSquare} + calc(var(--size-chess-square) * ${index}))`;
+    } else {
+      return `calc(${topOfPromotionSquare} - calc(var(--size-chess-square) * ${3 - index}))`;
+    }
   };
 
   return (
@@ -65,10 +40,10 @@ export const PromotionPanel = () => {
       {promotionPieces.map((type, index) => (
         <div
           key={type}
-          className="desktop-md:w-[8.75vmin] desktop-md:h-[8.75vmin] limitedHeight:w-[11.25vmin] limitedHeight:h-[11.25vmin] absolute h-[11.25vmin] w-[11.25vmin] cursor-pointer from-amber-400 to-amber-700 hover:bg-radial"
+          className="size-chess-square absolute cursor-pointer from-amber-400 to-amber-700 hover:bg-radial"
           style={{
-            top: getTopOffset(index, promotingColor, isLargeScreen),
-            left: calculatePosition(promotionSquare, isLargeScreen),
+            top: getTopOffset(index, promotingColor),
+            left: calculatePosition(promotionSquare),
           }}
           onClick={() => onPromotionSelect(type)}
         >

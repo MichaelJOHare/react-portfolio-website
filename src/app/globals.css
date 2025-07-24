@@ -6,11 +6,15 @@
   }
 }
 @theme {
+  --size-chess-size: min(calc((100vh - 5rem) * 0.8), calc(90vw - 4rem));
+  --size-chess-square: calc(var(--size-chess-size) / 8);
+  --height-chess-h: calc((100vh - 5rem) * 0.8);
+  --width-desktop-w: calc(var(--size-chess-size) * 0.5);
+
   --text-2xs: 0.65rem;
   --text-2xs--line-height: 0.975rem;
 
   --breakpoint-desktop-md: 85rem;
-  --breakpoint-desktop-lg: 100rem;
 
   --color-darkSquare: #b58863;
   --color-lightSquare: #f0d9b5;
@@ -22,7 +26,7 @@
   --drop-shadow-bPiece: 0 0 0.2rem oklch(100% 0.00011 271.152);
 }
 @custom-variant dark (&:where(.dark, .dark *));
+@custom-variant mobile (@media (max-width: 84.9375rem) or (max-height: 900px));
+@custom-variant narrow (@media (max-aspect-ratio: 1/1));
 @custom-variant progress-filled (&::-webkit-progress-bar, &);
 @custom-variant progress-unfilled (&::-webkit-progress-value, &::-moz-progress-bar);
-@custom-variant limitedHeight (@media (max-height: 900px));
-@custom-variant desktop-w-h-breakpoint (@media (min-width: 85rem) and (min-height: 81.25rem) and (max-width: 100rem));
