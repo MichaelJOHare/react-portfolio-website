@@ -1,5 +1,5 @@
 import { useGame } from "../../../context/GameContext";
-import { ColorChoice, StrengthLevel } from "../../../types";
+import { NO_CHOICE } from "../../../types";
 import { MoveListButton } from "./MoveListButton";
 
 export const MoveList = () => {
@@ -22,8 +22,8 @@ export const MoveList = () => {
   const { clearPromotionDetails, isShown } = promotionHandler;
   const { interruptEngineThinking } = stockfishHandler;
   const isPlayingVsComputer =
-    engineOptions.colorChoice !== ColorChoice.NONE &&
-    engineOptions.strengthLevel !== StrengthLevel.NONE;
+    engineOptions.colorChoice !== NO_CHOICE &&
+    engineOptions.strengthChoice !== NO_CHOICE;
 
   const clearUI = () => {
     interruptEngineThinking();

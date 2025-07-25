@@ -1,14 +1,13 @@
-import { ColorChoice, StrengthLevel } from "../../../../types";
 import { ColorChoiceButtons } from "./ColorChoiceButtons";
 import { StrengthLevelButtons } from "./StrengthLevelButtons";
 
 type PlayVersusComputerProps = {
-  tempStrengthLevel: StrengthLevel;
-  tempColorChoice: ColorChoice;
+  tempStrengthLevel: number;
+  tempColorChoice: number;
   isPlaying: boolean;
   optionUnselected: boolean;
-  onStrengthLevelChange: (level: StrengthLevel) => void;
-  onColorChoiceChange: (color: ColorChoice) => void;
+  onStrengthLevelChange: (level: number) => void;
+  onColorChoiceChange: (color: number) => void;
   onPlayToggle: () => void;
 };
 

@@ -1,5 +1,5 @@
+import { createSquare, createStandardMove, getPieceAt } from "../.";
 import { Move, MovementStrategy } from "../../types";
-import { createSquare, createStandardMove, getPieceAt } from "../index";
 
 export const bishopMovementStrategy: MovementStrategy = (board, piece) => {
   const legalMoves: Move[] = [];

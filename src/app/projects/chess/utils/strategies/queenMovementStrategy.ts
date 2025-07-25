@@ -1,5 +1,5 @@
 import { MovementStrategy, Move } from "../../types";
-import { createStandardMove, createSquare, getPieceAt } from "../index";
+import { createStandardMove, createSquare, getPieceAt } from "../.";
 
 export const queenMovementStrategy: MovementStrategy = (board, piece) => {
   const legalMoves: Move[] = [];

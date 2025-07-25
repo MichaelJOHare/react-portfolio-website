@@ -3,23 +3,35 @@ import { createSquare, getSquareFromNotation } from "./square";
 import {
   ArrowProps,
   ChessEngineMove,
+  DEFAULT_DEPTH,
+  MAX_STRENGTH,
+  NO_CHOICE,
   Piece,
   PieceType,
   Square,
-  StrengthLevel,
 } from "../types";
 
+const LEVEL_CONFIG = [
+  { skill: 0, depth: 5, time: 50 },
+  { skill: 3, depth: 5, time: 100 },
+  { skill: 6, depth: 5, time: 150 },
+  { skill: 9, depth: 5, time: 200 },
+  { skill: 12, depth: 5, time: 300 },
+  { skill: 15, depth: 8, time: 400 },
+  { skill: 18, depth: 13, time: 500 },
+  { skill: MAX_STRENGTH, depth: 22, time: 1000 },
+] as const;
+
 export const getConfigFromLevel = (uiLevel: number) => {
-  if (uiLevel === StrengthLevel.NONE) {
-    return { skill: 20, depth: 24 };
+  if (uiLevel === NO_CHOICE) {
+    return {
+      skill: MAX_STRENGTH,
+      depth: DEFAULT_DEPTH,
+      time: NO_CHOICE,
+    };
   }
 
-  const clamped = Math.max(1, Math.min(8, uiLevel));
-  const internalLevel = Math.round((clamped - 1) * (29 / 7));
-  const skill = Math.min(internalLevel, 20);
-  const depth = internalLevel < 15 ? Math.ceil((internalLevel + 1) / 5) : 24;
-
-  return { skill, depth };
+  return LEVEL_CONFIG[uiLevel - 1];
 };
 
 export const isCastlingMove = (

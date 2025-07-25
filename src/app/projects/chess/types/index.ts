@@ -128,43 +128,29 @@ export type PromotionPanel = {
   promotingPawn: Piece | undefined;
 };
 
+export enum StockfishVersion {
+  SF16 = "sf-16",
+  SF17 = "sf-17",
+}
+
+export type EngineOptions = {
+  colorChoice: number;
+  strengthChoice: number;
+};
+export const DEFAULT_DEPTH = 28;
+export const MAX_STRENGTH = 20;
+export const NO_CHOICE = -1;
+export const ColorChoice = {
+  WHITE: 0,
+  RANDOM: 1,
+  BLACK: 2,
+};
+
 export type ChessEngineMove = {
   from: string;
   to: string;
   promotion?: string;
 } | null;
-
-export type EngineOptions = {
-  colorChoice: ColorChoice;
-  strengthLevel: StrengthLevel;
-};
-
-export enum StockfishVersion {
-  SF16 = "sf-16",
-  SF17 = "sf-17",
-  NONE = "0",
-}
-
-export const DEFAULT_DEPTH = 24;
-export const MAX_STRENGTH = 20;
-export enum StrengthLevel {
-  NONE = -1,
-  L1 = 1,
-  L2 = 2,
-  L3 = 3,
-  L4 = 4,
-  L5 = 5,
-  L6 = 6,
-  L7 = 7,
-  L8 = 8,
-}
-
-export enum ColorChoice {
-  WHITE = 0,
-  RANDOM = 1,
-  BLACK = 2,
-  NONE = -1,
-}
 
 export type ArrowProps = {
   x1: number;

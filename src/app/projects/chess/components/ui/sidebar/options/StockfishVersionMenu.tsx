@@ -43,9 +43,11 @@ export const StockfishVersionMenu = ({
           aria-haspopup="true"
           onClick={toggleMenu}
         >
-          {version === "sf-16" ? "Stockfish 16.1 · " : "Stockfish 17 · "}
+          {version === StockfishVersion.SF16
+            ? "Stockfish 16 · "
+            : "Stockfish 17.1 · "}
           <span className="float-right">
-            {version === "sf-16" ? "7MB" : "79MB"}
+            {version === StockfishVersion.SF16 ? "7MB" : "79MB"}
           </span>
           <DropdownArrow className="ms-3 h-2.5 w-2.5" />
         </button>
@@ -64,9 +66,7 @@ export const StockfishVersionMenu = ({
               className="block w-full px-4 py-2 text-left text-sm text-gray-700 select-none hover:bg-neutral-300"
               role="menuitem"
             >
-              {`${
-                version === "sf-16" ? "✓ Stockfish 16.1 " : "Stockfish 16.1 "
-              }`}
+              {`${version === StockfishVersion.SF16 ? "✓ Stockfish 16 " : "Stockfish 16 "}`}
               <span className="float-right text-gray-500 select-none">7MB</span>
             </button>
             <button
@@ -74,7 +74,7 @@ export const StockfishVersionMenu = ({
               className="block w-full px-4 py-2 text-left text-sm text-gray-700 select-none hover:bg-neutral-300"
               role="menuitem"
             >
-              {`${version === "sf-17" ? "✓ Stockfish 17 " : "Stockfish 17 "}`}
+              {`${version === StockfishVersion.SF17 ? "✓ Stockfish 17.1 " : "Stockfish 17.1 "}`}
               <span className="float-right text-gray-500 select-none">
                 79MB
               </span>

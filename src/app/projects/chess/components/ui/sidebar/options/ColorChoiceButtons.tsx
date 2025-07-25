@@ -4,9 +4,9 @@ import WhiteKing from "@/assets/icons/white-king.svg";
 import RandomKing from "@/assets/icons/random-king.svg";
 
 type ColorChoiceButtonsProps = {
-  selectedValue: ColorChoice;
+  selectedValue: number;
   isPlaying: boolean;
-  onClick: (color: ColorChoice) => void;
+  onClick: (color: number) => void;
 };
 
 export const ColorChoiceButtons = ({

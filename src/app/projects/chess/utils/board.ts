@@ -1,3 +1,12 @@
+import { createSquare } from ".";
+import {
+  rookMovementStrategy,
+  knightMovementStrategy,
+  bishopMovementStrategy,
+  queenMovementStrategy,
+  kingMovementStrategy,
+  pawnMovementStrategy,
+} from "./strategies";
 import {
   Piece,
   Square,
@@ -8,15 +17,6 @@ import {
   PieceRow,
   PieceColumn,
 } from "../types";
-import { createSquare } from "./square";
-import {
-  rookMovementStrategy,
-  knightMovementStrategy,
-  bishopMovementStrategy,
-  queenMovementStrategy,
-  kingMovementStrategy,
-  pawnMovementStrategy,
-} from "./strategies";
 
 type PieceSetup = {
   type: PieceType;

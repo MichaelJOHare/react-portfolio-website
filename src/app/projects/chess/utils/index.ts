@@ -5,3 +5,4 @@ export * from "./player";
 export * from "./piece";
 export * from "./gameManager";
 export * from "./FEN";
+export * from "./stockfish";

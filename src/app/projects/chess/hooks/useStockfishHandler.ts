@@ -1,22 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import debounce from "lodash.debounce";
-import { toFEN } from "../utils/FEN";
 import {
-  ColorChoice,
-  EngineOptions,
-  GameManager,
-  Highlighter,
-  PlayerColor,
-  PlayerType,
-  StockfishVersion,
-  StrengthLevel,
-} from "../types";
-import {
+  toFEN,
   calculateThreadsForNNUE,
   convertNotationToSquare,
   determinePromotionType,
   getConfigFromLevel,
-} from "../utils/stockfish";
+} from "../utils";
+import {
+  EngineOptions,
+  GameManager,
+  Highlighter,
+  NO_CHOICE,
+  PlayerColor,
+  PlayerType,
+  StockfishVersion,
+} from "../types";
 
 type EngineStatus =
   | "idle"
@@ -30,6 +29,7 @@ type EngineStatus =
 type EngineState = {
   status: EngineStatus;
   depth: number;
+  moveTime: number;
   lastDepthUpdate: number;
   lastArrowUpdate: number;
 };
@@ -40,8 +40,6 @@ const FOUND_BEST_MOVE = /^bestmove ([a-h][1-8])([a-h][1-8])([qrbn])?/;
 const INFORMS_DEPTH = /^info .*\bdepth (\d+) .*\bnps (\d+)/;
 const INFORMS_WDL = /wdl (\d+) (\d+) (\d+)/;
 const INFORMS_MATE = /score mate (\-?\d+)/;
-
-const DEFAULT_DEPTH = 24;
 
 export const useStockfishHandler = (
   gameManager: GameManager,
@@ -55,7 +53,8 @@ export const useStockfishHandler = (
   const engineOptionsRef = useRef<EngineOptions>(engineOptions);
   const engineStateRef = useRef<EngineState>({
     status: "idle",
-    depth: DEFAULT_DEPTH,
+    depth: NO_CHOICE,
+    moveTime: NO_CHOICE,
     lastDepthUpdate: 0,
     lastArrowUpdate: 0,
   });
@@ -77,10 +76,8 @@ export const useStockfishHandler = (
   };
 
   const isPlaying = () => {
-    const { colorChoice, strengthLevel } = engineOptionsRef.current;
-    return (
-      colorChoice !== ColorChoice.NONE && strengthLevel !== StrengthLevel.NONE
-    );
+    const { colorChoice, strengthChoice } = engineOptionsRef.current;
+    return colorChoice !== NO_CHOICE && strengthChoice !== NO_CHOICE;
   };
 
   const sendCommand = (cmd: string) => {
@@ -105,15 +102,16 @@ export const useStockfishHandler = (
   }, []);
 
   const configureEngine = useCallback((version: StockfishVersion) => {
-    const { strengthLevel } = engineOptionsRef.current;
-    const { skill, depth } = getConfigFromLevel(strengthLevel);
+    const { strengthChoice } = engineOptionsRef.current;
+    const { skill, depth, time } = getConfigFromLevel(strengthChoice);
     engineStateRef.current.depth = depth;
+    engineStateRef.current.moveTime = time;
     const threads = calculateThreadsForNNUE();
-    sendCommand(`setoption name Skill Level value ${skill}`);
-    sendCommand(`setoption name Threads value ${threads}`);
     if (version === StockfishVersion.SF16) {
       sendCommand("setoption name Use NNUE value true");
     }
+    sendCommand(`setoption name Skill Level value ${skill}`);
+    sendCommand(`setoption name Threads value ${threads}`);
     sendCommand("setoption name UCI_ShowWDL value true");
     sendCommand("ucinewgame");
 
@@ -141,9 +139,11 @@ export const useStockfishHandler = (
       halfMoveClock,
       fullMoveNumber,
     );
+    const { moveTime } = engineStateRef.current;
+    const goString = moveTime > 0 ? `movetime ${moveTime}` : "";
 
     sendCommand(`position fen ${fen}`);
-    sendCommand(`go depth ${engineStateRef.current.depth}`);
+    sendCommand(`go depth ${engineStateRef.current.depth} ${goString}`);
     engineStateRef.current.status = "thinking";
   }, []);
 
@@ -205,7 +205,7 @@ export const useStockfishHandler = (
       const playing = isPlaying();
       const currentDepth = parseInt(line.match(INFORMS_DEPTH)![1], 10);
       const currentTime = Date.now();
-      const percent = (currentDepth / DEFAULT_DEPTH) * 100;
+      const percent = (currentDepth / engineStateRef.current.depth) * 100;
       setDepthPercentage(percent);
 
       if (
@@ -278,10 +278,6 @@ export const useStockfishHandler = (
 
   const startWorker = useCallback(
     (scriptUrl: StockfishVersion) => {
-      if (scriptUrl === StockfishVersion.NONE) {
-        return;
-      }
-
       const worker = new window.Worker("/stockfish/stockfish-worker.js", {
         type: "module",
       });

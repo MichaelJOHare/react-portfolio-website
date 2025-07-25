@@ -1,5 +1,4 @@
-import { isKingInCheck } from "./board";
-import { isValidCastlingMove, simulateMove } from "./move";
+import { isValidCastlingMove, simulateMove, isKingInCheck } from ".";
 import {
   CastlingMove,
   Move,
@@ -18,7 +17,7 @@ export const createPlayer = (color: PlayerColor, type: PlayerType): Player => ({
   type,
 });
 
-export const getPlayerMoves = (
+export const getPossibleMoves = (
   player: Player,
   board: Square[][],
   piecesByPlayer: Map<string, Piece[]>,
@@ -38,7 +37,7 @@ export const getPlayerMoves = (
   return playerMoves;
 };
 
-export const getPlayerLegalMoves = (
+export const getPlayerMoves = (
   player: Player,
   opponent: Player,
   board: Square[][],
@@ -46,7 +45,12 @@ export const getPlayerLegalMoves = (
   moveHistory: MoveHistory[],
 ): Move[] => {
   const legalMoves: Move[] = [];
-  const pieceMoves = getPlayerMoves(player, board, piecesByPlayer, moveHistory);
+  const pieceMoves = getPossibleMoves(
+    player,
+    board,
+    piecesByPlayer,
+    moveHistory,
+  );
 
   pieceMoves.forEach((move) => {
     const { tempBoard, capturedPiece } = simulateMove(move, board);
@@ -60,7 +64,7 @@ export const getPlayerLegalMoves = (
       tempPiecesByPlayer.set(opponent.id, updatedPieces);
     }
 
-    const opponentMoves = getPlayerMoves(
+    const opponentMoves = getPossibleMoves(
       opponent,
       tempBoard,
       tempPiecesByPlayer,

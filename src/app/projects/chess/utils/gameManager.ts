@@ -1,5 +1,11 @@
-import { fromFEN } from "./FEN";
-import { getPlayerLegalMoves, getPlayerMoves } from "./player";
+import {
+  applyMove,
+  cloneBoard,
+  isKingInCheck,
+  fromFEN,
+  getPossibleMoves,
+  getPlayerMoves,
+} from ".";
 import {
   GameState,
   Move,
@@ -9,7 +15,6 @@ import {
   MoveHistory,
   PieceType,
 } from "../types";
-import { applyMove, cloneBoard, isKingInCheck } from "./index";
 
 export const copyGameState = (gameState: GameState): GameState => ({
   ...gameState,
@@ -74,7 +79,7 @@ export const getCheckStatus = (
 
   if (!playersKing) return { isKingInCheck: false };
 
-  const opponentMoves = getPlayerMoves(
+  const opponentMoves = getPossibleMoves(
     opponent,
     board,
     piecesByPlayer,
@@ -103,7 +108,7 @@ export const getGameStatus = (
     moveHistory,
   );
 
-  const legalMoves = getPlayerLegalMoves(
+  const legalMoves = getPlayerMoves(
     currentPlayer,
     opponent,
     board,

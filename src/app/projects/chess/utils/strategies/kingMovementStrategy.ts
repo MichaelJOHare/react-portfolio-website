@@ -5,7 +5,7 @@ import {
   createCastlingMove,
   getPieceAt,
   havePiecesMoved,
-} from "../index";
+} from "../.";
 
 export const kingMovementStrategy: MovementStrategy = (board, piece) => {
   const legalMoves: Move[] = [];

@@ -5,14 +5,13 @@ import { usePieceSelector } from "../hooks/usePieceSelector";
 import { usePromotionHandler } from "../hooks/usePromotionHandler";
 import { useStockfishHandler } from "../hooks/useStockfishHandler";
 import {
-  ColorChoice,
   EngineOptions,
   GameManager,
   Highlighter,
+  NO_CHOICE,
   PieceSelector,
   PromotionHandler,
   StockfishHandler,
-  StrengthLevel,
 } from "../types";
 
 interface Props {
@@ -41,8 +40,8 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
   const [isBoardFlipped, setIsBoardFlipped] = useState(false);
   const [stockfishEnabled, setStockfishEnabled] = useState(false);
   const [engineOptions, setEngineOptions] = useState<EngineOptions>({
-    strengthLevel: StrengthLevel.NONE,
-    colorChoice: ColorChoice.NONE,
+    strengthChoice: NO_CHOICE,
+    colorChoice: NO_CHOICE,
   });
   const gameManager = useGameManager();
   const highlighter = useHighlighter(isBoardFlipped);

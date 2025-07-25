@@ -1,9 +1,7 @@
-import { StrengthLevel } from "../../../../types";
-
 type StrengthLevelButtonsProps = {
-  selectedValue: StrengthLevel;
+  selectedValue: number;
   isPlaying: boolean;
-  onChange: (level: StrengthLevel) => void;
+  onChange: (level: number) => void;
 };
 
 export const StrengthLevelButtons = ({

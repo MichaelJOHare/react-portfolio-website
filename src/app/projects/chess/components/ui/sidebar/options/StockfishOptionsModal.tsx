@@ -6,8 +6,8 @@ import { StockfishVersionMenu } from "./StockfishVersionMenu";
 import { useGame } from "@/app/projects/chess/context/GameContext";
 import {
   ColorChoice,
+  NO_CHOICE,
   PlayerType,
-  StrengthLevel,
   StockfishVersion,
 } from "../../../../types";
 
@@ -33,21 +33,17 @@ export const StockfishOptionsModal = ({
   const { startWorker, isRunning, terminateWorker } = stockfishHandler;
   const menuRef = useRef<HTMLDivElement>(null);
   const [version, setVersion] = useState(StockfishVersion.SF16);
-  const [tempColorChoice, setTempColorChoice] = useState(ColorChoice.NONE);
-  const [tempStrengthLevel, setTempStrengthLevel] = useState(
-    StrengthLevel.NONE,
-  );
+  const [tempColorChoice, setTempColorChoice] = useState(NO_CHOICE);
+  const [tempStrengthLevel, setTempStrengthLevel] = useState(NO_CHOICE);
 
   const whitePlayer = gameManager.players[0];
   const blackPlayer = gameManager.players[1];
   const colorChoice = engineOptions.colorChoice;
-  const strengthLevel = engineOptions.strengthLevel;
+  const strengthLevel = engineOptions.strengthChoice;
 
-  const isPlaying =
-    colorChoice !== ColorChoice.NONE && strengthLevel !== StrengthLevel.NONE;
+  const isPlaying = colorChoice !== NO_CHOICE && strengthLevel !== NO_CHOICE;
   const optionUnselected =
-    tempColorChoice === ColorChoice.NONE ||
-    tempStrengthLevel === StrengthLevel.NONE;
+    tempColorChoice === NO_CHOICE || tempStrengthLevel === NO_CHOICE;
 
   const handlePlayToggle = () => {
     if (!isPlaying) {
@@ -93,7 +89,7 @@ export const StockfishOptionsModal = ({
     }
   };
 
-  const handlePlayClicked = (actualColor: ColorChoice) => {
+  const handlePlayClicked = (actualColor: number) => {
     if (isRunning()) {
       terminateWorker();
     }
@@ -101,7 +97,7 @@ export const StockfishOptionsModal = ({
     startWorker(StockfishVersion.SF16);
     onClose();
     setEngineOptions({
-      strengthLevel: tempStrengthLevel,
+      strengthChoice: tempStrengthLevel,
       colorChoice: actualColor,
     });
   };
@@ -111,8 +107,8 @@ export const StockfishOptionsModal = ({
     blackPlayer.type = PlayerType.HUMAN;
     terminateWorker();
     setEngineOptions({
-      colorChoice: ColorChoice.NONE,
-      strengthLevel: StrengthLevel.NONE,
+      colorChoice: NO_CHOICE,
+      strengthChoice: NO_CHOICE,
     });
   };
 
@@ -134,8 +130,8 @@ export const StockfishOptionsModal = ({
 
   useEffect(() => {
     if (isOpen && !isPlaying) {
-      setTempColorChoice(ColorChoice.NONE);
-      setTempStrengthLevel(StrengthLevel.NONE);
+      setTempColorChoice(NO_CHOICE);
+      setTempStrengthLevel(NO_CHOICE);
     }
   }, [isOpen, isPlaying]);
 

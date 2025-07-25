@@ -4,11 +4,11 @@ import {
   defaultBoard,
   setupPieces,
   cloneBoard,
-  getPlayerLegalMoves,
   loadGameStateFromFEN,
   initializePiecesByPlayer,
   executePlayerMove,
   undoRedoMoves,
+  getPlayerMoves,
 } from "../utils";
 import {
   Piece,
@@ -83,7 +83,7 @@ export const useGameManager = () => {
     const { players, currentPlayerIndex } = gameState;
     const player = players[currentPlayerIndex];
     const opponent = players[1 - currentPlayerIndex];
-    return getPlayerLegalMoves(
+    return getPlayerMoves(
       player,
       opponent,
       gameState.board,

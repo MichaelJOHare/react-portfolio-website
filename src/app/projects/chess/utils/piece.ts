@@ -1,4 +1,12 @@
 import {
+  bishopMovementStrategy,
+  knightMovementStrategy,
+  queenMovementStrategy,
+  rookMovementStrategy,
+  kingMovementStrategy,
+  pawnMovementStrategy,
+} from "./strategies";
+import {
   Player,
   PieceType,
   PlayerColor,
@@ -7,14 +15,6 @@ import {
   Piece,
   NOT_MOVED,
 } from "../types";
-import {
-  bishopMovementStrategy,
-  knightMovementStrategy,
-  queenMovementStrategy,
-  rookMovementStrategy,
-  kingMovementStrategy,
-  pawnMovementStrategy,
-} from "./strategies";
 
 export const createPiece = (
   player: Player,

@@ -1,10 +1,12 @@
-import { getPieceAt, defaultBoard } from "./board";
-import { createSquare, squareToString } from "./square";
 import {
   createPiece,
   getMovementStrategyFromType,
   havePiecesMoved,
-} from "./piece";
+  createSquare,
+  squareToString,
+  getPieceAt,
+  defaultBoard,
+} from ".";
 import {
   Move,
   PieceType,
