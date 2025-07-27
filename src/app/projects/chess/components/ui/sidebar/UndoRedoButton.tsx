@@ -71,7 +71,7 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
         onClick={() => {
           handleUndoMove();
         }}
-        className="me-1.5 inline-flex w-full items-center rounded-lg bg-zinc-700 p-2.5 text-center text-sm font-medium text-neutral-200 hover:bg-zinc-900 dark:bg-zinc-900 dark:hover:bg-zinc-600"
+        className="me-1.5 inline-flex w-full items-center justify-center rounded-lg bg-zinc-700 p-2.5 text-center text-sm font-medium text-neutral-200 hover:bg-zinc-900 dark:bg-zinc-900 dark:hover:bg-zinc-600"
       >
         <LeftArrowIcon className="size-full text-neutral-200" />
         <span className="sr-only">Previous Move</span>
@@ -84,7 +84,7 @@ export const UndoRedoButton = ({ direction }: UndoRedoButtonProps) => {
         onClick={() => {
           handleRedoMove();
         }}
-        className="ms-1.5 inline-flex w-full items-center rounded-lg bg-zinc-700 p-2.5 text-center text-sm font-medium text-neutral-200 hover:bg-zinc-900 dark:bg-zinc-900 dark:hover:bg-zinc-600"
+        className="ms-1.5 inline-flex w-full items-center justify-center rounded-lg bg-zinc-700 p-2.5 text-center text-sm font-medium text-neutral-200 hover:bg-zinc-900 dark:bg-zinc-900 dark:hover:bg-zinc-600"
       >
         <RightArrowIcon className="size-full text-neutral-200" />
         <span className="sr-only">Next Move</span>

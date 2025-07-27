@@ -18,33 +18,32 @@ export const PromotionPanel = () => {
     promotionPieces = [...promotionPieces].reverse();
   }
 
-  const calculatePosition = (square: Square): string => {
-    const col = square.col;
-    const squareSizeInCSS = `calc(var(--size-chess-square) * ${col})`; // i think i can just use the custom property directly
-    return squareSizeInCSS;
-  };
+  const getPromotionStyles = (index: number): React.CSSProperties => {
+    const { row, col } = promotionSquare;
+    const isPlayerOnTop = promotingColor === PlayerColor.WHITE;
 
-  const getTopOffset = (index: number, color: PlayerColor): string => {
-    const isPlayerOnTop = color === PlayerColor.WHITE;
-    const topOfPromotionSquare = `calc(var(--size-chess-square) * ${promotionSquare.row})`;
+    const gridColumn = col + 1;
+    let gridRow: number;
 
     if (isPlayerOnTop) {
-      return `calc(${topOfPromotionSquare} + calc(var(--size-chess-square) * ${index}))`;
+      gridRow = row + 1 + index;
     } else {
-      return `calc(${topOfPromotionSquare} - calc(var(--size-chess-square) * ${3 - index}))`;
+      gridRow = row + 1 - (3 - index);
     }
+
+    return {
+      gridColumn,
+      gridRow,
+    };
   };
 
   return (
-    <div className="absolute z-20 flex h-full w-full flex-col backdrop-blur-xs backdrop-filter">
+    <div className="absolute inset-0 z-20 grid grid-cols-8 grid-rows-8 backdrop-blur-xs backdrop-filter">
       {promotionPieces.map((type, index) => (
         <div
           key={type}
-          className="size-chess-square absolute cursor-pointer from-amber-400 to-amber-700 hover:bg-radial"
-          style={{
-            top: getTopOffset(index, promotingColor),
-            left: calculatePosition(promotionSquare),
-          }}
+          className="size-full cursor-pointer from-amber-400 to-amber-700 hover:bg-radial"
+          style={getPromotionStyles(index)}
           onClick={() => onPromotionSelect(type)}
         >
           <img

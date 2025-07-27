@@ -104,7 +104,7 @@ export const Sidebar = () => {
   ]);
 
   return (
-    <div className="desktop-md:h-full relative h-[50vh] w-full">
+    <div className="relative h-[50vh] w-full lg:h-full">
       <div className="flex size-full flex-col rounded-lg border border-gray-200 bg-neutral-300 dark:border-gray-600 dark:bg-gray-700">
         <div className="flex flex-shrink-0 items-center justify-center border-b border-gray-400 px-3 py-2 dark:border-gray-600">
           <div className="flex w-full max-w-lg items-center justify-between">

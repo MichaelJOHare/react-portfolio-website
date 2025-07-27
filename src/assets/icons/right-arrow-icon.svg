@@ -2,10 +2,10 @@
   aria-hidden="true"
   xmlns="http://www.w3.org/2000/svg"
   fill="none"
-  viewBox="0 0 14 10"
+  viewBox="0 0 16 10"
 >
   <path
     style="stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"
-    d="M-1 5h16m0 0L11 1m4 4L11 9"
+    d="M1 5h14m0 0L11 1m4 4L11 9"
   />
 </svg>

@@ -68,7 +68,7 @@ export const CapturedPieces = ({ color }: CapturedPiecesProps) => {
       Array.from({ length: count }).map((_, i) => (
         <span
           key={`${type}-${i}`}
-          className="font-mono text-3xl text-neutral-600 dark:text-neutral-200"
+          className="font-mono text-2xl text-neutral-600 dark:text-neutral-200"
         >
           {getPieceUnicode(type)}
         </span>

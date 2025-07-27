@@ -137,7 +137,7 @@ export const StockfishOptionsModal = ({
 
   return (
     <div
-      className={`desktop-md:mt-0 desktop-md:pb-0 mobile:min-h-148 absolute top-0 left-0 mt-2 flex size-full items-center justify-center pb-2 transition-opacity duration-200 ${
+      className={`absolute top-0 left-0 mt-2 flex size-full min-h-148 items-center justify-center pb-2 transition-opacity duration-200 lg:mt-0 lg:min-h-0 lg:pb-0 ${
         isOpen ? "z-20 opacity-100" : "pointer-events-none z-0 opacity-0"
       }`}
     >
