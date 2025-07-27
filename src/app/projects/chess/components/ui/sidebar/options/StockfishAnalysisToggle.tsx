@@ -36,7 +36,7 @@ export const StockfishAnalysisToggle = ({
           checked={stockfishEnabled}
           onChange={(e) => {
             setStockfishEnabled(e.target.checked);
-            onAnalysisToggle(false);
+            onAnalysisToggle(e.target.checked);
           }}
         />
         <div className="absolute h-full w-30 rounded-full bg-neutral-500 shadow-sm shadow-neutral-700 transition will-change-[box-shadow] group-hover:shadow-md peer-checked:translate-x-26 peer-checked:bg-emerald-700 peer-checked:will-change-auto dark:shadow-slate-900 dark:peer-checked:bg-emerald-600" />
