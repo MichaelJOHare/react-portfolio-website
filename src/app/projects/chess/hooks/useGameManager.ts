@@ -119,12 +119,16 @@ export const useGameManager = (pieceAnimator: PieceAnimator) => {
     const updatedState = performMove(gameState, validMove);
 
     if (animate) {
-      startAnimation(validMove.piece.id, validMove.from, validMove.to, () => {
+      /*       startAnimation(validMove.piece.id, validMove.from, validMove.to, () => {
         setGameState((prev) => ({
           ...prev,
           ...updatedState,
         }));
-      });
+      }); */
+      setGameState((prev) => ({
+        ...prev,
+        ...updatedState,
+      }));
     } else {
       setGameState((prev) => ({
         ...prev,
