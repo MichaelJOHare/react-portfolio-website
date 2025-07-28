@@ -11,7 +11,7 @@ export const ChessContainer = () => {
   return (
     <div className="flex items-center justify-center px-2">
       <div
-        className={`flex w-full flex-col lg:w-fit lg:flex-row ${stockfishEnabled ? "lg:gap-0" : "gap-4"}`}
+        className={`flex w-full flex-col lg:flex-row lg:justify-center ${stockfishEnabled ? "lg:gap-0" : "gap-4"}`}
       >
         <div className="flex">
           <div className="h-auto w-full">
