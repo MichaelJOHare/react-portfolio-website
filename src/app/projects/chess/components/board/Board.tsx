@@ -68,7 +68,7 @@ export const Board = () => {
 
   return (
     <DndContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
-      {/* try to make corner squares rounded, right side not rounded when sf enabled */}
+      {/* make corner squares rounded, right side not rounded when sf enabled */}
       <div
         id="chessboard"
         className={`${isBoardFlipped ? "rotate-180" : ""} relative grid aspect-square h-full w-full touch-none grid-cols-8`}

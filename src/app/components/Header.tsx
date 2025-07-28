@@ -9,22 +9,20 @@ import { MobileNav } from "./MobileNav";
 export const Header = () => {
   return (
     <header className="flex items-center justify-between py-5 pl-5">
-      <div>
-        <Link href="/" aria-label={siteMetadata.headerTitle}>
-          <div className="flex items-center justify-between">
-            <div className="pt-1 pr-3">
-              <Logo />
-            </div>
-            {typeof siteMetadata.headerTitle === "string" ? (
-              <div className="hidden h-10 text-2xl font-semibold sm:block">
-                {siteMetadata.headerTitle}
-              </div>
-            ) : (
-              siteMetadata.headerTitle
-            )}
+      <Link href="/" aria-label={siteMetadata.headerTitle}>
+        <div className="flex items-center justify-between">
+          <div className="pt-1 pr-3">
+            <Logo />
           </div>
-        </Link>
-      </div>
+          {typeof siteMetadata.headerTitle === "string" ? (
+            <div className="hidden h-10 text-2xl font-semibold sm:block">
+              {siteMetadata.headerTitle}
+            </div>
+          ) : (
+            siteMetadata.headerTitle
+          )}
+        </div>
+      </Link>
       <div className="flex h-10">
         {headerNavLinks.map((link) => (
           <Link
