@@ -36,7 +36,7 @@ export const usePromotionHandler = (
 
   const setPromotionDetails = (move: Move) => {
     stockfishHandler.stopEngineThinking();
-    highlighter.clearStockfishBestMoveArrow(); // might race against engine response
+    highlighter.clearStockfishBestMoveArrow();
     highlighter.addPreviousMoveSquares(move.from, move.to);
     const squaresToHide = getSquaresToHideDuringPromotion(
       move,
@@ -61,7 +61,7 @@ export const usePromotionHandler = (
     const from = promotingPawn.currentSquare;
     const to = promotionSquare;
 
-    executeMove(from.row, from.col, to.row, to.col, playerMoves, type);
+    executeMove(from, to, playerMoves, false, type);
 
     clearPromotionDetails();
     stockfishHandler.interruptEngineThinking();

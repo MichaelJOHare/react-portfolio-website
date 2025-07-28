@@ -13,6 +13,11 @@ export const createSquare = (
   piece,
 });
 
+export const flipSquare = (square: Square): Square => ({
+  row: 7 - square.row,
+  col: 7 - square.col,
+});
+
 export const squareToString = (square: Square): string => {
   return legendLetter[square.col] + legendNumber[square.row];
 };

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createSquare } from "../utils";
 import {
   GameManager,
   Highlighter,
@@ -44,7 +45,7 @@ export const usePieceSelector = (
     setValidMoves(moves);
   };
 
-  const finalizeMove = (start: Square, end: Square) => {
+  const finalizeMove = (start: Square, end: Square, animate = false) => {
     const playerMoves = getLegalMoves();
     const move = playerMoves.find(
       (move) =>
@@ -57,8 +58,8 @@ export const usePieceSelector = (
     if (move?.isPromotion) {
       setPromotionDetails(move);
     } else {
-      executeMove(start.row, start.col, end.row, end.col, playerMoves);
       deselectPiece();
+      executeMove(start, end, playerMoves, animate);
       highlighter.addPreviousMoveSquares(start, end);
       highlighter.clearStockfishBestMoveArrow();
       interruptEngineThinking();
@@ -67,9 +68,10 @@ export const usePieceSelector = (
 
   const handleClick = (row: number, col: number) => {
     const piece = board[row][col].piece;
+    const endSquare = createSquare(row, col);
     if (selectedPieceSquare) {
       if (isMoveValid(row, col)) {
-        finalizeMove(selectedPieceSquare, { row, col });
+        finalizeMove(selectedPieceSquare, endSquare, true);
       } else if (isCurrentPlayerPiece(piece)) {
         selectPiece(row, col, piece);
       } else {

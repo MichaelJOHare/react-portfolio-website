@@ -181,11 +181,10 @@ export const useStockfishHandler = (
           const delay = Math.random() * (maxDelay - minDelay) + minDelay;
           setTimeout(() => {
             gmRef.current.executeMove(
-              fromSq.row,
-              fromSq.col,
-              toSq.row,
-              toSq.col,
+              fromSq,
+              toSq,
               legalMoves,
+              true,
               promotionType,
             );
             highlighter.addPreviousMoveSquares(fromSq, toSq);

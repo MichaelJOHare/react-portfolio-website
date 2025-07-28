@@ -1,4 +1,4 @@
-import { PieceType, PlayerColor, Square } from "../../types";
+import { PieceType, PlayerColor } from "../../types";
 import { useGame } from "../../context/GameContext";
 
 export const PromotionPanel = () => {

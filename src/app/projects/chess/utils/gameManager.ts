@@ -212,11 +212,7 @@ export const undoRedoMoves = (
   };
 };
 
-export const executePlayerMove = (
-  gameState: GameState,
-  validMove: Move,
-  remainingUndoneMoves?: MoveHistory[],
-) => {
+export const performMove = (gameState: GameState, validMove: Move) => {
   const {
     players,
     currentPlayerIndex,
@@ -269,7 +265,7 @@ export const executePlayerMove = (
     piecesByPlayer: moveResult.updatedPiecesByPlayer,
     currentPlayerIndex: currentPlayerIndex === 0 ? 1 : 0,
     moveHistory: updatedMoveHistory,
-    undoneMoveHistory: remainingUndoneMoves ? remainingUndoneMoves : [],
+    undoneMoveHistory: [],
     halfMoveClock: moveResult.newHalfMoveClock,
     fullMoveNumber: moveResult.newFullMoveNumber,
     capturedPieces: [...capturedPieces, ...moveResult.capturedPieces],

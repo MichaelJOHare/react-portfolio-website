@@ -4,11 +4,13 @@ import { useHighlighter } from "../hooks/useHighlighter";
 import { usePieceSelector } from "../hooks/usePieceSelector";
 import { usePromotionHandler } from "../hooks/usePromotionHandler";
 import { useStockfishHandler } from "../hooks/useStockfishHandler";
+import { usePieceAnimator } from "../hooks/usePieceAnimator";
 import {
   EngineOptions,
   GameManager,
   Highlighter,
   NO_CHOICE,
+  PieceAnimator,
   PieceSelector,
   PromotionHandler,
   StockfishHandler,
@@ -25,6 +27,7 @@ type GameContextType = {
   pieceSelector: PieceSelector;
   promotionHandler: PromotionHandler;
   stockfishHandler: StockfishHandler;
+  pieceAnimator: PieceAnimator;
   isBoardFlipped: boolean;
   toggleFlipBoard: () => void;
   stockfishEnabled: boolean;
@@ -43,7 +46,8 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     strengthChoice: NO_CHOICE,
     colorChoice: NO_CHOICE,
   });
-  const gameManager = useGameManager();
+  const pieceAnimator = usePieceAnimator();
+  const gameManager = useGameManager(pieceAnimator);
   const highlighter = useHighlighter(isBoardFlipped);
   const stockfishHandler = useStockfishHandler(
     gameManager,
@@ -76,6 +80,7 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     <GameContext.Provider
       value={{
         gameManager,
+        pieceAnimator,
         highlighter,
         pieceSelector,
         promotionHandler,

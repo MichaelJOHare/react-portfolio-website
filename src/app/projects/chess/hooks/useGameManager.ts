@@ -6,7 +6,7 @@ import {
   cloneBoard,
   loadGameStateFromFEN,
   initializePiecesByPlayer,
-  executePlayerMove,
+  performMove,
   undoRedoMoves,
   getPlayerMoves,
 } from "../utils";
@@ -17,11 +17,13 @@ import {
   PieceType,
   Move,
   PromotionMove,
-  MoveHistory,
   GameState,
+  Square,
+  PieceAnimator,
 } from "../types";
 
-export const useGameManager = () => {
+export const useGameManager = (pieceAnimator: PieceAnimator) => {
+  const { startAnimation } = pieceAnimator;
   const [gameState, setGameState] = useState<GameState>({
     board: defaultBoard(),
     players: [
@@ -93,47 +95,50 @@ export const useGameManager = () => {
   };
 
   const executeMove = (
-    startRow: number,
-    startCol: number,
-    endRow: number,
-    endCol: number,
+    startSquare: Square,
+    endSquare: Square,
     playerMoves: Move[],
+    animate = false,
     promotionType?: PieceType,
-    remainingUndoneMoves?: MoveHistory[],
   ) => {
     const { board } = gameState;
-    const piece = board[startRow][startCol].piece;
+    const piece = board[startSquare.row][startSquare.col].piece;
     if (!piece) return;
     const validMove = playerMoves.find(
       (move) =>
         move.piece.id === piece.id &&
-        move.from.row === startRow &&
-        move.from.col === startCol &&
-        move.to.row === endRow &&
-        move.to.col === endCol &&
+        move.from.row === startSquare.row &&
+        move.from.col === startSquare.col &&
+        move.to.row === endSquare.row &&
+        move.to.col === endSquare.col &&
         (promotionType
           ? (move as PromotionMove).promotionType === promotionType
           : true),
     );
     if (!validMove) return;
-    const updatedState = executePlayerMove(
-      gameState,
-      validMove,
-      remainingUndoneMoves,
-    );
+    const updatedState = performMove(gameState, validMove);
 
-    setGameState((prev) => ({
-      ...prev,
-      ...updatedState,
-    }));
+    if (animate) {
+      startAnimation(validMove.piece.id, validMove.from, validMove.to, () => {
+        setGameState((prev) => ({
+          ...prev,
+          ...updatedState,
+        }));
+      });
+    } else {
+      setGameState((prev) => ({
+        ...prev,
+        ...updatedState,
+      }));
+    }
   };
 
   const replayMoves = (count: number, isUndo: boolean) => {
     if (count <= 0) return;
-    const updatedState = undoRedoMoves(gameState, count, isUndo);
+    const updatedGameState = undoRedoMoves(gameState, count, isUndo);
     setGameState((prev) => ({
       ...prev,
-      ...updatedState,
+      ...updatedGameState,
     }));
   };
 
