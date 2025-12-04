@@ -64,9 +64,9 @@ export const ChessPiece = ({ type, color, square }: ChessPieceProps) => {
   };
 
   const interactionProps = isAnimating ? {} : { ...listeners, ...attributes };
-  const baseImageClasses = `h-full select-none ${isBoardFlipped ? "rotate-180" : ""}`;
-  const ghostImageClasses = `pointer-events-none z-0 opacity-50 ${baseImageClasses}`;
-  const mainImageClasses = `absolute z-10 ${baseImageClasses} ${
+  const basePieceClass = `h-full select-none ${isBoardFlipped ? "rotate-180" : ""}`;
+  const ghostPieceClass = `pointer-events-none z-0 opacity-50 ${basePieceClass}`;
+  const mainPieceClass = `absolute z-10 ${basePieceClass} ${
     isDragging
       ? "z-20 cursor-grabbing"
       : isAnimating
@@ -78,13 +78,13 @@ export const ChessPiece = ({ type, color, square }: ChessPieceProps) => {
     <>
       {isDragging && (
         <img
-          className={ghostImageClasses}
+          className={ghostPieceClass}
           src={pieceImagePath}
           alt={`${type}-ghost`}
         />
       )}
       <img
-        className={mainImageClasses}
+        className={mainPieceClass}
         ref={setNodeRef}
         style={pieceStyle()}
         onTransitionEnd={handleTransitionEnd}

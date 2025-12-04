@@ -17,6 +17,7 @@ import {
   Square,
   PlayerColor,
   NOT_MOVED,
+  PIECE_MOVE_MULTIPLIER,
 } from "../types";
 
 /*
@@ -282,7 +283,7 @@ export const executeStandardMove = (
   const updatedPiece = {
     ...move.piece,
     currentSquare: move.to,
-    firstMoveNumber: moveNumber * 2,
+    firstMoveNumber: moveNumber * PIECE_MOVE_MULTIPLIER,
   };
   board[move.from.row][move.from.col].piece = undefined;
   if (updatedPiece) {
@@ -338,12 +339,12 @@ export const executeCastlingMove = (
   const updatedKing = {
     ...castlingMove.piece,
     currentSquare: castlingMove.kingTo,
-    firstMoveNumber: moveNumber * 2,
+    firstMoveNumber: moveNumber * PIECE_MOVE_MULTIPLIER,
   };
   const updatedRook = {
     ...castlingMove.rook,
     currentSquare: castlingMove.rookTo,
-    firstMoveNumber: moveNumber * 2,
+    firstMoveNumber: moveNumber * PIECE_MOVE_MULTIPLIER,
   };
 
   board[castlingMove.kingFrom.row][castlingMove.kingFrom.col].piece = undefined;
@@ -403,7 +404,7 @@ export const undoStandardMove = (
 ): Piece[] => {
   const piecesToUpdate: Piece[] = [];
   const updatedFirstMoveNumber =
-    moveNumber * 2 === move.piece.firstMoveNumber
+    moveNumber * PIECE_MOVE_MULTIPLIER === move.piece.firstMoveNumber
       ? NOT_MOVED
       : move.piece.firstMoveNumber;
 

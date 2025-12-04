@@ -26,6 +26,7 @@ export type Square = {
 };
 
 export const NOT_MOVED = -1;
+export const PIECE_MOVE_MULTIPLIER = 2; // so we can track half-moves
 export type Piece = {
   id: string;
   player: Player;
