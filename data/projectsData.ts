@@ -17,6 +17,15 @@ const projectsData: Project[] = [
     playable: true,
   },
   {
+    title: "Terminal SSH Session Manager",
+    description: `A terminal-based SSH session manager written in Go using the Bubble Tea TUI framework.  Allows users to easily manage 
+    and connect to multiple SSH/telnet sessions from a single interface. Also allows editing/adding/removing hosts from their config files 
+    directly through the interface.  Inspired by PuTTY, I wanted to create a better looking and more useful tool for managing my own SSH/telnet connections at work.`,
+    imgSrc: "/assets/images/terminal-ssh-manager.png",
+    href: "https://github.com/MichaelJOHare/bubbletea-ssh-manager",
+    playable: false,
+  },
+  {
     title: "Chrome Dino Game Clone",
     description: `A clone of the classic Chrome Dino Game, written using HTML5 Canvas and JavaScript.  Built to better learn how to use canvas 
     as well as to experiment with browser-based game development.`,
