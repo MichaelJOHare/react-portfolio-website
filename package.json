@@ -42,7 +42,7 @@
     "jest-environment-jsdom": "^30.3.0",
     "next": "^16.2.2",
     "postcss": "^8.5.9",
-    "prettier": "^3.8.1",
+    "prettier": "^3.8.2",
     "prettier-plugin-classnames": "^0.10.1",
     "prettier-plugin-merge": "^0.10.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
