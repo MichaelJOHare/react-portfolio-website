@@ -330,6 +330,8 @@ export const useStockfishHandler = (
     engineOptionsRef.current = engineOptions;
   }, [engineOptions]);
 
+  useEffect(() => terminateWorker, [terminateWorker]);
+
   /* USE EFFECTS FOR UPDATING USEREFs THAT HAVE EXTERNAL DEPENDENCIES */
 
   return {

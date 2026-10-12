@@ -3,7 +3,16 @@ module.exports = {
   testMatch: ["**/__tests__/**/*.test.ts"],
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   transform: {
-    "^.+\\.tsx?$": ["ts-jest", { tsconfig: "tsconfig.json" }],
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        tsconfig: {
+          module: "NodeNext",
+          moduleResolution: "NodeNext",
+          rootDir: "./",
+        },
+      },
+    ],
   },
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
