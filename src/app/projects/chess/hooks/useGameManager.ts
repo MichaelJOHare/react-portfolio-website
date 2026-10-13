@@ -19,11 +19,9 @@ import {
   PromotionMove,
   GameState,
   Square,
-  PieceAnimator,
 } from "../types";
 
-export const useGameManager = (pieceAnimator: PieceAnimator) => {
-  const { startAnimation } = pieceAnimator;
+export const useGameManager = () => {
   const [gameState, setGameState] = useState<GameState>({
     board: defaultBoard(),
     players: [
@@ -92,6 +90,19 @@ export const useGameManager = (pieceAnimator: PieceAnimator) => {
       gameState.piecesByPlayer,
       gameState.moveHistory,
     );
+  };
+
+  const setPlayerTypes = (
+    whitePlayerType: PlayerType,
+    blackPlayerType: PlayerType,
+  ) => {
+    setGameState((prev) => ({
+      ...prev,
+      players: prev.players.map((player, index) => ({
+        ...player,
+        type: index === 0 ? whitePlayerType : blackPlayerType,
+      })),
+    }));
   };
 
   const executeMove = (
@@ -171,6 +182,7 @@ export const useGameManager = (pieceAnimator: PieceAnimator) => {
     setGameState,
     initializeBoard,
     getLegalMoves,
+    setPlayerTypes,
     replayMoves,
     executeMove,
     loadFromFEN,

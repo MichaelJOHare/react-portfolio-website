@@ -47,7 +47,7 @@ export const GameProvider = ({ children, onResetGame }: Props) => {
     colorChoice: NO_CHOICE,
   });
   const pieceAnimator = usePieceAnimator();
-  const gameManager = useGameManager(pieceAnimator);
+  const gameManager = useGameManager();
   const highlighter = useHighlighter(isBoardFlipped);
   const stockfishHandler = useStockfishHandler(
     gameManager,

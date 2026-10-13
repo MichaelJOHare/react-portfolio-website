@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useGame } from "@/app/projects/chess/context/GameContext";
 import StockfishOptionsIcon from "@/assets/icons/stockfish-options-icon.svg";
 
@@ -12,18 +11,6 @@ export const StockfishAnalysisToggle = ({
   disabled,
 }: SfAnalysisProps) => {
   const { setStockfishEnabled, stockfishEnabled } = useGame();
-  const [showIcon, setShowIcon] = useState(stockfishEnabled);
-
-  // delays icon toggle to sync with animation
-  useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout>;
-    if (stockfishEnabled) {
-      timeout = setTimeout(() => setShowIcon(true), 100);
-    } else {
-      setShowIcon(false);
-    }
-    return () => clearTimeout(timeout);
-  }, [stockfishEnabled]);
 
   return (
     <div className="group relative">
@@ -47,14 +34,14 @@ export const StockfishAnalysisToggle = ({
           <div className="relative flex h-full w-full items-center justify-center">
             <span
               className={`absolute transition-opacity duration-100 ease-in ${
-                showIcon ? "opacity-0" : "opacity-100"
+                stockfishEnabled ? "opacity-0 delay-100" : "opacity-100 delay-0"
               }`}
             >
               On
             </span>
             <StockfishOptionsIcon
               className={`drop-shadow-sfOn absolute ml-6 h-10 w-10 text-orange-300 transition-opacity duration-100 ease-in ${
-                showIcon ? "opacity-100" : "opacity-0"
+                stockfishEnabled ? "opacity-100 delay-100" : "opacity-0 delay-0"
               }`}
             />
           </div>

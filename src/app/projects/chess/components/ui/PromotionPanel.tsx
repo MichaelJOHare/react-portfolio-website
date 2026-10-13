@@ -1,5 +1,6 @@
 import { PieceType, PlayerColor } from "../../types";
 import { useGame } from "../../context/GameContext";
+import Image from "next/image";
 
 export const PromotionPanel = () => {
   const { isBoardFlipped, promotionHandler } = useGame();
@@ -46,10 +47,12 @@ export const PromotionPanel = () => {
           style={getPromotionStyles(index)}
           onClick={() => onPromotionSelect(type)}
         >
-          <img
+          <Image
             src={`/assets/images/${promotingColor}-${type}.svg`}
             alt={`${promotingColor}-${type}`}
             className={`h-full w-full select-none hover:scale-116 ${isBoardFlipped ? "rotate-180" : ""}`}
+            width={100}
+            height={100}
           />
         </div>
       ))}

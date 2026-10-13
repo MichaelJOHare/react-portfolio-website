@@ -7,7 +7,7 @@ type PlayVersusComputerProps = {
   isPlaying: boolean;
   optionUnselected: boolean;
   onStrengthLevelChange: (level: number) => void;
-  onColorChoiceChange: (color: number) => void;
+  onColorChoiceChange: (color: number, actualColor: number) => void;
   onPlayToggle: () => void;
 };
 
@@ -50,7 +50,7 @@ export const PlayVersusComputer = ({
       <div className="mt-4">
         <button
           type="button"
-          disabled={optionUnselected}
+          disabled={optionUnselected && !isPlaying}
           className="h-14 w-full rounded-lg bg-neutral-600 pb-1 text-3xl font-medium text-neutral-100 not-disabled:bg-emerald-600 hover:shadow-md hover:shadow-neutral-600 not-disabled:hover:bg-emerald-500 disabled:cursor-not-allowed disabled:shadow-none dark:bg-teal-800 dark:hover:shadow-slate-900"
           onClick={onPlayToggle}
         >

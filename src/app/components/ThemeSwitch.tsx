@@ -1,11 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
 import { useSpring, animated } from "@react-spring/web";
 
+const subscribe = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
+
 export const ThemeSwitch = () => {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    subscribe,
+    getClientSnapshot,
+    getServerSnapshot,
+  );
   const { theme, setTheme, resolvedTheme } = useTheme();
 
   const toggleTheme = useCallback(() => {
@@ -45,8 +53,6 @@ export const ThemeSwitch = () => {
     config: properties.springConfig,
   });
   const linesProps = useSpring({ opacity, config: properties.springConfig });
-
-  useEffect(() => setMounted(true), []);
 
   if (!mounted) {
     return null;

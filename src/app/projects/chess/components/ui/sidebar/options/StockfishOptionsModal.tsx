@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useCallback, useRef, useEffect, useState } from "react";
 import CloseModalIcon from "@/assets/icons/close-modal-icon.svg";
 import { StockfishAnalysisToggle } from "./StockfishAnalysisToggle";
 import { PlayVersusComputer } from "./PlayVersusComputer";
@@ -34,10 +34,9 @@ export const StockfishOptionsModal = ({
   const menuRef = useRef<HTMLDivElement>(null);
   const [version, setVersion] = useState(StockfishVersion.SF16);
   const [tempColorChoice, setTempColorChoice] = useState(NO_CHOICE);
+  const [tempActualColorChoice, setTempActualColorChoice] = useState(NO_CHOICE);
   const [tempStrengthLevel, setTempStrengthLevel] = useState(NO_CHOICE);
 
-  const whitePlayer = gameManager.players[0];
-  const blackPlayer = gameManager.players[1];
   const colorChoice = engineOptions.colorChoice;
   const strengthLevel = engineOptions.strengthChoice;
 
@@ -45,21 +44,27 @@ export const StockfishOptionsModal = ({
   const optionUnselected =
     tempColorChoice === NO_CHOICE || tempStrengthLevel === NO_CHOICE;
 
+  const closeModal = useCallback(() => {
+    if (!isPlaying) {
+      setTempColorChoice(NO_CHOICE);
+      setTempActualColorChoice(NO_CHOICE);
+      setTempStrengthLevel(NO_CHOICE);
+    }
+    onClose();
+  }, [isPlaying, onClose]);
+
   const handlePlayToggle = () => {
     if (!isPlaying) {
       const actualColor =
         tempColorChoice === ColorChoice.RANDOM
-          ? Math.random() < 0.5
-            ? ColorChoice.WHITE
-            : ColorChoice.BLACK
+          ? tempActualColorChoice
           : tempColorChoice;
 
       const isBlack = actualColor === ColorChoice.BLACK;
-      if (isBlack) {
-        whitePlayer.type = PlayerType.COMPUTER;
-      } else {
-        blackPlayer.type = PlayerType.COMPUTER;
-      }
+      gameManager.setPlayerTypes(
+        isBlack ? PlayerType.COMPUTER : PlayerType.HUMAN,
+        isBlack ? PlayerType.HUMAN : PlayerType.COMPUTER,
+      );
 
       if ((isBlack && !isBoardFlipped) || (!isBlack && isBoardFlipped)) {
         toggleFlipBoard();
@@ -95,7 +100,7 @@ export const StockfishOptionsModal = ({
     }
     setStockfishEnabled(false);
     startWorker(StockfishVersion.SF16);
-    onClose();
+    closeModal();
     setEngineOptions({
       strengthChoice: tempStrengthLevel,
       colorChoice: actualColor,
@@ -103,8 +108,10 @@ export const StockfishOptionsModal = ({
   };
 
   const handleStopClicked = () => {
-    whitePlayer.type = PlayerType.HUMAN;
-    blackPlayer.type = PlayerType.HUMAN;
+    gameManager.setPlayerTypes(PlayerType.HUMAN, PlayerType.HUMAN);
+    setTempColorChoice(NO_CHOICE);
+    setTempActualColorChoice(NO_CHOICE);
+    setTempStrengthLevel(NO_CHOICE);
     terminateWorker();
     setEngineOptions({
       colorChoice: NO_CHOICE,
@@ -115,7 +122,7 @@ export const StockfishOptionsModal = ({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        onClose();
+        closeModal();
       }
     };
     if (isOpen) {
@@ -126,14 +133,7 @@ export const StockfishOptionsModal = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpen, onClose]);
-
-  useEffect(() => {
-    if (isOpen && !isPlaying) {
-      setTempColorChoice(NO_CHOICE);
-      setTempStrengthLevel(NO_CHOICE);
-    }
-  }, [isOpen, isPlaying]);
+  }, [isOpen, closeModal]);
 
   return (
     <div
@@ -145,7 +145,7 @@ export const StockfishOptionsModal = ({
         <div className="absolute top-2 right-3">
           <button
             className="rounded-3xl bg-rose-600 hover:bg-rose-800"
-            onClick={onClose}
+            onClick={closeModal}
           >
             <CloseModalIcon className="size-10 scale-[99%] text-neutral-200" />
           </button>
@@ -175,7 +175,10 @@ export const StockfishOptionsModal = ({
                 isPlaying={isPlaying}
                 optionUnselected={optionUnselected}
                 onStrengthLevelChange={setTempStrengthLevel}
-                onColorChoiceChange={setTempColorChoice}
+                onColorChoiceChange={(color, actualColor) => {
+                  setTempColorChoice(color);
+                  setTempActualColorChoice(actualColor);
+                }}
                 onPlayToggle={handlePlayToggle}
               />
             </div>

@@ -9,7 +9,6 @@ module.exports = {
         tsconfig: {
           module: "NodeNext",
           moduleResolution: "NodeNext",
-          rootDir: "./",
         },
       },
     ],

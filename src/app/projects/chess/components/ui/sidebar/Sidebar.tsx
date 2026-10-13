@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toFEN } from "../../../utils/FEN";
 import { StockfishOptionsModal } from "./options/StockfishOptionsModal";
 import { useGame } from "../../../context/GameContext";
@@ -22,7 +22,10 @@ export const Sidebar = () => {
   const { terminateWorker } = stockfishHandler;
   const [showFenTextArea, setShowFenTextArea] = useState(false);
   const [showStockfishOptions, setShowStockfishOptions] = useState(false);
-  const [fenValue, setFenValue] = useState("");
+  const [fenDraft, setFenDraft] = useState<{
+    value: string;
+    position: string;
+  } | null>(null);
   const [fenStatus, setFenStatus] = useState<
     | "Valid"
     | "Valid Check"
@@ -30,8 +33,6 @@ export const Sidebar = () => {
     | "Invalid FEN string"
     | "Paste FEN string here"
   >("Paste FEN string here");
-  const movesHistory = moveHistory.map((record) => record.move);
-
   const onFlipBoard = () => {
     toggleFlipBoard();
   };
@@ -42,19 +43,31 @@ export const Sidebar = () => {
   };
 
   const onToggleFenTextArea = () => {
-    setShowFenTextArea((v) => {
-      if (!v) {
-        setFenStatus("Paste FEN string here");
-      }
-      return !v;
-    });
+    if (!showFenTextArea) {
+      setFenStatus("Paste FEN string here");
+      setFenDraft(null);
+    }
+    setShowFenTextArea(!showFenTextArea);
   };
+
+  const currentFen = showFenTextArea
+    ? toFEN(
+        board,
+        players,
+        currentPlayerIndex,
+        moveHistory.map((record) => record.move),
+        halfMoveClock,
+        fullMoveNumber,
+      )
+    : "";
+  const fenValue =
+    fenDraft?.position === currentFen ? fenDraft.value : currentFen;
 
   const updateStateOnFenChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
     const fenString = event.target.value.trim();
-    setFenValue(fenString);
+    setFenDraft({ value: fenString, position: currentFen });
 
     if (!fenString) {
       setFenStatus("Paste FEN string here");
@@ -80,28 +93,6 @@ export const Sidebar = () => {
       setFenStatus("Valid");
     }
   };
-
-  useEffect(() => {
-    if (showFenTextArea) {
-      const currentFen = toFEN(
-        board,
-        players,
-        currentPlayerIndex,
-        movesHistory,
-        halfMoveClock,
-        fullMoveNumber,
-      );
-      setFenValue(currentFen);
-    }
-  }, [
-    showFenTextArea,
-    board,
-    players,
-    currentPlayerIndex,
-    movesHistory,
-    halfMoveClock,
-    fullMoveNumber,
-  ]);
 
   return (
     <div className="relative h-[50vh] w-full lg:h-full">

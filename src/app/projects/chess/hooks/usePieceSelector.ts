@@ -26,8 +26,8 @@ export const usePieceSelector = (
 
   const isCurrentPlayerPiece = (piece?: Piece) =>
     piece &&
-    piece.player === players[currentPlayerIndex] &&
-    piece.player.type !== PlayerType.COMPUTER;
+    piece.player.id === players[currentPlayerIndex].id &&
+    players[currentPlayerIndex].type !== PlayerType.COMPUTER;
 
   const isMoveValid = (row: number, col: number) =>
     validMoves.some((s) => s.row === row && s.col === col);

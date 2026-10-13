@@ -1,4 +1,5 @@
 import { useDraggable } from "@dnd-kit/core";
+import Image from "next/image";
 import { PieceType, PlayerColor, Square } from "../../types";
 import { useGame } from "../../context/GameContext";
 import { flipSquare } from "../../utils";
@@ -77,13 +78,15 @@ export const ChessPiece = ({ type, color, square }: ChessPieceProps) => {
   return (
     <>
       {isDragging && (
-        <img
+        <Image
           className={ghostPieceClass}
           src={pieceImagePath}
           alt={`${type}-ghost`}
+          width={100}
+          height={100}
         />
       )}
-      <img
+      <Image
         className={mainPieceClass}
         ref={setNodeRef}
         style={pieceStyle()}
@@ -91,6 +94,8 @@ export const ChessPiece = ({ type, color, square }: ChessPieceProps) => {
         {...interactionProps}
         src={pieceImagePath}
         alt={type}
+        width={100}
+        height={100}
       />
     </>
   );

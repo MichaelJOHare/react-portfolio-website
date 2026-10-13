@@ -1,24 +1,11 @@
 import { renderHook, act } from "@testing-library/react";
 import { useGameManager } from "@/app/projects/chess/hooks/useGameManager";
-import { AnimatingPiece } from "@/app/projects/chess/hooks/usePieceAnimator";
 import { INITIAL_FEN } from "@/app/projects/chess/utils/FEN";
-import {
-  Square,
-  PieceAnimator,
-  PieceType,
-  PlayerColor,
-} from "@/app/projects/chess/types";
-
-const mockAnimator: PieceAnimator = {
-  startAnimation: jest.fn(),
-  getAnimatingPiece: jest.fn(),
-  completeAnimation: jest.fn(),
-  animatingPieces: new Map<string, AnimatingPiece>(),
-};
+import { Square, PieceType, PlayerColor } from "@/app/projects/chess/types";
 
 const square = (row: number, col: number): Square => ({ row, col });
 
-const renderGameManager = () => renderHook(() => useGameManager(mockAnimator));
+const renderGameManager = () => renderHook(() => useGameManager());
 
 beforeEach(() => {
   jest.clearAllMocks();
